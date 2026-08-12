@@ -229,6 +229,20 @@ export const registerSchedules = async () => {
   )
 
   await scheduleQueue.upsertJobScheduler(
+    ScheduleJobData.refreshThreadsTokens,
+    {
+      pattern: "17 2 * * *",
+    },
+    {
+      name: ScheduleJobData.refreshThreadsTokens,
+      data: {
+        type: ScheduleJobData.refreshThreadsTokens,
+        data: {},
+      },
+    },
+  )
+
+  await scheduleQueue.upsertJobScheduler(
     ScheduleJobData.refreshZaloTokens,
     {
       pattern: "0 2 * * *",

@@ -12,7 +12,10 @@ import {
 import type { IntegrationJobCommentAIReply } from "@chatbotx.io/worker-config"
 import { logger } from "../../../lib/logger"
 import { integrationService } from "../../../services/integrations"
-import { generateAIReplyText } from "../automated-response/replies"
+import {
+  createGuardedCommentInputMessage,
+  generateAIReplyText,
+} from "../automated-response/replies"
 import { postPublicCommentReply } from "."
 
 /**
@@ -28,6 +31,14 @@ export async function processCommentAIReply(
 ): Promise<void> {
   if (!data.message?.trim()) {
     // Image/sticker-only comment: nothing for the agent to answer.
+    return
+  }
+
+  if (data.channelType === "threads" && data.replyChannel === "private") {
+    logger.info(
+      { commentId: data.commentId, capability: "private reply unsupported" },
+      "comment AI reply skipped: unsupported capability",
+    )
     return
   }
 
@@ -79,7 +90,14 @@ export async function processCommentAIReply(
   const generated = await generateAIReplyText({
     conversation,
     contactInbox,
-    messages: [{ role: "user", content: data.message }],
+    messages: [
+      data.channelType === "threads"
+        ? createGuardedCommentInputMessage({
+            channel: data.channelType,
+            comment: data.message,
+          })
+        : { role: "user", content: data.message },
+    ],
     aiAgent: agent,
   })
   if (!generated?.text) {
@@ -110,8 +128,8 @@ export async function processCommentAIReply(
     return
   }
 
-  // Private DM. Instagram private DM is out of scope (no private_replies API),
-  // same as the private text branch.
+  // Private DM. Instagram/Threads private DM is out of scope (no
+  // private_replies API), same as the private text branch.
   if (data.channelType === "messenger") {
     const { integrationRow } =
       await integrationService.identifyInboxAndIntegrationAuthFromIdentifier(

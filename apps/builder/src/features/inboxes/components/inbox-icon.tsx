@@ -7,6 +7,8 @@ import {
   SiMessengerHex,
   SiTelegram,
   SiTelegramHex,
+  SiThreads,
+  SiThreadsHex,
   SiTiktok,
   SiTiktokHex,
   SiWhatsapp,
@@ -20,10 +22,12 @@ import {
   type LucideIcon,
   MailIcon,
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 import type { ComponentType, SVGProps } from "react"
 import { memo } from "react"
 
 type IconSize = "small" | "medium" | "large" | "xlarge"
+type InboxLabelKey = `fields.${ChannelType}.label`
 
 const ICON_SIZE_CLASSES: Record<IconSize, string> = {
   small: "size-4",
@@ -43,54 +47,59 @@ type InboxIconConfig = {
   Icon: ComponentType<SVGProps<SVGSVGElement> & { fill?: string }> | LucideIcon
   fill?: string
   iconClassName?: string
-  defaultLabel: string
+  defaultLabelKey: InboxLabelKey
 }
 
 export const INBOX_ICON_CONFIG: Record<ChannelType, InboxIconConfig> = {
   messenger: {
     Icon: SiMessenger,
     fill: SiMessengerHex,
-    defaultLabel: "Messenger",
+    defaultLabelKey: "fields.messenger.label",
   },
   instagram: {
     Icon: SiInstagram,
     fill: SiInstagramHex,
-    defaultLabel: "Instagram",
+    defaultLabelKey: "fields.instagram.label",
+  },
+  threads: {
+    Icon: SiThreads,
+    fill: SiThreadsHex,
+    defaultLabelKey: "fields.threads.label",
   },
   whatsapp: {
     Icon: SiWhatsapp,
     fill: SiWhatsappHex,
-    defaultLabel: "Whatsapp",
+    defaultLabelKey: "fields.whatsapp.label",
   },
   zalo: {
     Icon: SiZalo,
     fill: SiZaloHex,
-    defaultLabel: "Zalo OA",
+    defaultLabelKey: "fields.zalo.label",
   },
   telegram: {
     Icon: SiTelegram,
     fill: SiTelegramHex,
-    defaultLabel: "Telegram",
+    defaultLabelKey: "fields.telegram.label",
   },
   tiktok: {
     Icon: SiTiktok,
     fill: SiTiktokHex,
-    defaultLabel: "TikTok",
+    defaultLabelKey: "fields.tiktok.label",
     iconClassName:
       "[paint-order:stroke_fill] stroke-2 stroke-white dark:fill-zinc-100 dark:stroke-zinc-900",
   },
   webchat: {
     Icon: AppWindowIcon,
     iconClassName: "fill-zinc-100 dark:stroke-zinc-800",
-    defaultLabel: "Webchat",
+    defaultLabelKey: "fields.webchat.label",
   },
   smtp: {
     Icon: MailIcon,
-    defaultLabel: "Email",
+    defaultLabelKey: "fields.smtp.label",
   },
   omnichannel: {
     Icon: GlobeIcon,
-    defaultLabel: "Omnichannel",
+    defaultLabelKey: "fields.omnichannel.label",
   },
 }
 
@@ -117,6 +126,7 @@ export const InboxIcon = memo(
     showLabel = true,
     size = "medium",
   }: InboxIconProps) => {
+    const t = useTranslations()
     const config = isChannelType(channel)
       ? INBOX_ICON_CONFIG[channel]
       : INBOX_ICON_CONFIG.omnichannel
@@ -124,7 +134,7 @@ export const InboxIcon = memo(
       Icon,
       fill,
       iconClassName: configIconClassName,
-      defaultLabel,
+      defaultLabelKey,
     } = config
 
     return (
@@ -141,7 +151,7 @@ export const InboxIcon = memo(
           <span
             className={cn("flex-1", LABEL_SIZE_CLASSES[size], labelClassName)}
           >
-            {label ?? defaultLabel}
+            {label ?? t(defaultLabelKey)}
           </span>
         )}
       </div>

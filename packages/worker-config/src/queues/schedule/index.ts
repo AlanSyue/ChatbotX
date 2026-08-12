@@ -26,6 +26,7 @@ export const ScheduleJobData = {
   purgeCoexistStaging: "purgeCoexistStaging",
   purgeWhatsappSignupSessions: "purgeWhatsappSignupSessions",
   purgeWorkspaces: "purgeWorkspaces",
+  refreshThreadsTokens: "refreshThreadsTokens",
   refreshZaloTokens: "refreshZaloTokens",
   unsubscribeExpiredTrials: "unsubscribeExpiredTrials",
   teardownExpiredTrial: "teardownExpiredTrial",
@@ -149,6 +150,11 @@ export type ScheduleJobPurgeWorkspaces = {
   data: Record<string, never>
 }
 
+export type ScheduleJobRefreshThreadsTokens = {
+  type: typeof ScheduleJobData.refreshThreadsTokens
+  data: Record<string, never>
+}
+
 export type ScheduleJobRefreshZaloTokens = {
   type: typeof ScheduleJobData.refreshZaloTokens
   data: Record<string, never>
@@ -184,6 +190,7 @@ export type ScheduleJobData =
   | ScheduleJobPurgeCoexistStaging
   | ScheduleJobPurgeWhatsappSignupSessions
   | ScheduleJobPurgeWorkspaces
+  | ScheduleJobRefreshThreadsTokens
   | ScheduleJobRefreshZaloTokens
   | ScheduleJobUnsubscribeExpiredTrials
   | ScheduleJobTeardownExpiredTrial

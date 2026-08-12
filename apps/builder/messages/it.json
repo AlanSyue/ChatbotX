@@ -15,6 +15,9 @@
       "cloneFromMessenger": "Clona da Messenger",
       "clonedFromMessenger": "Clonato da Messenger"
     },
+    "threads": {
+      "label": "Threads"
+    },
     "zalo": { "label": "Zalo OA" },
     "telegram": {
       "label": "Telegram",
@@ -1850,6 +1853,11 @@
       "addMapping": "Aggiungi mappatura",
       "addCustomField": "Aggiungi"
     },
+    "sendCarousel": {
+      "addSlide": "Add slide",
+      "removeSlide": "Remove slide",
+      "whatsappLinkButtonIgnored": "On WhatsApp, this card's link won't work: a card with a link button cannot have other buttons. It will be sent as a reply instead."
+    },
     "additionalSteps": "Passaggi aggiuntivi",
     "delayType": {
       "datetimeCustomField": "Campo personalizzato data e ora",
@@ -2426,6 +2434,8 @@
     "noVersionsFound": "Nessuna versione pubblicata trovata",
     "publishVersionSuccess": "È stata pubblicata una nuova versione",
     "flowConfigIncomplete": "Alcune configurazioni sono incomplete",
+    "whatsappCarouselButtonsMismatch": "On WhatsApp, a carousel needs the same buttons on every card: either a single link button on each card, or the same number of reply buttons on each card",
+    "whatsappCarouselLinkButtonNotAlone": "On WhatsApp, a carousel card with a link button cannot have any other buttons. Remove the other buttons on that card, or change the link button to another action.",
     "duplicateNodeError": "Impossibile duplicare il blocco. Riprova.",
     "deleteNodeError": "Impossibile eliminare il blocco. Riprova.",
     "redoHistoryCleared": "Cronologia delle operazioni ripetibili cancellata",
@@ -2823,6 +2833,7 @@
         "quickReplyPayloadPlaceholder": "Inserisci payload (facoltativo)",
         "flowToken": "Token del flusso",
         "flowTokenPlaceholder": "Inserisci token del flusso",
+        "flowNotSynced": "Sync WhatsApp flows to map submitted fields.",
         "catalogProductId": "ID prodotto",
         "catalogProductIdPlaceholder": "Inserisci ID del rivenditore del prodotto",
         "carouselCard": "Scheda {index}",
@@ -3124,7 +3135,10 @@
     "title": "Registri di controllo"
   },
   "customFields": {
-    "title": "Campi personalizzati"
+    "title": "Campi personalizzati",
+    "variables": {
+      "rawGroup": "Raw custom fields"
+    }
   },
   "keywords": {
     "title": "Parole chiave",
@@ -3530,6 +3544,75 @@
       "instagramDescription": "Connessione tramite accesso Instagram. Supporta risposte pubbliche, risposte private e la possibilità di nascondere i commenti. Non supporta i Mi piace ai commenti.",
       "instagramFacebookTitle": "Accesso a Instagram con Facebook",
       "instagramFacebookDescription": "Instagram collegato tramite una Pagina Facebook. Supporta risposte pubbliche, risposte private, la possibilità di nascondere i commenti e i Mi piace ai commenti."
+    }
+  },
+  "threadsCommentAutomation": {
+    "title": "Threads Comment Automation",
+    "description": "Automate public Threads comment replies for your contacts.",
+    "create": "Create Automation",
+    "replies": "Replies",
+    "empty": "No Threads comment automations yet.",
+    "publicOnlyNote": "Threads currently supports public replies only.",
+    "trackCommentsOn": "Track comments on",
+    "publicReply": "Public reply to comment",
+    "publicReplyDescription": "Send a public reply to matching Threads comments.",
+    "replyMessage": "Reply message",
+    "replyFlow": "Reply flow",
+    "replyAIAgent": "Reply AI Agent",
+    "includeKeywordsType": "Reply to",
+    "includeKeywords": "Keywords to match",
+    "excludeKeywords": "Exclude comments with these keywords",
+    "keywordsPlaceholder": "Type and press Enter...",
+    "replyAfter": "Reply after",
+    "replyAfterValue": "Value",
+    "specificPostIds": "Specific post IDs",
+    "postIdPlaceholder": "Enter post IDs and press Enter...",
+    "card": {
+      "targeting": "Targeting & Reply",
+      "filters": "Filters & Options",
+      "replyTiming": "Reply Timing"
+    },
+    "postType": {
+      "all": "All posts",
+      "specificPosts": "Specific posts"
+    },
+    "replyType": {
+      "text": "Text message",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "No reply"
+    },
+    "keywordsType": {
+      "all": "All comments",
+      "equal": "Exact match",
+      "contain": "Contains"
+    },
+    "replyAfterType": {
+      "immediately": "Immediately",
+      "seconds": "After X seconds",
+      "minutes": "After X minutes",
+      "hours": "After X hours",
+      "randomWithin3Minutes": "Random within 3 minutes",
+      "randomWithin5Minutes": "Random within 5 minutes",
+      "randomWithin10Minutes": "Random within 10 minutes",
+      "randomWithin20Minutes": "Random within 20 minutes",
+      "randomWithin30Minutes": "Random within 30 minutes",
+      "randomWithin60Minutes": "Random within 60 minutes"
+    },
+    "options": {
+      "replyToNewContactsOnly": "Only reply to new contacts",
+      "replyOncePerUserPerPost": "Reply only once to each user per post",
+      "replyToUsersWhoCommentedOnOtherPosts": "Reply to users who commented on other posts",
+      "ignoreCommentReplies": "Don't reply to replies to comments"
+    },
+    "validation": {
+      "postIdsMustBeEmptyForAll": "Post IDs must be empty when targeting all posts.",
+      "postIdsRequired": "Select at least one post ID when targeting specific posts.",
+      "keywordsMustBeEmptyForAll": "Keywords must be empty when matching all comments.",
+      "keywordsRequired": "Enter at least one keyword for the selected match type.",
+      "delayMustBePositive": "Delay value must be greater than zero.",
+      "delayMustBeZero": "Delay value must be zero for the selected timing option.",
+      "atLeastOneFieldRequired": "At least one field is required."
     }
   },
   "instagramStoryAutomation": {

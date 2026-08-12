@@ -1,6 +1,5 @@
 import { buildContext } from "@chatbotx.io/business"
 import type { FBCommentHideComments } from "@chatbotx.io/database/partials"
-import type { MessengerAuthValue } from "@chatbotx.io/integration-messenger"
 import type { AuthValue } from "@chatbotx.io/sdk"
 import { allIntegrations } from "../../../services/integrations"
 
@@ -18,11 +17,11 @@ export function needsAttachmentInfo(
 /**
  * Returns a memoized resolver that fetches a comment's attachment type at
  * most once per incoming comment, regardless of how many active automations
- * need it. Instagram has no attachment-lookup API yet — out of scope MVP,
- * same boundary as executePrivateReply.
+ * need it. Instagram/Threads have no attachment-lookup API yet — out of scope
+ * MVP, same boundary as executePrivateReply.
  */
 export function createAttachmentInfoResolver(params: {
-  channelType: "messenger" | "instagram" | "instagramFacebook"
+  channelType: "messenger" | "instagram" | "instagramFacebook" | "threads"
   workspaceId: string
   commentId: string
   integrationRow: {
@@ -31,7 +30,7 @@ export function createAttachmentInfoResolver(params: {
     inboxId: string
     [x: string]: unknown
   }
-  auth: MessengerAuthValue
+  auth: AuthValue
 }): () => Promise<CommentAttachmentInfo> {
   const { channelType, workspaceId, commentId, integrationRow, auth } = params
   let cached: CommentAttachmentInfo | undefined

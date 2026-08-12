@@ -67,6 +67,12 @@ const ORPHAN_CLEANUP_STRATEGIES: Partial<
         accessToken: appAccessToken,
       }),
   },
+  [integrationTypes.enum.threads]: {
+    credentialType: integrationTypes.enum.threads,
+    unsubscribe: async () => {
+      // Threads Phase 1: no outbound unsubscribe API wired yet.
+    },
+  },
 }
 
 function toErrorMessage(error: unknown): string {

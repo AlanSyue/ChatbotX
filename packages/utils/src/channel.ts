@@ -24,6 +24,7 @@ export const channelTypes = z.enum([
   "smtp",
   "telegram",
   "instagram",
+  "threads",
   "tiktok",
 ])
 

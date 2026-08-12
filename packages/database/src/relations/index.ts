@@ -84,6 +84,7 @@ import { integrationOpenrouterRelations } from "./integration-openrouter"
 import { integrationSendGridRelations } from "./integration-sendgrid"
 import { integrationSmtpRelations } from "./integration-smtp"
 import { integrationTelegramRelations } from "./integration-telegram"
+import { integrationThreadsRelations } from "./integration-threads"
 import { integrationTiktokRelations } from "./integration-tiktok"
 import { integrationWebchatRelations } from "./integration-webchat"
 import { integrationWhatsappRelations } from "./integration-whatsapp"
@@ -212,6 +213,7 @@ export const relations = {
   ...integrationTelegramRelations,
   ...integrationTiktokRelations,
   ...integrationInstagramRelations,
+  ...integrationThreadsRelations,
   ...integrationActiveCampaignRelations,
   ...integrationKlaviyoRelations,
   ...integrationMailchimpRelations,

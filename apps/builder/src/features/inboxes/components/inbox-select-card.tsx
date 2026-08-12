@@ -28,6 +28,7 @@ function InboxSelectCard({ configuredChannels }: InboxSelectCardProps) {
       "whatsapp",
       "messenger",
       "instagram",
+      "threads",
       "zalo",
       "tiktok",
       "telegram",

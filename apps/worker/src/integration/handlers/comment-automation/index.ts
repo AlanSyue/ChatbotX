@@ -30,6 +30,7 @@ import {
   type MessengerAuthValue,
   sendPrivateReply,
 } from "@chatbotx.io/integration-messenger"
+import type { ThreadsAuthValue } from "@chatbotx.io/integration-threads"
 import { RealtimeEventType } from "@chatbotx.io/partysocket-config"
 import { contactVariableService } from "@chatbotx.io/variables"
 import {
@@ -89,6 +90,12 @@ const UNHIDE_DELAY_MS: Record<string, number> = {
   "10d": 10 * 86_400_000,
 }
 
+type CommentAutomationChannelType =
+  | "messenger"
+  | "instagram"
+  | "instagramFacebook"
+  | "threads"
+
 // Facebook post ids are composite `{pageId}_{storyId}`. The published/ads
 // pickers store that composite form, but the reels picker stores a bare id and
 // users pasting an id manually often omit the `{pageId}_` prefix. Compare on the
@@ -146,6 +153,33 @@ function willSendReply(reply: FBCommentReply): boolean {
   }
   // text/flow need a value; AIAgent needs the selected agent id in `value`.
   return Boolean(reply.value)
+}
+
+function hasHideCommentAction(hideComments: FBCommentHideComments): boolean {
+  return (
+    hideComments.all ||
+    hideComments.hasPhoneNumber ||
+    hideComments.hasImage ||
+    hideComments.hasVideo ||
+    hideComments.hasLink ||
+    hideComments.hasKeywords ||
+    hideComments.showCommentsAfter !== "none"
+  )
+}
+
+function logUnsupportedCapability({
+  automationId,
+  commentId,
+  capability,
+}: {
+  automationId: string
+  commentId: string
+  capability: string
+}) {
+  logger.info(
+    { automationId, commentId, capability },
+    "Comment automation capability unsupported",
+  )
 }
 
 function computeDelayMs(replyAfter: FBCommentReplyAfter): number {
@@ -208,6 +242,21 @@ export async function postPublicCommentReply(props: {
       "Unable to emit realtime message",
     ),
   )
+  let queueOptions:
+    | {
+        delay?: number
+        attempts?: number
+      }
+    | undefined
+
+  if (props.contactInbox.channel === "threads") {
+    queueOptions = {
+      ...(props.delay === undefined ? {} : { delay: props.delay }),
+      attempts: 1,
+    }
+  } else if (props.delay !== undefined) {
+    queueOptions = { delay: props.delay }
+  }
   await chatQueue.add(
     ChatJobAction.sendChannelMessage,
     {
@@ -224,18 +273,22 @@ export async function postPublicCommentReply(props: {
         },
       },
     },
-    ...(props.delay === undefined ? [] : [{ delay: props.delay }]),
+    ...(queueOptions ? [queueOptions] : []),
   )
 }
 
 async function executePublicReply(
   publicReply: FBCommentReply,
   ctx: {
-    auth: MessengerAuthValue
+    auth:
+      | MessengerAuthValue
+      | InstagramAuthValue
+      | InstagramFacebookAuthValue
+      | ThreadsAuthValue
     integrationType: string
     integrationIdentifier: string
     commentId: string
-    channelType: "messenger" | "instagram" | "instagramFacebook"
+    channelType: CommentAutomationChannelType
     conversationId: string
     contactInboxId: string
     delay: number
@@ -282,6 +335,10 @@ async function executePublicReply(
   }
 
   if (publicReply.type === "flow" && publicReply.value) {
+    const queueOptions =
+      ctx.contactInbox.channel === "threads"
+        ? { delay: ctx.delay, attempts: 1 }
+        : { delay: ctx.delay }
     await integrationQueue.add(
       IntegrationJobAction.sendFlow,
       {
@@ -294,12 +351,16 @@ async function executePublicReply(
           commentAnchor: { commentId: ctx.commentId, replyChannel: "public" },
         },
       },
-      { delay: ctx.delay },
+      queueOptions,
     )
     return
   }
 
   if (publicReply.type === "AIAgent" && publicReply.value) {
+    const queueOptions =
+      ctx.contactInbox.channel === "threads"
+        ? { delay: ctx.delay, attempts: 1 }
+        : { delay: ctx.delay }
     await integrationQueue.add(
       IntegrationJobAction.commentAIReply,
       {
@@ -320,7 +381,7 @@ async function executePublicReply(
             ctx.parentMessageCreatedAt?.toISOString() ?? null,
         },
       },
-      { delay: ctx.delay },
+      queueOptions,
     )
   }
 }
@@ -328,11 +389,15 @@ async function executePublicReply(
 async function executePrivateReply(
   privateReply: FBCommentReply,
   ctx: {
-    auth: MessengerAuthValue | InstagramAuthValue | InstagramFacebookAuthValue
+    auth:
+      | MessengerAuthValue
+      | InstagramAuthValue
+      | InstagramFacebookAuthValue
+      | ThreadsAuthValue
     integrationType: string
     integrationIdentifier: string
     commentId: string
-    channelType: "messenger" | "instagram" | "instagramFacebook"
+    channelType: CommentAutomationChannelType
     conversationId: string
     contactInboxId: string
     contactInbox: ContactInboxModel
@@ -519,7 +584,11 @@ export async function processCommentAutomation(
       integrationType as IntegrationType,
       integrationIdentifier,
     )
-  const auth = integrationRow.auth as MessengerAuthValue
+  const auth = integrationRow.auth as
+    | MessengerAuthValue
+    | InstagramAuthValue
+    | InstagramFacebookAuthValue
+    | ThreadsAuthValue
 
   const contactInbox = await contactInboxService.findBy({
     where: { id: contactInboxId },
@@ -532,10 +601,7 @@ export async function processCommentAutomation(
     return
   }
 
-  const channelType = integrationType as
-    | "messenger"
-    | "instagram"
-    | "instagramFacebook"
+  const channelType = integrationType as CommentAutomationChannelType
   const automations = await fbCommentAutomationService.findActiveAutomations({
     workspaceId,
     channelType,
@@ -685,46 +751,72 @@ export async function processCommentAutomation(
         const messageRef = { id: dbMessage.id, createdAt: dbMessage.createdAt }
 
         if (automation.options.likeUserComment) {
-          chatQueue
-            .add(ChatJobAction.changeChannelMessageState, {
-              type: ChatJobAction.changeChannelMessageState,
-              data: {
-                conversation: conversationRef,
-                contactInbox,
-                message: messageRef,
-                liked: true,
-              },
+          if (channelType === "threads") {
+            logUnsupportedCapability({
+              automationId: automation.id,
+              commentId,
+              capability: "like comment unsupported",
             })
-            .catch((err: unknown) =>
-              logger.error(
-                { err, automationId: automation.id, commentId },
-                "Failed to like comment",
-              ),
-            )
+          } else {
+            chatQueue
+              .add(ChatJobAction.changeChannelMessageState, {
+                type: ChatJobAction.changeChannelMessageState,
+                data: {
+                  conversation: conversationRef,
+                  contactInbox,
+                  message: messageRef,
+                  liked: true,
+                },
+              })
+              .catch((err: unknown) =>
+                logger.error(
+                  { err, automationId: automation.id, commentId },
+                  "Failed to like comment",
+                ),
+              )
+          }
         }
 
-        const { hasImage, hasVideo } = needsAttachmentInfo(
-          automation.hideComments,
-        )
-          ? await resolveAttachmentInfo()
-          : { hasImage: false, hasVideo: false }
+        if (hasHideCommentAction(automation.hideComments)) {
+          if (channelType === "threads") {
+            if (needsAttachmentInfo(automation.hideComments)) {
+              logUnsupportedCapability({
+                automationId: automation.id,
+                commentId,
+                capability: "attachment lookup unsupported",
+              })
+            }
+            logUnsupportedCapability({
+              automationId: automation.id,
+              commentId,
+              capability: "hide or unhide comment unsupported",
+            })
+          } else {
+            const { hasImage, hasVideo } = needsAttachmentInfo(
+              automation.hideComments,
+            )
+              ? await resolveAttachmentInfo()
+              : { hasImage: false, hasVideo: false }
 
-        applyHideComments(automation.hideComments, commentId, message, {
-          conversation: conversationRef,
-          contactInbox,
-          messageId: dbMessage.id,
-          messageCreatedAt: dbMessage.createdAt,
-          hasImage,
-          hasVideo,
-        }).catch((err: unknown) =>
-          logger.error(
-            { err, automationId: automation.id, commentId },
-            "Failed to apply hide comments",
-          ),
-        )
+            applyHideComments(automation.hideComments, commentId, message, {
+              conversation: conversationRef,
+              contactInbox,
+              messageId: dbMessage.id,
+              messageCreatedAt: dbMessage.createdAt,
+              hasImage,
+              hasVideo,
+            }).catch((err: unknown) =>
+              logger.error(
+                { err, automationId: automation.id, commentId },
+                "Failed to apply hide comments",
+              ),
+            )
+          }
+        }
       }
 
       let dispatchFailed = false
+      let dispatchedReply = false
 
       try {
         await executePublicReply(automation.publicReply, {
@@ -742,6 +834,9 @@ export async function processCommentAutomation(
           parentMessageId,
           parentMessageCreatedAt,
         })
+        if (willSendReply(automation.publicReply)) {
+          dispatchedReply = true
+        }
       } catch (err) {
         logger.error(
           { err, automationId: automation.id, commentId },
@@ -752,27 +847,38 @@ export async function processCommentAutomation(
         }
       }
 
-      try {
-        await executePrivateReply(automation.privateReply, {
-          auth,
-          integrationType,
-          integrationIdentifier,
+      if (willSendReply(automation.privateReply) && channelType === "threads") {
+        logUnsupportedCapability({
+          automationId: automation.id,
           commentId,
-          channelType,
-          conversationId,
-          contactInboxId,
-          contactInbox,
-          workspaceId,
-          delay,
-          message,
+          capability: "private reply unsupported",
         })
-      } catch (err) {
-        logger.error(
-          { err, automationId: automation.id, commentId },
-          "Failed to send private reply",
-        )
-        if (willSendReply(automation.privateReply)) {
-          dispatchFailed = true
+      } else {
+        try {
+          await executePrivateReply(automation.privateReply, {
+            auth,
+            integrationType,
+            integrationIdentifier,
+            commentId,
+            channelType,
+            conversationId,
+            contactInboxId,
+            contactInbox,
+            workspaceId,
+            delay,
+            message,
+          })
+          if (willSendReply(automation.privateReply)) {
+            dispatchedReply = true
+          }
+        } catch (err) {
+          logger.error(
+            { err, automationId: automation.id, commentId },
+            "Failed to send private reply",
+          )
+          if (willSendReply(automation.privateReply)) {
+            dispatchFailed = true
+          }
         }
       }
 
@@ -783,17 +889,24 @@ export async function processCommentAutomation(
       // requires threading the dedup write into the async job itself for
       // every async-dispatch reply type, which is out of scope for now.
       if (!dispatchFailed) {
-        await fbCommentAutomationService.insertDedup({
-          automationId: automation.id,
-          contactId: contactInbox.contactId,
-          postId,
-          workspaceId,
-        })
+        const countableReply =
+          channelType === "threads"
+            ? dispatchedReply
+            : willSendReply(automation.publicReply) ||
+              willSendReply(automation.privateReply)
+        const shouldWriteDedup =
+          channelType === "threads" ? dispatchedReply : true
 
-        if (
-          willSendReply(automation.publicReply) ||
-          willSendReply(automation.privateReply)
-        ) {
+        if (shouldWriteDedup) {
+          await fbCommentAutomationService.insertDedup({
+            automationId: automation.id,
+            contactId: contactInbox.contactId,
+            postId,
+            workspaceId,
+          })
+        }
+
+        if (countableReply) {
           await fbCommentAutomationService.incrementRepliesCount(automation.id)
         }
       }

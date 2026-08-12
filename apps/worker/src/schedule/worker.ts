@@ -27,6 +27,7 @@ import { purgeWorkspaces } from "./handlers/purge-workspaces"
 import { reconcileBroadcasts } from "./handlers/reconcile-broadcasts"
 import { reconcileMetaCatalogSyncs } from "./handlers/reconcile-meta-catalog-syncs"
 import { reconcileTenants } from "./handlers/reconcile-tenants"
+import { refreshThreadsTokens } from "./handlers/refresh-threads-tokens"
 import { refreshZaloTokens } from "./handlers/refresh-zalo-tokens"
 import { registerSchedules } from "./handlers/register-schedules"
 import { scanCoexistRuns } from "./handlers/scan-coexist-runs"
@@ -128,6 +129,10 @@ async function startScheduleWorker() {
 
         case ScheduleJobData.purgeWorkspaces:
           await purgeWorkspaces()
+          return
+
+        case ScheduleJobData.refreshThreadsTokens:
+          await refreshThreadsTokens()
           return
 
         case ScheduleJobData.refreshZaloTokens:
