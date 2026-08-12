@@ -132,6 +132,18 @@ vi.mock("@chatbotx.io/database/schema", () => ({
     id: "contactModel.id",
     workspaceId: "contactModel.workspaceId",
   },
+  magicLinkStatModel: {
+    workspaceId: "magicLinkStatModel.workspaceId",
+    linkId: "magicLinkStatModel.linkId",
+    contactInboxId: "magicLinkStatModel.contactInboxId",
+    occurredAt: "magicLinkStatModel.occurredAt",
+  },
+  refLinkStatModel: {
+    workspaceId: "refLinkStatModel.workspaceId",
+    linkId: "refLinkStatModel.linkId",
+    contactInboxId: "refLinkStatModel.contactInboxId",
+    occurredAt: "refLinkStatModel.occurredAt",
+  },
 }))
 
 // ---------------------------------------------------------------------------
@@ -197,6 +209,12 @@ vi.mock("@chatbotx.io/utils", async (importOriginal) => {
     createId: vi.fn(() => `generated-id-${++idCounter}`),
   }
 })
+vi.mock("@chatbotx.io/variables", () => ({
+  contactVariableService: {
+    getAll: vi.fn(),
+    replaceAll: vi.fn(),
+  },
+}))
 
 // ---------------------------------------------------------------------------
 // Import handlers under test (after all vi.mock calls)

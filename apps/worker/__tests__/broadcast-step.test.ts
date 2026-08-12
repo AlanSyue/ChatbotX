@@ -38,6 +38,18 @@ vi.mock("@chatbotx.io/database/schema", () => ({
   contactsToTagsModel: {},
   conversationModel: {},
   tagModel: {},
+  magicLinkStatModel: {
+    workspaceId: { __column: "magicLinkStatModel.workspaceId" },
+    linkId: { __column: "magicLinkStatModel.linkId" },
+    contactInboxId: { __column: "magicLinkStatModel.contactInboxId" },
+    occurredAt: { __column: "magicLinkStatModel.occurredAt" },
+  },
+  refLinkStatModel: {
+    workspaceId: { __column: "refLinkStatModel.workspaceId" },
+    linkId: { __column: "refLinkStatModel.linkId" },
+    contactInboxId: { __column: "refLinkStatModel.contactInboxId" },
+    occurredAt: { __column: "refLinkStatModel.occurredAt" },
+  },
 }))
 
 vi.mock("@chatbotx.io/event-bus", () => ({ emit: vi.fn() }))
@@ -62,6 +74,12 @@ vi.mock("@chatbotx.io/utils", async (importOriginal) => {
     createId: () => "test-id",
   }
 })
+vi.mock("@chatbotx.io/variables", () => ({
+  contactVariableService: {
+    getAll: vi.fn(),
+    replaceAll: vi.fn(),
+  },
+}))
 
 const buildProps = () =>
   ({

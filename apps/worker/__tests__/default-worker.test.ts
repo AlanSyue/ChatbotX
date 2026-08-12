@@ -26,7 +26,9 @@ const workerState = vi.hoisted(() => ({
   workerOn: vi.fn(),
 }))
 
-vi.mock("bullmq", () => {
+vi.mock("bullmq", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("bullmq")>()
+
   class WorkerMock {
     close = workerState.workerClose
     on = workerState.workerOn
@@ -41,34 +43,43 @@ vi.mock("bullmq", () => {
   }
 
   return {
+    ...actual,
     Worker: WorkerMock,
   }
 })
 
-vi.mock("@chatbotx.io/worker-config", () => ({
-  DefaultJobAction: {
-    bulkTagContacts: "bulkTagContacts",
-    exportContacts: "exportContacts",
-    checkMetaCatalogSync: "checkMetaCatalogSync",
-    importMetaCatalogProducts: "importMetaCatalogProducts",
-    runImport: "runImport",
-    sendAuditLog: "sendAuditLog",
-    sendErrorLog: "sendErrorLog",
-    syncChannelLabels: "syncChannelLabels",
-    syncTag: "syncTag",
-    submitMetaCatalogSync: "submitMetaCatalogSync",
-  },
-  defaultQueue: {
-    add: (...args: unknown[]) => workerState.defaultQueueAdd(...args),
-  },
-  defaultWorkerOptions: {},
-  getRedisConnection: () => ({}),
-  queueNames: {
-    enum: {
-      default: "default",
+vi.mock("@chatbotx.io/worker-config", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@chatbotx.io/worker-config")>()
+
+  return {
+    ...actual,
+    DefaultJobAction: {
+      ...actual.DefaultJobAction,
+      bulkTagContacts: "bulkTagContacts",
+      exportContacts: "exportContacts",
+      checkMetaCatalogSync: "checkMetaCatalogSync",
+      importMetaCatalogProducts: "importMetaCatalogProducts",
+      runImport: "runImport",
+      sendAuditLog: "sendAuditLog",
+      sendErrorLog: "sendErrorLog",
+      syncChannelLabels: "syncChannelLabels",
+      syncTag: "syncTag",
+      submitMetaCatalogSync: "submitMetaCatalogSync",
     },
-  },
-}))
+    defaultQueue: {
+      add: (...args: unknown[]) => workerState.defaultQueueAdd(...args),
+    },
+    defaultWorkerOptions: {},
+    getRedisConnection: () => ({}),
+    queueNames: {
+      enum: {
+        ...actual.queueNames.enum,
+        default: "default",
+      },
+    },
+  }
+})
 
 vi.mock("../src/lib/is-blocked-workspace", () => ({
   isBlockedWorkspace: (workspaceId: string | undefined) =>

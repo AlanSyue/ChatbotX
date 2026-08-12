@@ -31,9 +31,15 @@ vi.mock("@chatbotx.io/database/schema", () => ({
 
 const tenantService = { findByOwner: vi.fn(async () => undefined as unknown) }
 vi.mock("../src/enterprise/tenant/service", () => ({ tenantService }))
-vi.mock("@chatbotx.io/database/partials", () => ({
-  workspaceMemberRoles: { enum: { owner: "owner" } },
-}))
+vi.mock("@chatbotx.io/database/partials", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@chatbotx.io/database/partials")>()
+
+  return {
+    ...actual,
+    workspaceMemberRoles: { enum: { owner: "owner" } },
+  }
+})
 const invalidateCacheByTags = vi.fn(async () => undefined)
 vi.mock("@chatbotx.io/redis", () => ({
   invalidateCacheByTags,

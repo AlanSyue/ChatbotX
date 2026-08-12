@@ -121,9 +121,13 @@ vi.mock("@chatbotx.io/integration-messenger/apis/page", () => ({
   subscribePageToAppWebhook: mockSubscribePageToAppWebhook,
 }))
 
-vi.mock("@chatbotx.io/sdk", () => ({
-  AuthType: { oauth2: "oauth2", custom: "custom" },
-}))
+vi.mock("@chatbotx.io/sdk", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@chatbotx.io/sdk")>()
+  return {
+    ...actual,
+    AuthType: { ...actual.AuthType, oauth2: "oauth2", custom: "custom" },
+  }
+})
 
 vi.mock("@chatbotx.io/utils", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@chatbotx.io/utils")>()
