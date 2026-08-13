@@ -1,0 +1,128 @@
+name: chatbotx-dev
+
+x-network: &network
+  networks:
+    - chatbotx-dev-network
+
+x-rustfs-environment: &rustfs-environment
+  RUSTFS_ACCESS_KEY: ${DEV_RUSTFS_ACCESS_KEY:-chatbotx-dev}
+  RUSTFS_SECRET_KEY: ${DEV_RUSTFS_SECRET_KEY:-development-only-secret}
+  RUSTFS_API_CORS_ALLOW_ORIGIN: ${DEV_RUSTFS_CORS_ORIGIN:-http://127.0.0.1:3123}
+
+services:
+  postgres:
+    <<: *network
+    image: timescale/timescaledb-ha:pg18-all
+    ports:
+      - "127.0.0.1:${DEV_POSTGRES_PORT:-55432}:5432"
+    volumes:
+      - dev-db-data:/home/postgres/pgdata
+    command:
+      - postgres
+      - -c
+      - log_statement=${DEV_POSTGRES_LOG_STATEMENT:-none}
+    environment:
+      POSTGRES_DB: ${DEV_POSTGRES_DB:-chatbotx_dev}
+      POSTGRES_USER: ${DEV_POSTGRES_USER:-chatbotx_dev}
+      POSTGRES_PASSWORD: ${DEV_POSTGRES_PASSWORD:-development-only-secret}
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  adminer:
+    <<: *network
+    image: adminer:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${DEV_ADMINER_PORT:-58080}:8080"
+
+  mailhog:
+    <<: *network
+    image: mailhog/mailhog
+    ports:
+      - "127.0.0.1:${DEV_SMTP_PORT:-51025}:1025"
+      - "127.0.0.1:${DEV_MAILHOG_PORT:-58025}:8025"
+
+  filesystem:
+    <<: *network
+    image: rustfs/rustfs:latest
+    command: server /data --console-address ":9001"
+    ports:
+      - "127.0.0.1:${DEV_S3_PORT:-59000}:9000"
+      - "127.0.0.1:${DEV_S3_CONSOLE_PORT:-59001}:9001"
+    environment:
+      <<: *rustfs-environment
+    volumes:
+      - dev-filesystem-data:/data
+    healthcheck:
+      test:
+        - CMD
+        - sh
+        - -c
+        - >-
+          curl -f http://127.0.0.1:9000/health &&
+          curl -f http://127.0.0.1:9001/rustfs/console/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  filesystem-init:
+    <<: *network
+    image: rustfs/rc:latest
+    depends_on:
+      filesystem:
+        condition: service_healthy
+    environment:
+      <<: *rustfs-environment
+    entrypoint: >-
+      /bin/sh -c "rc alias set local http://filesystem:9000
+      $${RUSTFS_ACCESS_KEY} $${RUSTFS_SECRET_KEY};
+      rc mb local/${DEV_S3_BUCKET:-chatbotx-dev} --ignore-existing;
+      touch /tmp/empty;
+      rc cp /tmp/empty local/${DEV_S3_BUCKET:-chatbotx-dev}/public/;
+      rc anonymous set public local/${DEV_S3_BUCKET:-chatbotx-dev}/public;"
+
+  redis:
+    <<: *network
+    image: redis:8-alpine
+    ports:
+      - "127.0.0.1:${DEV_REDIS_PORT:-56379}:6379"
+    volumes:
+      - dev-cache-data:/data
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis-ui:
+    <<: *network
+    image: redis/redisinsight:latest
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${DEV_REDIS_UI_PORT:-55540}:5540"
+    volumes:
+      - dev-redis-ui-data:/data
+
+networks:
+  chatbotx-dev-network:
+    driver: bridge
+
+volumes:
+  dev-db-data:
+  dev-filesystem-data:
+  dev-cache-data:
+  dev-redis-ui-data:
