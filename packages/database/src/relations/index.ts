@@ -49,6 +49,7 @@ import { externalWebhookRelations } from "./external-webhook"
 import { facebookLeadAdsAutomationRelations } from "./facebook-lead-ads-automation"
 import { facebookLeadAdsLeadRelations } from "./facebook-lead-ads-lead"
 import { fbCommentAutomationRelations } from "./fb-comment-automation"
+import { fbCommentAutomationDispatchRelations } from "./fb-comment-automation-dispatch"
 import { fbCommentAutomationReplyRelations } from "./fb-comment-automation-reply"
 import { fileRelations } from "./file"
 import { flowRelations } from "./flow"
@@ -168,6 +169,7 @@ export const relations = {
   ...facebookLeadAdsAutomationRelations,
   ...facebookLeadAdsLeadRelations,
   ...fbCommentAutomationRelations,
+  ...fbCommentAutomationDispatchRelations,
   ...fbCommentAutomationReplyRelations,
   ...auditLogRelations,
   ...sessionRelations,

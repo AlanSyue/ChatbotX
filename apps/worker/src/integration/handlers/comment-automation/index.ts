@@ -2,6 +2,7 @@ import {
   broadcastToWorkspaceParty,
   contactInboxService,
   fbCommentAutomationService,
+  withBlockedOwnerGuard,
   workspaceService,
 } from "@chatbotx.io/business"
 import type {
@@ -31,11 +32,14 @@ import {
   sendPrivateReply,
 } from "@chatbotx.io/integration-messenger"
 import { RealtimeEventType } from "@chatbotx.io/partysocket-config"
+import { createId } from "@chatbotx.io/utils"
 import { contactVariableService } from "@chatbotx.io/variables"
 import {
   ChatJobAction,
+  type ChatJobSendChannelMessage,
   chatQueue,
   IntegrationJobAction,
+  type IntegrationJobDispatchCommentAutomationPrivateReply,
   type IntegrationJobProcessCommentAutomation,
   integrationQueue,
 } from "@chatbotx.io/worker-config"
@@ -56,16 +60,6 @@ const RANDOM_DELAY_MINUTES: Record<string, number> = {
 }
 
 const PHONE_RE = /\+?\d[\d\s\-().]{7,}/
-// `http(s)://`/`www.` links match case-insensitively — the scheme itself is
-// never meaningfully cased. Bare domains without a scheme (e.g. "example.com",
-// common since Facebook comments frequently omit `http(s)://`) are matched
-// case-SENSITIVELY on purpose: real domains are written lowercase, while a
-// missing space after a sentence-ending period produces a capitalized
-// continuation word (e.g. "ban.Shop", "ngay.Info") that would otherwise be
-// misdetected as a link. `co` is deliberately excluded from the bare list —
-// it's too common as a standalone lowercase word/abbreviation (e.g.
-// "picture.co founder") to distinguish from a real ".co" domain; a bare `.co`
-// link still needs `www.`/`http(s)://` to be caught.
 const SCHEME_LINK_RE = /https?:\/\/|www\./i
 const BARE_DOMAIN_RE =
   /\b[a-z0-9-]+\.(?:com|net|org|io|vn|shop|store|info|biz)\b/
@@ -89,10 +83,11 @@ const UNHIDE_DELAY_MS: Record<string, number> = {
   "10d": 10 * 86_400_000,
 }
 
-// Facebook post ids are composite `{pageId}_{storyId}`. The published/ads
-// pickers store that composite form, but the reels picker stores a bare id and
-// users pasting an id manually often omit the `{pageId}_` prefix. Compare on the
-// trailing story id (unique) so all three formats match the webhook `post_id`.
+const COMMENT_REPLY_RETENTION = {
+  removeOnComplete: { age: 8 * 86_400, count: 100_000 },
+  removeOnFail: { age: 14 * 86_400, count: 100_000 },
+}
+
 function normalizePostId(id: string): string {
   const idx = id.indexOf("_")
   return idx === -1 ? id : id.slice(idx + 1)
@@ -130,9 +125,6 @@ function matchKeywords(
   return true
 }
 
-// Facebook feed webhooks set parent_id on every comment: for a top-level
-// comment it equals the post id, and only a reply to another comment carries
-// that comment's id instead.
 export function isCommentReply(
   parentId: string | undefined,
   postId: string,
@@ -144,7 +136,6 @@ function willSendReply(reply: FBCommentReply): boolean {
   if (reply.type === "none") {
     return false
   }
-  // text/flow need a value; AIAgent needs the selected agent id in `value`.
   return Boolean(reply.value)
 }
 
@@ -166,14 +157,16 @@ function computeDelayMs(replyAfter: FBCommentReplyAfter): number {
   return Math.floor(Math.random() * (minutes ?? 3) * 60_000)
 }
 
-/**
- * Post a public Facebook comment reply: creates the outgoing DB message,
- * broadcasts it over realtime, and enqueues the actual send. Shared by the
- * `text` reply type (dispatched immediately, sends after `delay`) and
- * `processCommentAIReply` (already runs inside a job delayed by the caller, so
- * no further `delay` applies).
- */
+export function buildCommentReplyJobId(
+  kind: "public" | "private",
+  automationId: string,
+  commentId: string,
+): string {
+  return `comment-reply-${kind}-${encodeURIComponent(automationId)}-${encodeURIComponent(commentId)}`
+}
+
 export async function postPublicCommentReply(props: {
+  automationId: string
   text: string
   commentId: string
   conversationId: string
@@ -185,7 +178,15 @@ export async function postPublicCommentReply(props: {
   delay?: number
 }): Promise<void> {
   const repo = await createMessageRepository()
+  const reservation = await fbCommentAutomationService.reservePublicMessage({
+    automationId: props.automationId,
+    commentId: props.commentId,
+    workspaceId: props.workspaceId,
+    messageId: createId(),
+    messageCreatedAt: new Date(),
+  })
   const messageInput = {
+    id: reservation.messageId,
     conversationId: props.conversationId,
     contactInboxId: props.contactInboxId,
     workspaceId: props.workspaceId,
@@ -196,18 +197,48 @@ export async function postPublicCommentReply(props: {
     type: "comment" as const,
     contentAttributes: { replyToCommentId: props.commentId },
     parentId: props.parentMessageId ?? null,
-    createdAt: new Date(),
+    createdAt: reservation.messageCreatedAt,
   }
-  const message = await repo.create(messageInput)
-  broadcastToWorkspaceParty(props.workspaceId, {
-    eventType: RealtimeEventType.messageCreated,
-    data: message,
-  }).catch((err: unknown) =>
-    logger.error(
-      { err, commentId: props.commentId },
-      "Unable to emit realtime message",
-    ),
-  )
+  let message = await repo.findById({
+    id: reservation.messageId,
+    createdAt: reservation.messageCreatedAt,
+    workspaceId: props.workspaceId,
+  })
+  let isNew = false
+  if (!message) {
+    try {
+      const created = await repo.create(messageInput)
+      message = (await repo.findById({
+        id: created.id,
+        createdAt: created.createdAt,
+        workspaceId: props.workspaceId,
+      })) ?? {
+        ...created,
+        attachments: [],
+      }
+      isNew = true
+    } catch (err) {
+      message = await repo.findById({
+        id: reservation.messageId,
+        createdAt: reservation.messageCreatedAt,
+        workspaceId: props.workspaceId,
+      })
+      if (!message) {
+        throw err
+      }
+    }
+  }
+  if (isNew) {
+    broadcastToWorkspaceParty(props.workspaceId, {
+      eventType: RealtimeEventType.messageCreated,
+      data: message,
+    }).catch((err: unknown) =>
+      logger.error(
+        { err, commentId: props.commentId },
+        "Unable to emit realtime message",
+      ),
+    )
+  }
   await chatQueue.add(
     ChatJobAction.sendChannelMessage,
     {
@@ -221,17 +252,25 @@ export async function postPublicCommentReply(props: {
         message: {
           ...message,
           parentCreatedAt: props.parentMessageCreatedAt ?? null,
-        },
+        } satisfies ChatJobSendChannelMessage["data"]["message"],
       },
     },
-    ...(props.delay === undefined ? [] : [{ delay: props.delay }]),
+    {
+      ...(props.delay === undefined ? {} : { delay: props.delay }),
+      jobId: buildCommentReplyJobId(
+        "public",
+        props.automationId,
+        props.commentId,
+      ),
+      ...COMMENT_REPLY_RETENTION,
+    },
   )
 }
 
 async function executePublicReply(
   publicReply: FBCommentReply,
   ctx: {
-    auth: MessengerAuthValue
+    automationId: string
     integrationType: string
     integrationIdentifier: string
     commentId: string
@@ -268,6 +307,7 @@ async function executePublicReply(
       )
     }
     await postPublicCommentReply({
+      automationId: ctx.automationId,
       text,
       commentId: ctx.commentId,
       conversationId: ctx.conversationId,
@@ -294,7 +334,15 @@ async function executePublicReply(
           commentAnchor: { commentId: ctx.commentId, replyChannel: "public" },
         },
       },
-      { delay: ctx.delay },
+      {
+        delay: ctx.delay,
+        jobId: buildCommentReplyJobId(
+          "public",
+          ctx.automationId,
+          ctx.commentId,
+        ),
+        ...COMMENT_REPLY_RETENTION,
+      },
     )
     return
   }
@@ -305,6 +353,7 @@ async function executePublicReply(
       {
         type: IntegrationJobAction.commentAIReply,
         data: {
+          automationId: ctx.automationId,
           integrationType: ctx.integrationType,
           integrationIdentifier: ctx.integrationIdentifier,
           workspaceId: ctx.workspaceId,
@@ -320,7 +369,15 @@ async function executePublicReply(
             ctx.parentMessageCreatedAt?.toISOString() ?? null,
         },
       },
-      { delay: ctx.delay },
+      {
+        delay: ctx.delay,
+        jobId: buildCommentReplyJobId(
+          "public",
+          ctx.automationId,
+          ctx.commentId,
+        ),
+        ...COMMENT_REPLY_RETENTION,
+      },
     )
   }
 }
@@ -328,7 +385,7 @@ async function executePublicReply(
 async function executePrivateReply(
   privateReply: FBCommentReply,
   ctx: {
-    auth: MessengerAuthValue | InstagramAuthValue | InstagramFacebookAuthValue
+    automationId: string
     integrationType: string
     integrationIdentifier: string
     commentId: string
@@ -363,30 +420,29 @@ async function executePrivateReply(
       )
     }
 
-    if (ctx.channelType === "messenger") {
-      await sendPrivateReply(
-        ctx.auth as MessengerAuthValue,
-        ctx.commentId,
-        text,
-      )
-    } else if (ctx.channelType === "instagram") {
-      // Instagram Login sends the private DM through the me/messages endpoint,
-      // addressing the commenter by comment id.
-      await sendInstagramLoginPrivateReply(
-        ctx.auth as InstagramAuthValue,
-        ctx.commentId,
-        text,
-      )
-    } else if (ctx.channelType === "instagramFacebook") {
-      // Instagram via Facebook Login sends the private DM through the
-      // {igId}/messages endpoint (Page/Business-asset token), addressing the
-      // commenter by comment id.
-      await sendInstagramFacebookPrivateReply(
-        ctx.auth as InstagramFacebookAuthValue,
-        ctx.commentId,
-        text,
-      )
-    }
+    await integrationQueue.add(
+      IntegrationJobAction.dispatchCommentAutomationPrivateReply,
+      {
+        type: IntegrationJobAction.dispatchCommentAutomationPrivateReply,
+        data: {
+          integrationType: ctx.channelType,
+          integrationIdentifier: ctx.integrationIdentifier,
+          automationId: ctx.automationId,
+          commentId: ctx.commentId,
+          text,
+          workspaceId: ctx.workspaceId,
+        },
+      },
+      {
+        delay: ctx.delay,
+        jobId: buildCommentReplyJobId(
+          "private",
+          ctx.automationId,
+          ctx.commentId,
+        ),
+        ...COMMENT_REPLY_RETENTION,
+      },
+    )
     return
   }
 
@@ -410,7 +466,15 @@ async function executePrivateReply(
             : {}),
         },
       },
-      { delay: ctx.delay },
+      {
+        delay: ctx.delay,
+        jobId: buildCommentReplyJobId(
+          "private",
+          ctx.automationId,
+          ctx.commentId,
+        ),
+        ...COMMENT_REPLY_RETENTION,
+      },
     )
     return
   }
@@ -421,6 +485,7 @@ async function executePrivateReply(
       {
         type: IntegrationJobAction.commentAIReply,
         data: {
+          automationId: ctx.automationId,
           integrationType: ctx.integrationType,
           integrationIdentifier: ctx.integrationIdentifier,
           workspaceId: ctx.workspaceId,
@@ -435,9 +500,62 @@ async function executePrivateReply(
       },
       {
         delay: ctx.delay,
+        jobId: buildCommentReplyJobId(
+          "private",
+          ctx.automationId,
+          ctx.commentId,
+        ),
+        ...COMMENT_REPLY_RETENTION,
       },
     )
   }
+}
+
+export async function dispatchCommentAutomationPrivateReply(
+  data: IntegrationJobDispatchCommentAutomationPrivateReply["data"],
+): Promise<void> {
+  const claim = await fbCommentAutomationService.claimPrivateReplySend({
+    automationId: data.automationId,
+    commentId: data.commentId,
+    workspaceId: data.workspaceId,
+  })
+  if (claim === "already-sent") {
+    logger.warn(
+      { automationId: data.automationId, commentId: data.commentId },
+      "Private reply already sent for this comment, skipping duplicate dispatch attempt",
+    )
+    return
+  }
+
+  const { integrationRow } =
+    await integrationService.identifyInboxAndIntegrationAuthFromIdentifier(
+      data.integrationType as IntegrationType,
+      data.integrationIdentifier,
+    )
+
+  if (data.integrationType === "messenger") {
+    await sendPrivateReply(
+      integrationRow.auth as MessengerAuthValue,
+      data.commentId,
+      data.text,
+    )
+    return
+  }
+
+  if (data.integrationType === "instagramFacebook") {
+    await sendInstagramFacebookPrivateReply(
+      integrationRow.auth as InstagramFacebookAuthValue,
+      data.commentId,
+      data.text,
+    )
+    return
+  }
+
+  await sendInstagramLoginPrivateReply(
+    integrationRow.auth as InstagramAuthValue,
+    data.commentId,
+    data.text,
+  )
 }
 
 async function applyHideComments(
@@ -500,310 +618,331 @@ async function applyHideComments(
 export async function processCommentAutomation(
   data: IntegrationJobProcessCommentAutomation["data"],
 ): Promise<void> {
-  const {
-    integrationType,
-    integrationIdentifier,
-    workspaceId,
-    conversationId,
-    contactInboxId,
-    commentId,
-    postId,
-    parentId,
-    fromId: _fromId,
-    message,
-    createdTime,
-  } = data
-
-  const { integrationRow } =
-    await integrationService.identifyInboxAndIntegrationAuthFromIdentifier(
-      integrationType as IntegrationType,
+  await withBlockedOwnerGuard(data.workspaceId, async () => {
+    const {
+      integrationType,
       integrationIdentifier,
-    )
-  const auth = integrationRow.auth as MessengerAuthValue
+      workspaceId,
+      conversationId,
+      contactInboxId,
+      commentId,
+      postId,
+      parentId,
+      fromId: _fromId,
+      message,
+      createdTime,
+    } = data
 
-  const contactInbox = await contactInboxService.findBy({
-    where: { id: contactInboxId },
-  })
-  if (!contactInbox) {
-    logger.warn(
-      { contactInboxId, workspaceId, commentId },
-      "Comment automation skipped: contactInbox not found",
-    )
-    return
-  }
-
-  const channelType = integrationType as
-    | "messenger"
-    | "instagram"
-    | "instagramFacebook"
-  const automations = await fbCommentAutomationService.findActiveAutomations({
-    workspaceId,
-    channelType,
-  })
-
-  const workspace = await workspaceService.findById({ id: workspaceId })
-
-  const resolveAttachmentInfo = createAttachmentInfoResolver({
-    channelType,
-    workspaceId,
-    commentId,
-    integrationRow,
-    auth,
-  })
-
-  for (const automation of automations) {
-    try {
-      if (
-        !fbCommentAutomationService.isWithinSchedule(
-          automation,
-          workspace.timezone,
-        )
-      ) {
-        logAutomationSkipped({
-          automationId: automation.id,
-          commentId,
-          postId,
-          workspaceId,
-          reason: "outside schedule",
-        })
-        continue
-      }
-      if (!matchPost(automation.post, postId)) {
-        logAutomationSkipped({
-          automationId: automation.id,
-          commentId,
-          postId,
-          workspaceId,
-          reason: "post does not match",
-        })
-        continue
-      }
-      if (
-        automation.options.ignoreCommentReplies &&
-        isCommentReply(parentId, postId)
-      ) {
-        logAutomationSkipped({
-          automationId: automation.id,
-          commentId,
-          postId,
-          workspaceId,
-          reason: "comment is a reply",
-        })
-        continue
-      }
-      if (
-        !matchKeywords(
-          automation.includeKeywords,
-          automation.excludeKeywords,
-          message,
-        )
-      ) {
-        logAutomationSkipped({
-          automationId: automation.id,
-          commentId,
-          postId,
-          workspaceId,
-          reason: "keywords do not match",
-        })
-        continue
-      }
-
-      if (automation.options.replyToNewContactsOnly) {
-        const priorCount =
-          await fbCommentAutomationService.getPriorContactInboxCount({
-            contactId: contactInbox.contactId,
-          })
-        if (priorCount > 1) {
-          logAutomationSkipped({
-            automationId: automation.id,
-            commentId,
-            postId,
-            workspaceId,
-            reason: "contact is not new",
-          })
-          continue
-        }
-      }
-
-      if (automation.options.replyOncePerUserPerPost) {
-        const existing = await fbCommentAutomationService.findDedup({
-          automationId: automation.id,
-          contactId: contactInbox.contactId,
-          postId,
-        })
-        if (existing) {
-          logAutomationSkipped({
-            automationId: automation.id,
-            commentId,
-            postId,
-            workspaceId,
-            reason: "already replied to this user on this post",
-          })
-          continue
-        }
-      }
-
-      if (!automation.options.replyToUsersWhoCommentedOnOtherPosts) {
-        const repliedElsewhere =
-          await fbCommentAutomationService.hasRepliedOnOtherPost({
-            automationId: automation.id,
-            contactId: contactInbox.contactId,
-            postId,
-          })
-        if (repliedElsewhere) {
-          logAutomationSkipped({
-            automationId: automation.id,
-            commentId,
-            postId,
-            workspaceId,
-            reason: "user already engaged on another post",
-          })
-          continue
-        }
-      }
-
-      const delay = computeDelayMs(automation.replyAfter)
-
-      const messageRepo = await createMessageRepository()
-      const dbMessage = await messageRepo.findBySourceId(
-        commentId,
-        conversationId,
-        workspaceId,
-        new Date(createdTime * 1000),
+    const { integrationRow } =
+      await integrationService.identifyInboxAndIntegrationAuthFromIdentifier(
+        integrationType as IntegrationType,
+        integrationIdentifier,
       )
+    const auth = integrationRow.auth as MessengerAuthValue
 
-      let parentMessageId: string | null = null
-      let parentMessageCreatedAt: Date | null = null
+    const contactInbox = await contactInboxService.findBy({
+      where: { id: contactInboxId },
+    })
+    if (!contactInbox) {
+      logger.warn(
+        { contactInboxId, workspaceId, commentId },
+        "Comment automation skipped: contactInbox not found",
+      )
+      return
+    }
 
-      if (dbMessage) {
-        parentMessageId = dbMessage.id
-        parentMessageCreatedAt = dbMessage.createdAt
-        const conversationRef = {
-          id: conversationId,
-          workspaceId,
-        } as ConversationModel
-        const messageRef = { id: dbMessage.id, createdAt: dbMessage.createdAt }
+    const channelType = integrationType as
+      | "messenger"
+      | "instagram"
+      | "instagramFacebook"
+    const automations = await fbCommentAutomationService.findActiveAutomations({
+      workspaceId,
+      channelType,
+    })
 
-        if (automation.options.likeUserComment) {
-          chatQueue
-            .add(ChatJobAction.changeChannelMessageState, {
-              type: ChatJobAction.changeChannelMessageState,
-              data: {
-                conversation: conversationRef,
-                contactInbox,
-                message: messageRef,
-                liked: true,
-              },
-            })
-            .catch((err: unknown) =>
-              logger.error(
-                { err, automationId: automation.id, commentId },
-                "Failed to like comment",
-              ),
-            )
+    const workspace = await workspaceService.findById({ id: workspaceId })
+
+    const resolveAttachmentInfo = createAttachmentInfoResolver({
+      channelType,
+      workspaceId,
+      commentId,
+      integrationRow,
+      auth,
+    })
+
+    let processingFailed = false
+
+    for (const automation of automations) {
+      try {
+        if (
+          !fbCommentAutomationService.isWithinSchedule(
+            automation,
+            workspace.timezone,
+          )
+        ) {
+          logAutomationSkipped({
+            automationId: automation.id,
+            commentId,
+            postId,
+            workspaceId,
+            reason: "outside schedule",
+          })
+          continue
+        }
+        if (!matchPost(automation.post, postId)) {
+          logAutomationSkipped({
+            automationId: automation.id,
+            commentId,
+            postId,
+            workspaceId,
+            reason: "post does not match",
+          })
+          continue
+        }
+        if (
+          automation.options.ignoreCommentReplies &&
+          isCommentReply(parentId, postId)
+        ) {
+          logAutomationSkipped({
+            automationId: automation.id,
+            commentId,
+            postId,
+            workspaceId,
+            reason: "comment is a reply",
+          })
+          continue
+        }
+        if (
+          !matchKeywords(
+            automation.includeKeywords,
+            automation.excludeKeywords,
+            message,
+          )
+        ) {
+          logAutomationSkipped({
+            automationId: automation.id,
+            commentId,
+            postId,
+            workspaceId,
+            reason: "keywords do not match",
+          })
+          continue
         }
 
-        const { hasImage, hasVideo } = needsAttachmentInfo(
-          automation.hideComments,
-        )
-          ? await resolveAttachmentInfo()
-          : { hasImage: false, hasVideo: false }
+        if (automation.options.replyToNewContactsOnly) {
+          const priorCount =
+            await fbCommentAutomationService.getPriorContactInboxCount({
+              contactId: contactInbox.contactId,
+            })
+          if (priorCount > 1) {
+            logAutomationSkipped({
+              automationId: automation.id,
+              commentId,
+              postId,
+              workspaceId,
+              reason: "contact is not new",
+            })
+            continue
+          }
+        }
 
-        applyHideComments(automation.hideComments, commentId, message, {
-          conversation: conversationRef,
-          contactInbox,
-          messageId: dbMessage.id,
-          messageCreatedAt: dbMessage.createdAt,
-          hasImage,
-          hasVideo,
-        }).catch((err: unknown) =>
+        if (automation.options.replyOncePerUserPerPost) {
+          const claim = await fbCommentAutomationService.claimDedup({
+            automationId: automation.id,
+            commentId,
+            contactId: contactInbox.contactId,
+            postId,
+            workspaceId,
+          })
+          if (claim === "conflict") {
+            logAutomationSkipped({
+              automationId: automation.id,
+              commentId,
+              postId,
+              workspaceId,
+              reason: "already replied to this user on this post",
+            })
+            continue
+          }
+        }
+
+        if (!automation.options.replyToUsersWhoCommentedOnOtherPosts) {
+          const repliedElsewhere =
+            await fbCommentAutomationService.hasRepliedOnOtherPost({
+              automationId: automation.id,
+              contactId: contactInbox.contactId,
+              postId,
+            })
+          if (repliedElsewhere) {
+            logAutomationSkipped({
+              automationId: automation.id,
+              commentId,
+              postId,
+              workspaceId,
+              reason: "user already engaged on another post",
+            })
+            continue
+          }
+        }
+
+        const dispatch = await fbCommentAutomationService.getOrCreateDispatch({
+          automationId: automation.id,
+          commentId,
+          workspaceId,
+        })
+        if (dispatch.scheduledAt) {
+          logAutomationSkipped({
+            automationId: automation.id,
+            commentId,
+            postId,
+            workspaceId,
+            reason: "comment dispatch already scheduled",
+          })
+          continue
+        }
+
+        const delay = computeDelayMs(automation.replyAfter)
+
+        const messageRepo = await createMessageRepository()
+        const dbMessage = await messageRepo.findBySourceId(
+          commentId,
+          conversationId,
+          workspaceId,
+          new Date(createdTime * 1000),
+        )
+
+        let parentMessageId: string | null = null
+        let parentMessageCreatedAt: Date | null = null
+
+        if (dbMessage) {
+          parentMessageId = dbMessage.id
+          parentMessageCreatedAt = dbMessage.createdAt
+          const conversationRef = {
+            id: conversationId,
+            workspaceId,
+          } as ConversationModel
+          const messageRef = {
+            id: dbMessage.id,
+            createdAt: dbMessage.createdAt,
+          }
+
+          if (automation.options.likeUserComment) {
+            chatQueue
+              .add(ChatJobAction.changeChannelMessageState, {
+                type: ChatJobAction.changeChannelMessageState,
+                data: {
+                  conversation: conversationRef,
+                  contactInbox,
+                  message: messageRef,
+                  liked: true,
+                },
+              })
+              .catch((err: unknown) =>
+                logger.error(
+                  { err, automationId: automation.id, commentId },
+                  "Failed to like comment",
+                ),
+              )
+          }
+
+          const { hasImage, hasVideo } = needsAttachmentInfo(
+            automation.hideComments,
+          )
+            ? await resolveAttachmentInfo()
+            : { hasImage: false, hasVideo: false }
+
+          applyHideComments(automation.hideComments, commentId, message, {
+            conversation: conversationRef,
+            contactInbox,
+            messageId: dbMessage.id,
+            messageCreatedAt: dbMessage.createdAt,
+            hasImage,
+            hasVideo,
+          }).catch((err: unknown) =>
+            logger.error(
+              { err, automationId: automation.id, commentId },
+              "Failed to apply hide comments",
+            ),
+          )
+        }
+
+        let dispatchFailed = false
+
+        try {
+          await executePublicReply(automation.publicReply, {
+            automationId: automation.id,
+            integrationType,
+            integrationIdentifier,
+            commentId,
+            channelType,
+            conversationId,
+            contactInboxId,
+            delay,
+            workspaceId,
+            contactInbox,
+            message,
+            parentMessageId,
+            parentMessageCreatedAt,
+          })
+        } catch (err) {
           logger.error(
             { err, automationId: automation.id, commentId },
-            "Failed to apply hide comments",
-          ),
-        )
-      }
-
-      let dispatchFailed = false
-
-      try {
-        await executePublicReply(automation.publicReply, {
-          auth,
-          integrationType,
-          integrationIdentifier,
-          commentId,
-          channelType,
-          conversationId,
-          contactInboxId,
-          delay,
-          workspaceId,
-          contactInbox,
-          message,
-          parentMessageId,
-          parentMessageCreatedAt,
-        })
-      } catch (err) {
-        logger.error(
-          { err, automationId: automation.id, commentId },
-          "Failed to send public reply",
-        )
-        if (willSendReply(automation.publicReply)) {
-          dispatchFailed = true
+            "Failed to send public reply",
+          )
+          if (willSendReply(automation.publicReply)) {
+            dispatchFailed = true
+          }
         }
-      }
 
-      try {
-        await executePrivateReply(automation.privateReply, {
-          auth,
-          integrationType,
-          integrationIdentifier,
-          commentId,
-          channelType,
-          conversationId,
-          contactInboxId,
-          contactInbox,
-          workspaceId,
-          delay,
-          message,
-        })
-      } catch (err) {
-        logger.error(
-          { err, automationId: automation.id, commentId },
-          "Failed to send private reply",
-        )
-        if (willSendReply(automation.privateReply)) {
-          dispatchFailed = true
+        try {
+          await executePrivateReply(automation.privateReply, {
+            automationId: automation.id,
+            integrationType,
+            integrationIdentifier,
+            commentId,
+            channelType,
+            conversationId,
+            contactInboxId,
+            contactInbox,
+            workspaceId,
+            delay,
+            message,
+          })
+        } catch (err) {
+          logger.error(
+            { err, automationId: automation.id, commentId },
+            "Failed to send private reply",
+          )
+          if (willSendReply(automation.privateReply)) {
+            dispatchFailed = true
+          }
         }
-      }
 
-      // Dedup/count fire once dispatch is *enqueued*, not once an async reply
-      // (flow, AIAgent) actually succeeds — a later failure inside that job
-      // (e.g. agent misconfigured, no auto-reply-enabled provider) still
-      // counts as "replied" here and won't be retried. Fixing this properly
-      // requires threading the dedup write into the async job itself for
-      // every async-dispatch reply type, which is out of scope for now.
-      if (!dispatchFailed) {
-        await fbCommentAutomationService.insertDedup({
+        if (dispatchFailed) {
+          throw new Error("One or more comment automation replies failed")
+        }
+
+        await fbCommentAutomationService.markDispatchScheduled({
           automationId: automation.id,
-          contactId: contactInbox.contactId,
-          postId,
+          commentId,
           workspaceId,
+          hasReply:
+            willSendReply(automation.publicReply) ||
+            willSendReply(automation.privateReply),
         })
-
-        if (
-          willSendReply(automation.publicReply) ||
-          willSendReply(automation.privateReply)
-        ) {
-          await fbCommentAutomationService.incrementRepliesCount(automation.id)
-        }
+      } catch (err) {
+        processingFailed = true
+        logger.error(
+          { err, automationId: automation.id, commentId, workspaceId },
+          "Failed to process comment automation",
+        )
       }
-    } catch (err) {
-      logger.error(
-        { err, automationId: automation.id, commentId, workspaceId },
-        "Failed to process comment automation",
-      )
     }
-  }
+
+    if (processingFailed) {
+      throw new Error("One or more comment automations failed")
+    }
+  })
 }
 
 const logAutomationSkipped = ({

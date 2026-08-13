@@ -11,6 +11,7 @@ import { simpleQueue } from "@chatbotx.io/redis"
 import { getKey } from "./constants"
 import { dispatchAutomatedResponseReply } from "./dispatch-reply"
 import { logger } from "./lib/logger"
+import { selectAutomatedResponseText } from "./select-text"
 import { automatedResponseService } from "./utils"
 
 export const processPendingMessages = async (props: {
@@ -79,9 +80,12 @@ const replyByAutomatedResponse = async (props: {
   const allAutomatedResponses = await automatedResponseService.getAll(
     conversation.workspaceId,
   )
-  const inboundAutomatedResponses = allAutomatedResponses.filter(
-    (automatedResponse) => automatedResponse.type === "inbound",
-  )
+  const inboundAutomatedResponses = allAutomatedResponses
+    .filter((automatedResponse) => automatedResponse.type === "inbound")
+    .map((automatedResponse) => ({
+      ...automatedResponse,
+      text: selectAutomatedResponseText(automatedResponse),
+    }))
 
   for (const message of messages) {
     if (!message.text) {

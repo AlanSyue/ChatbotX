@@ -41,7 +41,9 @@ export function CreateAutomatedResponseForm(
   const router = useRouter()
 
   const flowOptions = useFlowSelectOptions()
-  const [responseMode, setResponseMode] = useState("flowId")
+  const [responseMode, setResponseMode] = useState<string[]>([
+    responseModes.enum.flowId,
+  ])
 
   const {
     form,
@@ -74,6 +76,7 @@ export function CreateAutomatedResponseForm(
           folderId: folderId ?? null,
           keywords: [{ value: "" }],
           text: "",
+          texts: [],
           flowId: "",
         },
       },
@@ -102,6 +105,16 @@ export function CreateAutomatedResponseForm(
     keywords.length,
     () => appendKeywords({ value: "" }),
   )
+
+  const {
+    fields: texts,
+    append: appendText,
+    remove: removeText,
+    replace: replaceTexts,
+  } = useFieldArray({
+    control,
+    name: "texts",
+  })
 
   return (
     <Form {...form}>
@@ -159,20 +172,26 @@ export function CreateAutomatedResponseForm(
           </Label>
 
           <ToggleGroup
-            defaultValue={[responseMode]}
-            onValueChange={(vals) => {
-              const val = vals[0]
-              if (val) {
-                setResponseMode(val)
-                if (val === responseModes.enum.flowId) {
-                  setValue("text", "")
-                }
-                if (val === responseModes.enum.text) {
-                  setValue("flowId", "")
+            defaultValue={responseMode}
+            onValueChange={(val) => {
+              const nextMode = Array.from(val)
+              const selectedMode = nextMode[0]
+              setResponseMode(nextMode)
+              if (!selectedMode) {
+                return
+              }
+              if (selectedMode === responseModes.enum.flowId) {
+                setValue("text", "")
+                replaceTexts([])
+              }
+              if (selectedMode === responseModes.enum.text) {
+                setValue("flowId", "")
+                if (texts.length === 0) {
+                  appendText({ value: "" })
                 }
               }
             }}
-            value={[responseMode]}
+            value={responseMode}
             variant="outline"
           >
             <ToggleGroupItem
@@ -190,7 +209,7 @@ export function CreateAutomatedResponseForm(
           </ToggleGroup>
         </div>
 
-        {responseMode === responseModes.enum.flowId && (
+        {responseMode[0] === responseModes.enum.flowId && (
           <ComboboxField
             emptyText={t("actions.noRecordFound")}
             label={t("fields.flowId.label")}
@@ -201,8 +220,39 @@ export function CreateAutomatedResponseForm(
           />
         )}
 
-        {responseMode === responseModes.enum.text && (
-          <InputField label={t("fields.text.label")} name="text" required />
+        {responseMode[0] === responseModes.enum.text && (
+          <div className="flex flex-col gap-2">
+            {texts.map((field, index) => (
+              <div className="flex gap-2" key={field.id}>
+                <InputField
+                  label={index === 0 ? t("fields.text.label") : undefined}
+                  name={`texts.${index}.value`}
+                  required
+                />
+                {texts.length === 1 ? (
+                  <div className="w-12">&nbsp;</div>
+                ) : (
+                  <Button
+                    aria-label={t("actions.delete")}
+                    onClick={() => removeText(index)}
+                    type="button"
+                    variant="ghost"
+                  >
+                    <XIcon />
+                  </Button>
+                )}
+              </div>
+            ))}
+            <div>
+              <Button
+                onClick={() => appendText({ value: "" })}
+                type="button"
+                variant="ghost"
+              >
+                <PlusCircleIcon /> {t("actions.addMore")}
+              </Button>
+            </div>
+          </div>
         )}
 
         <div className="flex justify-end gap-4">

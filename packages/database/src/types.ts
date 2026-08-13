@@ -101,6 +101,8 @@ export type FacebookLeadAdsLeadModel =
   typeof schema.facebookLeadAdsLeadModel.$inferSelect
 export type FBCommentAutomationModel =
   typeof schema.fbCommentAutomationModel.$inferSelect
+export type FBCommentAutomationDispatchModel =
+  typeof schema.fbCommentAutomationDispatchModel.$inferSelect
 export type FBCommentAutomationReplyModel =
   typeof schema.fbCommentAutomationReplyModel.$inferSelect
 export type IgStoryAutomationModel =

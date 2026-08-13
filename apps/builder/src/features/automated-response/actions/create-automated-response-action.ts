@@ -30,6 +30,7 @@ export const createAutomatedResponseAction = workspaceActionClient
 
     let flowId: string | undefined = parsedInput.flowId ?? undefined
     let text: string | null | undefined = parsedInput.text
+    let texts = parsedInput.texts?.map((item) => item.value)
 
     if (flowId) {
       const exists = await flowService.exists(workspaceId, flowId)
@@ -42,13 +43,19 @@ export const createAutomatedResponseAction = workspaceActionClient
         })
       }
       text = undefined
+      texts = []
+    } else if (texts?.length) {
+      text = texts[0]
+      flowId = undefined
     } else if (text) {
+      texts = [text]
       flowId = undefined
     }
 
     await automatedResponseService.create(workspaceId, {
       type,
       text,
+      texts,
       flowId,
       folderId: parsedInput.folderId,
       keywords: parsedInput.keywords.map((m) => m.value),

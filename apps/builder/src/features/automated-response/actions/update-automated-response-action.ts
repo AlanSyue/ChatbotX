@@ -1,14 +1,14 @@
 "use server"
 
-import {
-  automatedResponseService,
-  flowService,
-  type UpdateAutomatedResponseRequest,
-} from "@chatbotx.io/business"
+import { automatedResponseService, flowService } from "@chatbotx.io/business"
 import { zodBigintAsString } from "@chatbotx.io/utils"
 import { returnValidationErrors } from "next-safe-action"
 import { workspaceActionClient } from "@/lib/safe-action"
-import { updateAutomatedResponseRequest } from "../schema/action"
+import {
+  normalizeAutomatedResponseUpdate,
+  type UpdateAutomatedResponseRequest,
+  updateAutomatedResponseRequest,
+} from "../schema/action"
 
 export const updateAutomatedResponseAction = workspaceActionClient
   .bindArgsSchemas([zodBigintAsString(), zodBigintAsString()])
@@ -26,15 +26,18 @@ export const updateAutomatedResponse = async (
   ctx: { workspaceId: string; id: string },
   parsedInput: UpdateAutomatedResponseRequest,
 ) => {
+  const normalizedInput = normalizeAutomatedResponseUpdate(parsedInput)
+
   await automatedResponseService.findOrFail({
     workspaceId: ctx.workspaceId,
     id: ctx.id,
   })
 
-  if (parsedInput.text?.length) {
-    parsedInput.flowId = undefined
-  } else if (parsedInput.flowId) {
-    const exists = await flowService.exists(ctx.workspaceId, parsedInput.flowId)
+  if (normalizedInput.flowId) {
+    const exists = await flowService.exists(
+      ctx.workspaceId,
+      normalizedInput.flowId,
+    )
     if (!exists) {
       return returnValidationErrors(updateAutomatedResponseRequest, {
         _errors: ["Validation Exception"],
@@ -43,8 +46,7 @@ export const updateAutomatedResponse = async (
         },
       })
     }
-    parsedInput.text = null
   }
 
-  await automatedResponseService.update(ctx, parsedInput)
+  await automatedResponseService.update(ctx, normalizedInput)
 }

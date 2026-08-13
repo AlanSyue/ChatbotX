@@ -2,6 +2,7 @@ import {
   aiAgentService,
   contactInboxService,
   conversationService,
+  fbCommentAutomationService,
   workspaceService,
 } from "@chatbotx.io/business"
 import type { IntegrationType } from "@chatbotx.io/database/partials"
@@ -96,6 +97,7 @@ export async function processCommentAIReply(
 
   if (data.replyChannel === "public") {
     await postPublicCommentReply({
+      automationId: data.automationId,
       text: generated.text,
       commentId: data.commentId,
       conversationId: data.conversationId,
@@ -113,6 +115,19 @@ export async function processCommentAIReply(
   // Private DM. Instagram private DM is out of scope (no private_replies API),
   // same as the private text branch.
   if (data.channelType === "messenger") {
+    const claim = await fbCommentAutomationService.claimPrivateReplySend({
+      automationId: data.automationId,
+      commentId: data.commentId,
+      workspaceId: data.workspaceId,
+    })
+    if (claim === "already-sent") {
+      logger.warn(
+        { automationId: data.automationId, commentId: data.commentId },
+        "comment AI private reply skipped: already sent",
+      )
+      return
+    }
+
     const { integrationRow } =
       await integrationService.identifyInboxAndIntegrationAuthFromIdentifier(
         data.integrationType as IntegrationType,

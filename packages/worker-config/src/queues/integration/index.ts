@@ -46,6 +46,8 @@ export const IntegrationJobAction = {
   updateContactAvatar: "updateContactAvatar",
   channelLabelChange: "channelLabelChange",
   processCommentAutomation: "processCommentAutomation",
+  dispatchCommentAutomationPrivateReply:
+    "dispatchCommentAutomationPrivateReply",
   commentAIReply: "commentAIReply",
   processLeadgen: "processLeadgen",
   processStoryReplyAutomation: "processStoryReplyAutomation",
@@ -378,6 +380,7 @@ export type IntegrationJobProcessCommentAutomation = {
 export type IntegrationJobCommentAIReply = {
   type: typeof IntegrationJobAction.commentAIReply
   data: {
+    automationId: string
     integrationType: string
     integrationIdentifier: string
     workspaceId: string
@@ -390,6 +393,18 @@ export type IntegrationJobCommentAIReply = {
     message?: string
     parentMessageId?: string | null
     parentMessageCreatedAt?: string | null
+  }
+}
+
+export type IntegrationJobDispatchCommentAutomationPrivateReply = {
+  type: typeof IntegrationJobAction.dispatchCommentAutomationPrivateReply
+  data: {
+    integrationType: "messenger" | "instagram" | "instagramFacebook"
+    integrationIdentifier: string
+    automationId: string
+    commentId: string
+    text: string
+    workspaceId: string
   }
 }
 
@@ -460,6 +475,7 @@ export type IntegrationJobData =
   | IntegrationJobUpdateContactAvatar
   | IntegrationJobChannelLabelChange
   | IntegrationJobProcessCommentAutomation
+  | IntegrationJobDispatchCommentAutomationPrivateReply
   | IntegrationJobCommentAIReply
   | IntegrationJobProcessLeadgen
   | IntegrationJobProcessStoryReplyAutomation

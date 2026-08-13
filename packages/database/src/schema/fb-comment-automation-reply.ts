@@ -14,6 +14,7 @@ export const fbCommentAutomationReplyModel = pgTable(
     contactId: bigintAsString()
       .notNull()
       .references(() => contactModel.id, { onDelete: "cascade" }),
+    commentId: text(),
     postId: text().notNull(),
     workspaceId: bigintAsString()
       .notNull()

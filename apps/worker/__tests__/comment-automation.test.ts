@@ -8,9 +8,11 @@ const {
   mockFindContactInboxBy,
   mockFindActiveAutomations,
   mockIsWithinSchedule,
-  mockFindDedup,
-  mockInsertDedup,
-  mockIncrementRepliesCount,
+  mockClaimDedup,
+  mockGetOrCreateDispatch,
+  mockReservePublicMessage,
+  mockMarkDispatchScheduled,
+  mockClaimPrivateReplySend,
   mockGetPriorContactInboxCount,
   mockHasRepliedOnOtherPost,
   mockWorkspaceFindById,
@@ -34,9 +36,11 @@ const {
   mockFindContactInboxBy: vi.fn(),
   mockFindActiveAutomations: vi.fn(),
   mockIsWithinSchedule: vi.fn(),
-  mockFindDedup: vi.fn(),
-  mockInsertDedup: vi.fn(),
-  mockIncrementRepliesCount: vi.fn(),
+  mockClaimDedup: vi.fn(),
+  mockGetOrCreateDispatch: vi.fn(),
+  mockReservePublicMessage: vi.fn(),
+  mockMarkDispatchScheduled: vi.fn(),
+  mockClaimPrivateReplySend: vi.fn(),
   mockGetPriorContactInboxCount: vi.fn(),
   mockHasRepliedOnOtherPost: vi.fn(),
   mockWorkspaceFindById: vi.fn(),
@@ -60,15 +64,21 @@ const {
 
 vi.mock("@chatbotx.io/business", () => ({
   broadcastToWorkspaceParty: vi.fn().mockResolvedValue(undefined),
+  withBlockedOwnerGuard: async (
+    _workspaceId: string | undefined,
+    fn: () => Promise<unknown>,
+  ) => await fn(),
   contactInboxService: { findBy: mockFindContactInboxBy },
   aiAgentService: { findBy: mockAiAgentFindBy },
   conversationService: { findBy: mockConversationFindBy },
   fbCommentAutomationService: {
     findActiveAutomations: mockFindActiveAutomations,
     isWithinSchedule: mockIsWithinSchedule,
-    findDedup: mockFindDedup,
-    insertDedup: mockInsertDedup,
-    incrementRepliesCount: mockIncrementRepliesCount,
+    claimDedup: mockClaimDedup,
+    getOrCreateDispatch: mockGetOrCreateDispatch,
+    reservePublicMessage: mockReservePublicMessage,
+    markDispatchScheduled: mockMarkDispatchScheduled,
+    claimPrivateReplySend: mockClaimPrivateReplySend,
     getPriorContactInboxCount: mockGetPriorContactInboxCount,
     hasRepliedOnOtherPost: mockHasRepliedOnOtherPost,
   },
@@ -113,6 +123,8 @@ vi.mock("@chatbotx.io/worker-config", () => ({
   chatQueue: { add: mockChatQueueAdd },
   IntegrationJobAction: {
     processCommentAutomation: "processCommentAutomation",
+    dispatchCommentAutomationPrivateReply:
+      "dispatchCommentAutomationPrivateReply",
     commentAIReply: "commentAIReply",
     sendFlow: "sendFlow",
   },
@@ -155,9 +167,11 @@ vi.mock("../src/integration/handlers/automated-response/replies", () => ({
 // Import after mocks
 // ---------------------------------------------------------------------------
 
-const { isCommentReply, processCommentAutomation } = await import(
-  "../src/integration/handlers/comment-automation"
-)
+const {
+  dispatchCommentAutomationPrivateReply,
+  isCommentReply,
+  processCommentAutomation,
+} = await import("../src/integration/handlers/comment-automation")
 const { processCommentAIReply } = await import(
   "../src/integration/handlers/comment-automation/ai-reply"
 )
@@ -252,11 +266,19 @@ beforeEach(() => {
     id: "message-1",
     createdAt: new Date("2026-07-10T00:00:00Z"),
   })
+  mockClaimDedup.mockResolvedValue("claimed")
+  mockGetOrCreateDispatch.mockResolvedValue({ scheduledAt: null })
+  mockReservePublicMessage.mockResolvedValue({
+    messageId: "message-1",
+    messageCreatedAt: new Date("2026-07-10T00:00:00Z"),
+  })
+  mockMarkDispatchScheduled.mockResolvedValue(true)
+  mockClaimPrivateReplySend.mockResolvedValue("claimed")
   mockCreateMessageRepository.mockResolvedValue({
     findBySourceId: vi.fn().mockResolvedValue(null),
+    findById: vi.fn().mockResolvedValue(null),
     create: mockMessageCreate,
   })
-  mockInsertDedup.mockResolvedValue(undefined)
   mockChatQueueAdd.mockResolvedValue(undefined)
   mockIntegrationQueueAdd.mockResolvedValue(undefined)
   mockContactVariableGetAll.mockResolvedValue({})
@@ -287,11 +309,11 @@ describe("processCommentAutomation reply filtering", () => {
 
     await processCommentAutomation(buildJobData({ parentId: POST_ID }) as any)
 
-    expect(mockInsertDedup).toHaveBeenCalledWith({
+    expect(mockMarkDispatchScheduled).toHaveBeenCalledWith({
       automationId: "automation-1",
-      contactId: "contact-1",
-      postId: POST_ID,
+      commentId: COMMENT_ID,
       workspaceId: "workspace-1",
+      hasReply: false,
     })
   })
 
@@ -302,7 +324,7 @@ describe("processCommentAutomation reply filtering", () => {
       buildJobData({ parentId: OTHER_COMMENT_ID }) as any,
     )
 
-    expect(mockInsertDedup).not.toHaveBeenCalled()
+    expect(mockMarkDispatchScheduled).not.toHaveBeenCalled()
     expect(mockLoggerInfo).toHaveBeenCalledWith(
       expect.objectContaining({ reason: "comment is a reply" }),
       "Comment automation skipped",
@@ -318,7 +340,7 @@ describe("processCommentAutomation reply filtering", () => {
       buildJobData({ parentId: OTHER_COMMENT_ID }) as any,
     )
 
-    expect(mockInsertDedup).toHaveBeenCalled()
+    expect(mockMarkDispatchScheduled).toHaveBeenCalled()
   })
 
   test("runs the automation when the payload has no parentId", async () => {
@@ -326,7 +348,7 @@ describe("processCommentAutomation reply filtering", () => {
 
     await processCommentAutomation(buildJobData() as any)
 
-    expect(mockInsertDedup).toHaveBeenCalled()
+    expect(mockMarkDispatchScheduled).toHaveBeenCalled()
   })
 })
 
@@ -338,7 +360,7 @@ describe("processCommentAutomation matchPost normalization", () => {
 
     await processCommentAutomation(buildJobData() as any)
 
-    expect(mockInsertDedup).toHaveBeenCalled()
+    expect(mockMarkDispatchScheduled).toHaveBeenCalled()
   })
 
   test("matches a manually entered id missing the pageId prefix", async () => {
@@ -348,7 +370,7 @@ describe("processCommentAutomation matchPost normalization", () => {
 
     await processCommentAutomation(buildJobData() as any)
 
-    expect(mockInsertDedup).toHaveBeenCalled()
+    expect(mockMarkDispatchScheduled).toHaveBeenCalled()
   })
 
   test("does not match a different post", async () => {
@@ -358,7 +380,7 @@ describe("processCommentAutomation matchPost normalization", () => {
 
     await processCommentAutomation(buildJobData() as any)
 
-    expect(mockInsertDedup).not.toHaveBeenCalled()
+    expect(mockMarkDispatchScheduled).not.toHaveBeenCalled()
     expect(mockLoggerInfo).toHaveBeenCalledWith(
       expect.objectContaining({ reason: "post does not match" }),
       "Comment automation skipped",
@@ -377,7 +399,7 @@ describe("processCommentAutomation replyToUsersWhoCommentedOnOtherPosts", () => 
 
     await processCommentAutomation(buildJobData() as any)
 
-    expect(mockInsertDedup).not.toHaveBeenCalled()
+    expect(mockMarkDispatchScheduled).not.toHaveBeenCalled()
     expect(mockLoggerInfo).toHaveBeenCalledWith(
       expect.objectContaining({
         reason: "user already engaged on another post",
@@ -396,7 +418,7 @@ describe("processCommentAutomation replyToUsersWhoCommentedOnOtherPosts", () => 
 
     await processCommentAutomation(buildJobData() as any)
 
-    expect(mockInsertDedup).toHaveBeenCalled()
+    expect(mockMarkDispatchScheduled).toHaveBeenCalled()
   })
 
   test("does not query when option is on (default)", async () => {
@@ -467,19 +489,24 @@ describe("processCommentAutomation AIAgent reply", () => {
       expect.anything(),
       expect.anything(),
     )
-    expect(mockIncrementRepliesCount).not.toHaveBeenCalled()
+    expect(mockMarkDispatchScheduled).toHaveBeenCalledWith({
+      automationId: "automation-1",
+      commentId: COMMENT_ID,
+      workspaceId: "workspace-1",
+      hasReply: false,
+    })
   })
 })
 
 describe("processCommentAutomation text private reply channel routing", () => {
   test("instagram sends the DM through the Instagram Login sendPrivateReply endpoint", async () => {
-    mockFindActiveAutomations.mockResolvedValue([
-      buildAutomation({ privateReply: { type: "text", value: "Hi from IG" } }),
-    ])
-
-    await processCommentAutomation({
-      ...buildJobData(),
+    await dispatchCommentAutomationPrivateReply({
       integrationType: "instagram",
+      integrationIdentifier: PAGE_ID,
+      automationId: "automation-1",
+      commentId: COMMENT_ID,
+      text: "Hi from IG",
+      workspaceId: "workspace-1",
     } as any)
 
     expect(mockSendInstagramPrivateReply).toHaveBeenCalledWith(
@@ -487,16 +514,18 @@ describe("processCommentAutomation text private reply channel routing", () => {
       COMMENT_ID,
       "Hi from IG",
     )
-    // The Messenger private-reply endpoint must not be used for Instagram.
     expect(mockSendPrivateReply).not.toHaveBeenCalled()
   })
 
   test("messenger still routes the text DM through the Messenger endpoint", async () => {
-    mockFindActiveAutomations.mockResolvedValue([
-      buildAutomation({ privateReply: { type: "text", value: "Hi from FB" } }),
-    ])
-
-    await processCommentAutomation(buildJobData() as any)
+    await dispatchCommentAutomationPrivateReply({
+      integrationType: "messenger",
+      integrationIdentifier: PAGE_ID,
+      automationId: "automation-1",
+      commentId: COMMENT_ID,
+      text: "Hi from FB",
+      workspaceId: "workspace-1",
+    } as any)
 
     expect(mockSendPrivateReply).toHaveBeenCalledWith(
       expect.anything(),
@@ -507,15 +536,13 @@ describe("processCommentAutomation text private reply channel routing", () => {
   })
 
   test("instagramFacebook sends the DM through the Instagram-via-Facebook sendPrivateReply endpoint", async () => {
-    mockFindActiveAutomations.mockResolvedValue([
-      buildAutomation({
-        privateReply: { type: "text", value: "Hi from IG-FB" },
-      }),
-    ])
-
-    await processCommentAutomation({
-      ...buildJobData(),
+    await dispatchCommentAutomationPrivateReply({
       integrationType: "instagramFacebook",
+      integrationIdentifier: PAGE_ID,
+      automationId: "automation-1",
+      commentId: COMMENT_ID,
+      text: "Hi from IG-FB",
+      workspaceId: "workspace-1",
     } as any)
 
     expect(mockSendInstagramFacebookPrivateReply).toHaveBeenCalledWith(
@@ -548,10 +575,16 @@ describe("processCommentAutomation text reply variable resolution", () => {
       text: "Hi {{contact.firstName}}",
       variables: {},
     })
-    expect(mockSendPrivateReply).toHaveBeenCalledWith(
+    expect(mockIntegrationQueueAdd).toHaveBeenCalledWith(
+      "dispatchCommentAutomationPrivateReply",
+      expect.objectContaining({
+        data: expect.objectContaining({
+          text: "Hi Jane",
+          commentId: COMMENT_ID,
+          automationId: "automation-1",
+        }),
+      }),
       expect.anything(),
-      COMMENT_ID,
-      "Hi Jane",
     )
   })
 
@@ -588,10 +621,14 @@ describe("processCommentAutomation text reply variable resolution", () => {
 
     await processCommentAutomation(buildJobData() as any)
 
-    expect(mockSendPrivateReply).toHaveBeenCalledWith(
+    expect(mockIntegrationQueueAdd).toHaveBeenCalledWith(
+      "dispatchCommentAutomationPrivateReply",
+      expect.objectContaining({
+        data: expect.objectContaining({
+          text: "Hi {{contact.firstName}}",
+        }),
+      }),
       expect.anything(),
-      COMMENT_ID,
-      "Hi {{contact.firstName}}",
     )
   })
 
@@ -707,6 +744,7 @@ describe("processCommentAIReply", () => {
 
   function buildAIJobData(overrides: Partial<Record<string, unknown>> = {}) {
     return {
+      automationId: "automation-1",
       integrationType: "messenger",
       integrationIdentifier: PAGE_ID,
       workspaceId: "workspace-1",
@@ -736,6 +774,7 @@ describe("processCommentAIReply", () => {
     expect(mockChatQueueAdd).toHaveBeenCalledWith(
       "sendChannelMessage",
       expect.objectContaining({ type: "sendChannelMessage" }),
+      expect.anything(),
     )
     expect(mockSendPrivateReply).not.toHaveBeenCalled()
   })

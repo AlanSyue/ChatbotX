@@ -21,11 +21,13 @@ import { createId } from "@chatbotx.io/utils"
 import { BaseService } from "../base.service"
 import { notFoundException } from "../errors"
 import type { PaginatedResult } from "../types"
+import { getAutomatedResponseTextWrite } from "./text-write"
 
 export type UpdateAutomatedResponseRequest = {
   folderId?: string | null
   keywords?: Array<{ value: string }>
   text?: string | null
+  texts?: Array<{ value: string }> | string[]
   flowId?: string | null
 }
 
@@ -128,6 +130,7 @@ class AutomatedResponseService extends BaseService {
     values: {
       type: AutomatedResponseType
       text?: string | null
+      texts?: string[]
       flowId?: string | null
       folderId?: string | null
       keywords: string[]
@@ -135,13 +138,17 @@ class AutomatedResponseService extends BaseService {
     tx?: DatabaseClient,
   ): Promise<AutomatedResponseModel> {
     const client = tx ?? db
+    const responseData = getAutomatedResponseTextWrite(values) ?? {
+      text: null,
+      texts: [],
+    }
     const [created] = await client
       .insert(automatedResponseModel)
       .values({
         id: createId(),
         workspaceId,
         status: true,
-        text: values.text,
+        ...responseData,
         flowId: values.flowId,
         folderId: values.folderId,
         keywords: values.keywords,
@@ -158,11 +165,22 @@ class AutomatedResponseService extends BaseService {
     tx?: DatabaseClient,
   ): Promise<AutomatedResponseModel> {
     const client = tx ?? db
+    const { flowId, keywords, text, texts: requestedTexts, ...rest } = data
+    const texts = requestedTexts?.map((value) =>
+      typeof value === "string" ? value : value.value,
+    )
+    const responseData = getAutomatedResponseTextWrite({
+      flowId,
+      text,
+      texts,
+    })
     const [updated] = await client
       .update(automatedResponseModel)
       .set({
-        ...data,
-        keywords: data.keywords?.map((m) => m.value) ?? [],
+        ...rest,
+        flowId,
+        ...responseData,
+        keywords: keywords?.map((m) => m.value),
       })
       .where(
         and(

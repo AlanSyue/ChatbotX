@@ -36,7 +36,9 @@ export default function EditAutomatedResponseForm(
   const router = useRouter()
 
   const flowOptions = useFlowSelectOptions()
-  const [responseMode, setResponseMode] = useState("flowId")
+  const [responseMode, setResponseMode] = useState<string[]>([
+    responseModes.enum.flowId,
+  ])
 
   const {
     form,
@@ -67,6 +69,7 @@ export default function EditAutomatedResponseForm(
         defaultValues: {
           keywords: [{ value: "" }],
           text: "",
+          texts: [],
           flowId: "",
         },
       },
@@ -76,12 +79,18 @@ export default function EditAutomatedResponseForm(
 
   useEffect(() => {
     if (automatedResponse) {
-      if (automatedResponse.text?.length) {
-        setResponseMode("text")
+      let texts = automatedResponse.texts
+      if (texts.length === 0 && automatedResponse.text) {
+        texts = [automatedResponse.text]
+      }
+
+      if (texts.length > 0) {
+        setResponseMode([responseModes.enum.text])
       }
       form.reset({
         ...automatedResponse,
-        text: automatedResponse.text,
+        text: automatedResponse.text ?? "",
+        texts: texts.map((value) => ({ value })),
         flowId: automatedResponse.flowId,
         keywords: automatedResponse.keywords?.map((m) => ({ value: m })) ?? [],
       })
@@ -102,6 +111,16 @@ export default function EditAutomatedResponseForm(
     keywords.length,
     () => appendKeywords({ value: "" }),
   )
+
+  const {
+    fields: texts,
+    append: appendText,
+    remove: removeText,
+    replace: replaceTexts,
+  } = useFieldArray({
+    control,
+    name: "texts",
+  })
 
   return (
     <Form {...form}>
@@ -150,28 +169,32 @@ export default function EditAutomatedResponseForm(
           </div>
         </div>
 
-        {/* Bot response block */}
-        {/* Bot response block */}
         <div className="mt-4 flex items-center gap-4">
           <Label className="font-bold" htmlFor="replyMode">
             {t("fields.botResponse.label")}
           </Label>
 
           <ToggleGroup
-            defaultValue={[responseMode]}
-            onValueChange={(vals) => {
-              const val = vals[0]
-              if (val) {
-                setResponseMode(val)
-                if (val === responseModes.enum.flowId) {
-                  setValue("text", "")
-                }
-                if (val === responseModes.enum.text) {
-                  setValue("flowId", "")
+            defaultValue={responseMode}
+            onValueChange={(val) => {
+              const nextMode = Array.from(val)
+              const selectedMode = nextMode[0]
+              setResponseMode(nextMode)
+              if (!selectedMode) {
+                return
+              }
+              if (selectedMode === responseModes.enum.flowId) {
+                setValue("text", "")
+                replaceTexts([])
+              }
+              if (selectedMode === responseModes.enum.text) {
+                setValue("flowId", "")
+                if (texts.length === 0) {
+                  appendText({ value: "" })
                 }
               }
             }}
-            value={[responseMode]}
+            value={responseMode}
             variant="outline"
           >
             <ToggleGroupItem
@@ -189,7 +212,7 @@ export default function EditAutomatedResponseForm(
           </ToggleGroup>
         </div>
 
-        {responseMode === responseModes.enum.flowId && (
+        {responseMode[0] === responseModes.enum.flowId && (
           <ComboboxField
             emptyText={t("actions.noRecordFound")}
             label={t("fields.flowId.label")}
@@ -200,8 +223,40 @@ export default function EditAutomatedResponseForm(
           />
         )}
 
-        {responseMode === responseModes.enum.text && (
-          <InputField label={t("fields.text.label")} name="text" required />
+        {responseMode[0] === responseModes.enum.text && (
+          <div className="flex flex-col gap-2">
+            {texts.map((field, index) => (
+              <div className="flex gap-2" key={field.id}>
+                <InputField
+                  formItemClassName="w-1/2"
+                  label={index === 0 ? t("fields.text.label") : undefined}
+                  name={`texts.${index}.value`}
+                  required
+                />
+                {texts.length === 1 ? (
+                  <div className="w-12">&nbsp;</div>
+                ) : (
+                  <Button
+                    aria-label={t("actions.delete")}
+                    onClick={() => removeText(index)}
+                    type="button"
+                    variant="ghost"
+                  >
+                    <XIcon />
+                  </Button>
+                )}
+              </div>
+            ))}
+            <div>
+              <Button
+                onClick={() => appendText({ value: "" })}
+                type="button"
+                variant="ghost"
+              >
+                <PlusCircleIcon /> {t("actions.addMore")}
+              </Button>
+            </div>
+          </div>
         )}
 
         <div className="flex justify-end gap-4">
