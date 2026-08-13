@@ -44,7 +44,7 @@ const requiredThreadsAndCommentAutomationKeys = [
   "instagramCommentAutomation.randomPublicReplyDescription",
   "instagramCommentAutomation.replyMessageNumber",
 ] as const
-const completeCatalogLocales = ["en", "vi"] as const
+const completeCatalogLocales = ["en", "vi", "zh-TW"] as const
 
 type IcuStructure = {
   argument: string
