@@ -4178,5 +4178,71 @@
       "position": "Ordine",
       "iconSearchLink": "Sfoglia le icone Lucide →"
     }
+  },
+  "storyReplyAutomation": {
+    "title": "Automazione risposte alle storie",
+    "description": "Invia automaticamente un messaggio privato ai contatti che rispondono alle tue storie Instagram o Facebook.",
+    "create": "Crea automazione",
+    "replies": "Risposte",
+    "activated": "Automazione attivata",
+    "deactivated": "Automazione disattivata",
+    "active": "Attiva",
+    "platform": "Piattaforma",
+    "storyTarget": "Storie di destinazione",
+    "storyTargetDescription": "Applica questa automazione alle risposte a una qualsiasi delle tue storie, oppure limitale a storie specifiche che selezioni mentre sono ancora attive.",
+    "reply": "Risposta (DM)",
+    "replyDescription": "Invia un messaggio privato alla persona che ha risposto alla tua storia. Scegli AI Agent, un modello di testo fisso, un flow o nessuna risposta.",
+    "replyMessage": "Messaggio di risposta",
+    "replyMessagePlaceholder": "Inserisci il messaggio di risposta...",
+    "includeKeywordsType": "Rispondi a",
+    "includeKeywordsTypeDescription": "Scegli a quali risposte alle storie deve reagire questa automazione.",
+    "includeKeywords": "Parole chiave da abbinare",
+    "excludeKeywords": "Escludi le risposte con queste parole chiave",
+    "keywordsPlaceholder": "Digita e premi Enter...",
+    "replyAfter": "Rispondi dopo",
+    "replyAfterValue": "Valore",
+    "selectStories": "Seleziona storie",
+    "chooseSpecificStories": "Scegli storie...",
+    "liveStoriesTab": "Storie attive",
+    "liveStoriesDescription": "Qui possono essere selezionate solo le storie ancora attive (pubblicate nelle ultime 24 ore). Usa la scheda Story ID per indirizzare manualmente una storia.",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "Inserisci gli ID media della storia, uno per riga...",
+    "noLiveStoriesFound": "Nessuna storia attiva trovata al momento",
+    "card": {
+      "targeting": "Targeting e risposta",
+      "filters": "Filtri",
+      "replyTiming": "Tempi di risposta"
+    },
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTargetType": {
+      "all": "Qualsiasi storia",
+      "specific": "Storie specifiche"
+    },
+    "replyType": {
+      "text": "Messaggio di testo",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "Nessuna risposta"
+    },
+    "keywordsType": {
+      "all": "Tutte le risposte",
+      "equal": "Corrispondenza esatta",
+      "contain": "Contiene"
+    },
+    "replyAfterType": {
+      "immediately": "Subito",
+      "seconds": "Dopo X secondi",
+      "minutes": "Dopo X minuti",
+      "hours": "Dopo X ore",
+      "randomWithin3Minutes": "Casuale entro 3 minuti",
+      "randomWithin5Minutes": "Casuale entro 5 minuti",
+      "randomWithin10Minutes": "Casuale entro 10 minuti",
+      "randomWithin20Minutes": "Casuale entro 20 minuti",
+      "randomWithin30Minutes": "Casuale entro 30 minuti",
+      "randomWithin60Minutes": "Casuale entro 60 minuti"
+    }
   }
 }

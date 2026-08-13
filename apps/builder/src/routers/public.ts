@@ -13,6 +13,7 @@ import whatsappMessageTemplateWorkspaceTokenAPIs from "@/features/integration-wh
 import integrationsWorkspaceTokenAPIs from "@/features/integrations/api/workspace-token"
 import savedReplyWorkspaceTokenAPIs from "@/features/saved-replies/api/workspace-token"
 import { sequencesWorkspaceTokenAPIs } from "@/features/sequences/api/workspace-token"
+import storyReplyAutomationWorkspaceTokenAPIs from "@/features/story-reply-automation/api/workspace-token"
 import { tagWorkspaceTokenAPIs } from "@/features/tags/api/token-auth"
 import triggersWorkspaceTokenAPIs from "@/features/triggers/api/workspace-token"
 import webhooksWorkspaceTokenAPIs from "@/features/webhooks/api/workspace-token"
@@ -25,6 +26,7 @@ export const publicRouter = {
   ...workspaceMembersAPIs,
   ...conversationWorkspaceTokenAPIs,
   ...savedReplyWorkspaceTokenAPIs,
+  ...storyReplyAutomationWorkspaceTokenAPIs,
   ...flowWorkspaceTokenAPIs,
   ...tagWorkspaceTokenAPIs,
   ...botFieldWorkspaceTokenAPIs,

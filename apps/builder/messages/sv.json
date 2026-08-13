@@ -4432,5 +4432,71 @@
       "toggleSuccess": "Inställningen för taggsynkronisering har uppdaterats."
     },
     "title": "Zalo OA"
+  },
+  "storyReplyAutomation": {
+    "title": "Automatisering för story-svar",
+    "description": "Skicka automatiskt ett privat meddelande till kontakter som svarar på dina Instagram- eller Facebook-stories.",
+    "create": "Skapa automatisering",
+    "replies": "Svar",
+    "activated": "Automatisering aktiverad",
+    "deactivated": "Automatisering inaktiverad",
+    "active": "Aktiv",
+    "platform": "Plattform",
+    "storyTarget": "Målstories",
+    "storyTargetDescription": "Använd denna automatisering på svar på någon av dina stories, eller begränsa den till specifika stories som du väljer medan de fortfarande är live.",
+    "reply": "Svar (DM)",
+    "replyDescription": "Skicka ett privat meddelande till personen som svarade på din story. Välj AI Agent, en fast textmall, ett flow eller inget svar.",
+    "replyMessage": "Svarsmeddelande",
+    "replyMessagePlaceholder": "Ange svarsmeddelande...",
+    "includeKeywordsType": "Svara på",
+    "includeKeywordsTypeDescription": "Välj vilka story-svar som denna automatisering ska reagera på.",
+    "includeKeywords": "Nyckelord att matcha",
+    "excludeKeywords": "Exkludera svar med dessa nyckelord",
+    "keywordsPlaceholder": "Skriv och tryck Enter...",
+    "replyAfter": "Svara efter",
+    "replyAfterValue": "Värde",
+    "selectStories": "Välj stories",
+    "chooseSpecificStories": "Välj stories...",
+    "liveStoriesTab": "Aktiva stories",
+    "liveStoriesDescription": "Här kan bara stories som fortfarande är live (publicerade under de senaste 24 timmarna) väljas. Använd fliken Story ID för att rikta in en story manuellt.",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "Ange story-medie-ID:n, ett per rad...",
+    "noLiveStoriesFound": "Inga aktiva stories hittades just nu",
+    "card": {
+      "targeting": "Målgrupp och svar",
+      "filters": "Filter",
+      "replyTiming": "Svarstidpunkt"
+    },
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTargetType": {
+      "all": "Vilken story som helst",
+      "specific": "Specifika stories"
+    },
+    "replyType": {
+      "text": "Textmeddelande",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "Inget svar"
+    },
+    "keywordsType": {
+      "all": "Alla svar",
+      "equal": "Exakt matchning",
+      "contain": "Innehåller"
+    },
+    "replyAfterType": {
+      "immediately": "Omedelbart",
+      "seconds": "Efter X sekunder",
+      "minutes": "Efter X minuter",
+      "hours": "Efter X timmar",
+      "randomWithin3Minutes": "Slumpmässigt inom 3 minuter",
+      "randomWithin5Minutes": "Slumpmässigt inom 5 minuter",
+      "randomWithin10Minutes": "Slumpmässigt inom 10 minuter",
+      "randomWithin20Minutes": "Slumpmässigt inom 20 minuter",
+      "randomWithin30Minutes": "Slumpmässigt inom 30 minuter",
+      "randomWithin60Minutes": "Slumpmässigt inom 60 minuter"
+    }
   }
 }

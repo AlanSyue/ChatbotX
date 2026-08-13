@@ -4238,5 +4238,71 @@
       "botLink": "קישור לבוט",
       "chatPlugin": "תוסף צ'אט C."
     }
+  },
+  "storyReplyAutomation": {
+    "title": "אוטומציית תגובות לסטורי",
+    "description": "שלחו אוטומטית הודעה פרטית לאנשי קשר שמגיבים לסטוריז שלכם באינסטגרם או בפייסבוק.",
+    "create": "יצירת אוטומציה",
+    "replies": "תגובות",
+    "activated": "האוטומציה הופעלה",
+    "deactivated": "האוטומציה הושבתה",
+    "active": "פעיל",
+    "platform": "פלטפורמה",
+    "storyTarget": "סטוריז יעד",
+    "storyTargetDescription": "החילו את האוטומציה הזו על תגובות לכל אחד מהסטוריז שלכם, או צמצמו אותה לסטוריז מסוימים שתבחרו כל עוד הם עדיין פעילים.",
+    "reply": "תגובה (DM)",
+    "replyDescription": "שלחו הודעה פרטית לאדם שהגיב לסטורי שלכם. בחרו AI Agent, תבנית טקסט קבועה, flow או ללא תגובה.",
+    "replyMessage": "הודעת תגובה",
+    "replyMessagePlaceholder": "הזינו הודעת תגובה...",
+    "includeKeywordsType": "להגיב אל",
+    "includeKeywordsTypeDescription": "בחרו לאילו תגובות לסטורי האוטומציה הזו תגיב.",
+    "includeKeywords": "מילות מפתח להתאמה",
+    "excludeKeywords": "החריגו תגובות עם מילות המפתח האלו",
+    "keywordsPlaceholder": "הקלידו ולחצו Enter...",
+    "replyAfter": "להגיב אחרי",
+    "replyAfterValue": "ערך",
+    "selectStories": "בחירת סטוריז",
+    "chooseSpecificStories": "בחרו סטוריז...",
+    "liveStoriesTab": "סטוריז חיים",
+    "liveStoriesDescription": "כאן ניתן לבחור רק סטוריז שעדיין פעילים כרגע (פורסמו ב־24 השעות האחרונות). השתמשו בלשונית Story ID כדי למקד ידנית סטורי.",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "הזינו מזהי מדיה של הסטורי, אחד בכל שורה...",
+    "noLiveStoriesFound": "לא נמצאו כרגע סטוריז פעילים",
+    "card": {
+      "targeting": "מיקוד ותגובה",
+      "filters": "מסננים",
+      "replyTiming": "תזמון תגובה"
+    },
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTargetType": {
+      "all": "כל סטורי",
+      "specific": "סטוריז מסוימים"
+    },
+    "replyType": {
+      "text": "הודעת טקסט",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "ללא תגובה"
+    },
+    "keywordsType": {
+      "all": "כל התגובות",
+      "equal": "התאמה מדויקת",
+      "contain": "מכיל"
+    },
+    "replyAfterType": {
+      "immediately": "מיידית",
+      "seconds": "אחרי X שניות",
+      "minutes": "אחרי X דקות",
+      "hours": "אחרי X שעות",
+      "randomWithin3Minutes": "אקראי בתוך 3 דקות",
+      "randomWithin5Minutes": "אקראי בתוך 5 דקות",
+      "randomWithin10Minutes": "אקראי בתוך 10 דקות",
+      "randomWithin20Minutes": "אקראי בתוך 20 דקות",
+      "randomWithin30Minutes": "אקראי בתוך 30 דקות",
+      "randomWithin60Minutes": "אקראי בתוך 60 דקות"
+    }
   }
 }

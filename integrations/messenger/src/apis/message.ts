@@ -25,3 +25,13 @@ export const sendPageMessage = (
     }),
   )
 }
+
+export const sendStoryReply = (
+  auth: MessengerAuthValue,
+  psid: string,
+  message: string,
+): Promise<FacebookSendMessageResponse> =>
+  sendPageMessage(auth, {
+    recipient: { id: psid },
+    message: { text: message },
+  })

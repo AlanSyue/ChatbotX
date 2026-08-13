@@ -4432,5 +4432,71 @@
       "position": "Pedido",
       "iconSearchLink": "Bfilase Lucide icons →"
     }
+  },
+  "storyReplyAutomation": {
+    "title": "Automatización de respuestas a historias",
+    "description": "Envía automáticamente un mensaje privado a los contactos que responden a tus historias de Instagram o Facebook.",
+    "create": "Crear automatización",
+    "replies": "Respuestas",
+    "activated": "Automatización activada",
+    "deactivated": "Automatización desactivada",
+    "active": "Activa",
+    "platform": "Plataforma",
+    "storyTarget": "Historias objetivo",
+    "storyTargetDescription": "Aplica esta automatización a las respuestas de cualquiera de tus historias o limítala a historias específicas que selecciones mientras sigan activas.",
+    "reply": "Respuesta (DM)",
+    "replyDescription": "Envía un mensaje privado a la persona que respondió a tu historia. Elige AI Agent, una plantilla de texto fija, un flow o sin respuesta.",
+    "replyMessage": "Mensaje de respuesta",
+    "replyMessagePlaceholder": "Introduce el mensaje de respuesta...",
+    "includeKeywordsType": "Responder a",
+    "includeKeywordsTypeDescription": "Elige a qué respuestas de historias debe reaccionar esta automatización.",
+    "includeKeywords": "Palabras clave para coincidir",
+    "excludeKeywords": "Excluir respuestas con estas palabras clave",
+    "keywordsPlaceholder": "Escribe y pulsa Enter...",
+    "replyAfter": "Responder después de",
+    "replyAfterValue": "Valor",
+    "selectStories": "Seleccionar historias",
+    "chooseSpecificStories": "Seleccionar historias...",
+    "liveStoriesTab": "Historias activas",
+    "liveStoriesDescription": "Aquí solo se pueden elegir historias que siguen activas actualmente (publicadas en las últimas 24 horas). Usa la pestaña Story ID para apuntar manualmente a una historia.",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "Introduce IDs de medios de la historia, uno por línea...",
+    "noLiveStoriesFound": "No se encontraron historias activas en este momento",
+    "card": {
+      "targeting": "Segmentación y respuesta",
+      "filters": "Filtros",
+      "replyTiming": "Momento de la respuesta"
+    },
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTargetType": {
+      "all": "Cualquier historia",
+      "specific": "Historias específicas"
+    },
+    "replyType": {
+      "text": "Mensaje de texto",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "Sin respuesta"
+    },
+    "keywordsType": {
+      "all": "Todas las respuestas",
+      "equal": "Coincidencia exacta",
+      "contain": "Contiene"
+    },
+    "replyAfterType": {
+      "immediately": "Inmediatamente",
+      "seconds": "Después de X segundos",
+      "minutes": "Después de X minutos",
+      "hours": "Después de X horas",
+      "randomWithin3Minutes": "Aleatorio dentro de 3 minutos",
+      "randomWithin5Minutes": "Aleatorio dentro de 5 minutos",
+      "randomWithin10Minutes": "Aleatorio dentro de 10 minutos",
+      "randomWithin20Minutes": "Aleatorio dentro de 20 minutos",
+      "randomWithin30Minutes": "Aleatorio dentro de 30 minutos",
+      "randomWithin60Minutes": "Aleatorio dentro de 60 minutos"
+    }
   }
 }

@@ -4432,5 +4432,71 @@
       "position": "Ordem",
       "iconSearchLink": "Explorar ícones Lucide →"
     }
+  },
+  "storyReplyAutomation": {
+    "title": "Automação de respostas a stories",
+    "description": "Envie automaticamente uma mensagem privada para contactos que respondem aos seus stories do Instagram ou Facebook.",
+    "create": "Criar automação",
+    "replies": "Respostas",
+    "activated": "Automação ativada",
+    "deactivated": "Automação desativada",
+    "active": "Ativa",
+    "platform": "Plataforma",
+    "storyTarget": "Stories de destino",
+    "storyTargetDescription": "Aplique esta automação às respostas a qualquer um dos seus stories, ou limite-a a stories específicos que selecionar enquanto ainda estiverem ativos.",
+    "reply": "Resposta (DM)",
+    "replyDescription": "Envie uma mensagem privada à pessoa que respondeu ao seu story. Escolha AI Agent, um modelo de texto fixo, um flow ou nenhuma resposta.",
+    "replyMessage": "Mensagem de resposta",
+    "replyMessagePlaceholder": "Introduza a mensagem de resposta...",
+    "includeKeywordsType": "Responder a",
+    "includeKeywordsTypeDescription": "Escolha a que respostas a stories esta automação deve reagir.",
+    "includeKeywords": "Palavras-chave a corresponder",
+    "excludeKeywords": "Excluir respostas com estas palavras-chave",
+    "keywordsPlaceholder": "Escreva e prima Enter...",
+    "replyAfter": "Responder após",
+    "replyAfterValue": "Valor",
+    "selectStories": "Selecionar stories",
+    "chooseSpecificStories": "Escolher stories...",
+    "liveStoriesTab": "Stories ativos",
+    "liveStoriesDescription": "Aqui só podem ser selecionados stories que ainda estejam ativos (publicados nas últimas 24 horas). Utilize o separador Story ID para segmentar manualmente um story.",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "Introduza IDs de multimédia do story, um por linha...",
+    "noLiveStoriesFound": "Não foram encontrados stories ativos neste momento",
+    "card": {
+      "targeting": "Segmentação e resposta",
+      "filters": "Filtros",
+      "replyTiming": "Momento da resposta"
+    },
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTargetType": {
+      "all": "Qualquer story",
+      "specific": "Stories específicos"
+    },
+    "replyType": {
+      "text": "Mensagem de texto",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "Sem resposta"
+    },
+    "keywordsType": {
+      "all": "Todas as respostas",
+      "equal": "Correspondência exata",
+      "contain": "Contém"
+    },
+    "replyAfterType": {
+      "immediately": "Imediatamente",
+      "seconds": "Após X segundos",
+      "minutes": "Após X minutos",
+      "hours": "Após X horas",
+      "randomWithin3Minutes": "Aleatório até 3 minutos",
+      "randomWithin5Minutes": "Aleatório até 5 minutos",
+      "randomWithin10Minutes": "Aleatório até 10 minutos",
+      "randomWithin20Minutes": "Aleatório até 20 minutos",
+      "randomWithin30Minutes": "Aleatório até 30 minutos",
+      "randomWithin60Minutes": "Aleatório até 60 minutos"
+    }
   }
 }

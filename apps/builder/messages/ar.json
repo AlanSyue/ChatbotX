@@ -4439,5 +4439,71 @@
       "queueImport": "تعذّر جدولة استيراد كتالوج ميتا.",
       "queueSync": "تعذّر جدولة مزامنة كتالوج ميتا."
     }
+  },
+  "storyReplyAutomation": {
+    "title": "أتمتة الرد على القصص",
+    "description": "أرسل رسالة خاصة تلقائيًا إلى جهات الاتصال التي ترد على قصصك في Instagram أو Facebook.",
+    "create": "إنشاء أتمتة",
+    "replies": "الردود",
+    "activated": "تم تفعيل الأتمتة",
+    "deactivated": "تم إيقاف الأتمتة",
+    "active": "مفعّل",
+    "platform": "المنصة",
+    "storyTarget": "القصص المستهدفة",
+    "storyTargetDescription": "طبّق هذه الأتمتة على الردود على أي قصة من قصصك، أو ضيّقها إلى قصص محددة تختارها بينما لا تزال نشطة.",
+    "reply": "الرد (رسالة خاصة)",
+    "replyDescription": "أرسل رسالة خاصة إلى الشخص الذي رد على قصتك. اختر AI Agent أو قالب نص ثابت أو flow أو بدون رد.",
+    "replyMessage": "رسالة الرد",
+    "replyMessagePlaceholder": "أدخل رسالة الرد...",
+    "includeKeywordsType": "الرد على",
+    "includeKeywordsTypeDescription": "اختر أنواع ردود القصص التي تستجيب لها هذه الأتمتة.",
+    "includeKeywords": "الكلمات المفتاحية المطابقة",
+    "excludeKeywords": "استبعاد الردود التي تحتوي على هذه الكلمات المفتاحية",
+    "keywordsPlaceholder": "اكتب ثم اضغط Enter...",
+    "replyAfter": "الرد بعد",
+    "replyAfterValue": "القيمة",
+    "selectStories": "اختيار القصص",
+    "chooseSpecificStories": "اختر القصص...",
+    "liveStoriesTab": "القصص النشطة",
+    "liveStoriesDescription": "يمكن اختيار القصص النشطة حاليًا فقط هنا (المنشورة خلال آخر 24 ساعة). استخدم تبويب Story ID لاستهداف قصة يدويًا.",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "أدخل معرّفات وسائط القصة، معرّف واحد في كل سطر...",
+    "noLiveStoriesFound": "لا توجد قصص نشطة الآن",
+    "card": {
+      "targeting": "الاستهداف والرد",
+      "filters": "عوامل التصفية",
+      "replyTiming": "توقيت الرد"
+    },
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTargetType": {
+      "all": "أي قصة",
+      "specific": "قصص محددة"
+    },
+    "replyType": {
+      "text": "رسالة نصية",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "بدون رد"
+    },
+    "keywordsType": {
+      "all": "كل الردود",
+      "equal": "مطابقة تامة",
+      "contain": "يحتوي على"
+    },
+    "replyAfterType": {
+      "immediately": "فورًا",
+      "seconds": "بعد X ثانية",
+      "minutes": "بعد X دقيقة",
+      "hours": "بعد X ساعة",
+      "randomWithin3Minutes": "عشوائي خلال 3 دقائق",
+      "randomWithin5Minutes": "عشوائي خلال 5 دقائق",
+      "randomWithin10Minutes": "عشوائي خلال 10 دقائق",
+      "randomWithin20Minutes": "عشوائي خلال 20 دقيقة",
+      "randomWithin30Minutes": "عشوائي خلال 30 دقيقة",
+      "randomWithin60Minutes": "عشوائي خلال 60 دقيقة"
+    }
   }
 }

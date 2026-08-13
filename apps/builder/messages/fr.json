@@ -3675,5 +3675,71 @@
       "position": "Ordre",
       "iconSearchLink": "Parcourir les icônes Lucide →"
     }
+  },
+  "storyReplyAutomation": {
+    "title": "Automatisation des réponses aux stories",
+    "description": "Envoyez automatiquement un message privé aux contacts qui répondent à vos stories Instagram ou Facebook.",
+    "create": "Créer une automatisation",
+    "replies": "Réponses",
+    "activated": "Automatisation activée",
+    "deactivated": "Automatisation désactivée",
+    "active": "Active",
+    "platform": "Plateforme",
+    "storyTarget": "Stories ciblées",
+    "storyTargetDescription": "Appliquez cette automatisation aux réponses à n’importe laquelle de vos stories, ou limitez-la à des stories précises que vous sélectionnez tant qu’elles sont encore en ligne.",
+    "reply": "Réponse (DM)",
+    "replyDescription": "Envoyez un message privé à la personne qui a répondu à votre story. Choisissez AI Agent, un modèle de texte fixe, un flow ou aucune réponse.",
+    "replyMessage": "Message de réponse",
+    "replyMessagePlaceholder": "Saisissez le message de réponse...",
+    "includeKeywordsType": "Répondre à",
+    "includeKeywordsTypeDescription": "Choisissez les réponses aux stories auxquelles cette automatisation doit réagir.",
+    "includeKeywords": "Mots-clés à faire correspondre",
+    "excludeKeywords": "Exclure les réponses contenant ces mots-clés",
+    "keywordsPlaceholder": "Tapez puis appuyez sur Entrée...",
+    "replyAfter": "Répondre après",
+    "replyAfterValue": "Valeur",
+    "selectStories": "Sélectionner des stories",
+    "chooseSpecificStories": "Choisir des stories...",
+    "liveStoriesTab": "Stories en ligne",
+    "liveStoriesDescription": "Seules les stories actuellement en ligne (publiées au cours des dernières 24 heures) peuvent être sélectionnées ici. Utilisez l’onglet Story ID pour cibler une story manuellement.",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "Saisissez les IDs média des stories, un par ligne...",
+    "noLiveStoriesFound": "Aucune story en ligne trouvée pour le moment",
+    "card": {
+      "targeting": "Ciblage et réponse",
+      "filters": "Filtres",
+      "replyTiming": "Moment de la réponse"
+    },
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTargetType": {
+      "all": "N’importe quelle story",
+      "specific": "Stories spécifiques"
+    },
+    "replyType": {
+      "text": "Message texte",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "Aucune réponse"
+    },
+    "keywordsType": {
+      "all": "Toutes les réponses",
+      "equal": "Correspondance exacte",
+      "contain": "Contient"
+    },
+    "replyAfterType": {
+      "immediately": "Immédiatement",
+      "seconds": "Après X secondes",
+      "minutes": "Après X minutes",
+      "hours": "Après X heures",
+      "randomWithin3Minutes": "Aléatoire dans les 3 minutes",
+      "randomWithin5Minutes": "Aléatoire dans les 5 minutes",
+      "randomWithin10Minutes": "Aléatoire dans les 10 minutes",
+      "randomWithin20Minutes": "Aléatoire dans les 20 minutes",
+      "randomWithin30Minutes": "Aléatoire dans les 30 minutes",
+      "randomWithin60Minutes": "Aléatoire dans les 60 minutes"
+    }
   }
 }

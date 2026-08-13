@@ -120,6 +120,7 @@ export const receiveMessage = async (
 ): Promise<{
   message: (MessageModel & { attachments: unknown[] }) | null
   conversation: ConversationModel
+  contactInbox: ContactInboxModel
   postbackAction: string | null
   templateFlowToken: string | null
   quickReplyAction: string | null
@@ -338,6 +339,7 @@ export const receiveMessage = async (
   return {
     message: createdMessage,
     conversation,
+    contactInbox,
     postbackAction,
     templateFlowToken: templateFlowToken ?? null,
     quickReplyAction,

@@ -4432,5 +4432,71 @@
       "position": "訂單",
       "iconSearchLink": "瀏覽 Lucide 圖示 →"
     }
+  },
+  "storyReplyAutomation": {
+    "title": "限時動態回覆自動化",
+    "description": "當聯絡人回覆你的 Instagram 或 Facebook 限時動態時，自動發送私訊。",
+    "create": "建立自動化",
+    "replies": "回覆數",
+    "activated": "自動化已啟用",
+    "deactivated": "自動化已停用",
+    "active": "啟用中",
+    "platform": "平台",
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTarget": "目標限時動態",
+    "storyTargetDescription": "可套用到所有限時動態的回覆，或限制為你在動態仍在線時選取的特定動態。",
+    "storyTargetType": {
+      "all": "任何限時動態",
+      "specific": "特定限時動態"
+    },
+    "reply": "回覆內容（私訊）",
+    "replyDescription": "對回覆你限時動態的人發送私訊。可選擇 AI Agent、固定文字、聊天流程，或不回覆。",
+    "replyMessage": "回覆訊息",
+    "replyMessagePlaceholder": "輸入回覆訊息...",
+    "includeKeywordsType": "回覆條件",
+    "includeKeywordsTypeDescription": "選擇此自動化要回應哪一類限時動態回覆。",
+    "includeKeywords": "需符合的關鍵字",
+    "excludeKeywords": "排除含有這些關鍵字的回覆",
+    "keywordsPlaceholder": "輸入後按 Enter...",
+    "replyAfter": "延後回覆",
+    "replyAfterValue": "數值",
+    "card": {
+      "targeting": "目標與回覆",
+      "filters": "篩選條件",
+      "replyTiming": "回覆時間"
+    },
+    "replyType": {
+      "text": "文字訊息",
+      "flow": "流程",
+      "AIAgent": "AI Agent",
+      "none": "不回覆"
+    },
+    "keywordsType": {
+      "all": "所有回覆",
+      "equal": "完全相符",
+      "contain": "包含"
+    },
+    "replyAfterType": {
+      "immediately": "立即",
+      "seconds": "X 秒後",
+      "minutes": "X 分鐘後",
+      "hours": "X 小時後",
+      "randomWithin3Minutes": "3 分鐘內隨機",
+      "randomWithin5Minutes": "5 分鐘內隨機",
+      "randomWithin10Minutes": "10 分鐘內隨機",
+      "randomWithin20Minutes": "20 分鐘內隨機",
+      "randomWithin30Minutes": "30 分鐘內隨機",
+      "randomWithin60Minutes": "60 分鐘內隨機"
+    },
+    "selectStories": "選擇限時動態",
+    "chooseSpecificStories": "選擇限時動態...",
+    "liveStoriesTab": "目前在線動態",
+    "liveStoriesDescription": "這裡只能選擇目前仍在線的限時動態（通常為最近 24 小時內發布）。若要手動指定，請使用 Story ID 分頁。",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "輸入限時動態媒體 ID，每行一個...",
+    "noLiveStoriesFound": "目前找不到在線的限時動態"
   }
 }

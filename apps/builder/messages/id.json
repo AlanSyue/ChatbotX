@@ -4432,5 +4432,71 @@
       "position": "Urutan",
       "iconSearchLink": "Jelajahi ikon Lucide →"
     }
+  },
+  "storyReplyAutomation": {
+    "title": "Otomatisasi balasan story",
+    "description": "Kirim DM secara otomatis ke kontak yang membalas story Instagram atau Facebook Anda.",
+    "create": "Buat otomatisasi",
+    "replies": "Balasan",
+    "activated": "Otomatisasi diaktifkan",
+    "deactivated": "Otomatisasi dinonaktifkan",
+    "active": "Aktif",
+    "platform": "Platform",
+    "storyTarget": "Story target",
+    "storyTargetDescription": "Terapkan otomatisasi ini ke balasan pada story Anda, atau batasi ke story tertentu yang Anda pilih selama story tersebut masih aktif.",
+    "reply": "Balasan (DM)",
+    "replyDescription": "Kirim pesan pribadi ke orang yang membalas story Anda. Pilih AI Agent, template teks tetap, flow, atau tanpa balasan.",
+    "replyMessage": "Pesan balasan",
+    "replyMessagePlaceholder": "Masukkan pesan balasan...",
+    "includeKeywordsType": "Balas ke",
+    "includeKeywordsTypeDescription": "Pilih balasan story mana yang harus ditanggapi otomatisasi ini.",
+    "includeKeywords": "Kata kunci yang harus cocok",
+    "excludeKeywords": "Kecualikan balasan dengan kata kunci ini",
+    "keywordsPlaceholder": "Ketik lalu tekan Enter...",
+    "replyAfter": "Balas setelah",
+    "replyAfterValue": "Nilai",
+    "selectStories": "Pilih story",
+    "chooseSpecificStories": "Pilih story...",
+    "liveStoriesTab": "Story aktif",
+    "liveStoriesDescription": "Hanya story yang masih aktif saat ini (diposting dalam 24 jam terakhir) yang bisa dipilih di sini. Gunakan tab Story ID untuk menargetkan story secara manual.",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "Masukkan ID media story, satu per baris...",
+    "noLiveStoriesFound": "Tidak ada story aktif saat ini",
+    "card": {
+      "targeting": "Penargetan & Balasan",
+      "filters": "Filter",
+      "replyTiming": "Waktu balasan"
+    },
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTargetType": {
+      "all": "Story apa pun",
+      "specific": "Story tertentu"
+    },
+    "replyType": {
+      "text": "Pesan teks",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "Tanpa balasan"
+    },
+    "keywordsType": {
+      "all": "Semua balasan",
+      "equal": "Cocok persis",
+      "contain": "Mengandung"
+    },
+    "replyAfterType": {
+      "immediately": "Segera",
+      "seconds": "Setelah X detik",
+      "minutes": "Setelah X menit",
+      "hours": "Setelah X jam",
+      "randomWithin3Minutes": "Acak dalam 3 menit",
+      "randomWithin5Minutes": "Acak dalam 5 menit",
+      "randomWithin10Minutes": "Acak dalam 10 menit",
+      "randomWithin20Minutes": "Acak dalam 20 menit",
+      "randomWithin30Minutes": "Acak dalam 30 menit",
+      "randomWithin60Minutes": "Acak dalam 60 menit"
+    }
   }
 }

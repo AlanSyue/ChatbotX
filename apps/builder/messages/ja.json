@@ -4432,5 +4432,71 @@
       "position": "表示順",
       "iconSearchLink": "Lucideアイコンを探す →"
     }
+  },
+  "storyReplyAutomation": {
+    "title": "ストーリー返信自動化",
+    "description": "Instagram または Facebook のストーリーに返信した連絡先へ、自動でダイレクトメッセージを送信します。",
+    "create": "自動化を作成",
+    "replies": "返信数",
+    "activated": "自動化を有効化しました",
+    "deactivated": "自動化を無効化しました",
+    "active": "有効",
+    "platform": "プラットフォーム",
+    "storyTarget": "対象ストーリー",
+    "storyTargetDescription": "この自動化をすべてのストーリーへの返信に適用するか、公開中の特定のストーリーに限定できます。",
+    "reply": "返信（DM）",
+    "replyDescription": "ストーリーに返信した相手へダイレクトメッセージを送信します。AI Agent、固定テキスト、flow、または返信なしを選択できます。",
+    "replyMessage": "返信メッセージ",
+    "replyMessagePlaceholder": "返信メッセージを入力...",
+    "includeKeywordsType": "返信対象",
+    "includeKeywordsTypeDescription": "この自動化が反応するストーリー返信を選択します。",
+    "includeKeywords": "一致させるキーワード",
+    "excludeKeywords": "これらのキーワードを含む返信を除外",
+    "keywordsPlaceholder": "入力して Enter を押してください...",
+    "replyAfter": "返信までの時間",
+    "replyAfterValue": "値",
+    "selectStories": "ストーリーを選択",
+    "chooseSpecificStories": "ストーリーを選択...",
+    "liveStoriesTab": "公開中のストーリー",
+    "liveStoriesDescription": "ここでは現在公開中のストーリー（過去 24 時間以内に投稿）だけを選択できます。手動で指定する場合は Story ID タブを使用してください。",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "ストーリーメディア ID を 1 行につき 1 つ入力...",
+    "noLiveStoriesFound": "現在公開中のストーリーはありません",
+    "card": {
+      "targeting": "対象設定と返信",
+      "filters": "フィルター",
+      "replyTiming": "返信タイミング"
+    },
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTargetType": {
+      "all": "すべてのストーリー",
+      "specific": "特定のストーリー"
+    },
+    "replyType": {
+      "text": "テキストメッセージ",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "返信しない"
+    },
+    "keywordsType": {
+      "all": "すべての返信",
+      "equal": "完全一致",
+      "contain": "含む"
+    },
+    "replyAfterType": {
+      "immediately": "すぐに",
+      "seconds": "X 秒後",
+      "minutes": "X 分後",
+      "hours": "X 時間後",
+      "randomWithin3Minutes": "3 分以内でランダム",
+      "randomWithin5Minutes": "5 分以内でランダム",
+      "randomWithin10Minutes": "10 分以内でランダム",
+      "randomWithin20Minutes": "20 分以内でランダム",
+      "randomWithin30Minutes": "30 分以内でランダム",
+      "randomWithin60Minutes": "60 分以内でランダム"
+    }
   }
 }

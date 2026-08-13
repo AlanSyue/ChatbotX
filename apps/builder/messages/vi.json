@@ -4444,5 +4444,71 @@
       "position": "Thứ tự",
       "iconSearchLink": "Tìm kiếm biểu tượng Lucide →"
     }
+  },
+  "storyReplyAutomation": {
+    "title": "Tự động hóa trả lời tin (Story)",
+    "description": "Tự động nhắn tin riêng cho người trả lời tin (story) Instagram hoặc Facebook của bạn.",
+    "create": "Tạo tự động hóa",
+    "replies": "Phản hồi",
+    "activated": "Đã kích hoạt tự động hóa",
+    "deactivated": "Đã tắt tự động hóa",
+    "active": "Kích hoạt",
+    "platform": "Nền tảng",
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTarget": "Tin nhắm mục tiêu",
+    "storyTargetDescription": "Áp dụng tự động hóa cho phản hồi trên bất kỳ tin nào của bạn, hoặc chỉ các tin cụ thể bạn chọn khi tin đó vẫn còn hiển thị.",
+    "storyTargetType": {
+      "all": "Bất kỳ tin nào",
+      "specific": "Tin cụ thể"
+    },
+    "reply": "Trả lời (Tin nhắn riêng)",
+    "replyDescription": "Gửi tin nhắn riêng cho người đã trả lời tin của bạn. Chọn AI Agent, mẫu văn bản cố định, chatbot flow, hoặc tắt.",
+    "replyMessage": "Nội dung trả lời",
+    "replyMessagePlaceholder": "Nhập nội dung trả lời...",
+    "includeKeywordsType": "Trả lời cho",
+    "includeKeywordsTypeDescription": "Chọn loại phản hồi tin nào sẽ kích hoạt tự động hóa này.",
+    "includeKeywords": "Từ khóa cần khớp",
+    "excludeKeywords": "Loại trừ phản hồi có từ khóa",
+    "keywordsPlaceholder": "Nhập và nhấn Enter...",
+    "replyAfter": "Trả lời sau",
+    "replyAfterValue": "Giá trị",
+    "card": {
+      "targeting": "Nhắm mục tiêu & Trả lời",
+      "filters": "Bộ lọc",
+      "replyTiming": "Thời điểm trả lời"
+    },
+    "replyType": {
+      "text": "Tin nhắn văn bản",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "Không trả lời"
+    },
+    "keywordsType": {
+      "all": "Tất cả phản hồi",
+      "equal": "Khớp chính xác",
+      "contain": "Chứa"
+    },
+    "replyAfterType": {
+      "immediately": "Ngay lập tức",
+      "seconds": "Sau X giây",
+      "minutes": "Sau X phút",
+      "hours": "Sau X giờ",
+      "randomWithin3Minutes": "Ngẫu nhiên trong 3 phút",
+      "randomWithin5Minutes": "Ngẫu nhiên trong 5 phút",
+      "randomWithin10Minutes": "Ngẫu nhiên trong 10 phút",
+      "randomWithin20Minutes": "Ngẫu nhiên trong 20 phút",
+      "randomWithin30Minutes": "Ngẫu nhiên trong 30 phút",
+      "randomWithin60Minutes": "Ngẫu nhiên trong 60 phút"
+    },
+    "selectStories": "Chọn tin (Story)",
+    "chooseSpecificStories": "Chọn tin...",
+    "liveStoriesTab": "Tin đang hiển thị",
+    "liveStoriesDescription": "Chỉ những tin đang còn hiển thị (đăng trong 24 giờ qua) mới có thể chọn ở đây. Dùng tab Story ID để nhắm mục tiêu tin thủ công.",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "Nhập ID tin, mỗi dòng một ID...",
+    "noLiveStoriesFound": "Hiện không có tin nào đang hiển thị"
   }
 }

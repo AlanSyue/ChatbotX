@@ -4432,5 +4432,71 @@
       "position": "Volgorde",
       "iconSearchLink": "Lucide-pictogrammen bekijken →"
     }
+  },
+  "storyReplyAutomation": {
+    "title": "Automatisering voor story-antwoorden",
+    "description": "Stuur automatisch een privébericht naar contacten die reageren op je Instagram- of Facebook-stories.",
+    "create": "Automatisering maken",
+    "replies": "Antwoorden",
+    "activated": "Automatisering geactiveerd",
+    "deactivated": "Automatisering gedeactiveerd",
+    "active": "Actief",
+    "platform": "Platform",
+    "storyTarget": "Doelstories",
+    "storyTargetDescription": "Pas deze automatisering toe op reacties op al je stories, of beperk deze tot specifieke stories die je selecteert zolang ze nog live zijn.",
+    "reply": "Antwoord (DM)",
+    "replyDescription": "Stuur een privébericht naar de persoon die op je story heeft gereageerd. Kies AI Agent, een vaste tekstsjabloon, een flow of geen antwoord.",
+    "replyMessage": "Antwoordbericht",
+    "replyMessagePlaceholder": "Voer antwoordbericht in...",
+    "includeKeywordsType": "Reageren op",
+    "includeKeywordsTypeDescription": "Kies op welke story-reacties deze automatisering moet reageren.",
+    "includeKeywords": "Te matchen trefwoorden",
+    "excludeKeywords": "Antwoorden met deze trefwoorden uitsluiten",
+    "keywordsPlaceholder": "Typ en druk op Enter...",
+    "replyAfter": "Antwoorden na",
+    "replyAfterValue": "Waarde",
+    "selectStories": "Stories selecteren",
+    "chooseSpecificStories": "Stories kiezen...",
+    "liveStoriesTab": "Live stories",
+    "liveStoriesDescription": "Alleen stories die momenteel live zijn (geplaatst in de afgelopen 24 uur) kunnen hier worden geselecteerd. Gebruik het tabblad Story ID om handmatig een story te targeten.",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "Voer story-media-ID’s in, één per regel...",
+    "noLiveStoriesFound": "Er zijn momenteel geen live stories gevonden",
+    "card": {
+      "targeting": "Doelgroep en antwoord",
+      "filters": "Filters",
+      "replyTiming": "Tijdstip van antwoord"
+    },
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTargetType": {
+      "all": "Elke story",
+      "specific": "Specifieke stories"
+    },
+    "replyType": {
+      "text": "Tekstbericht",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "Geen antwoord"
+    },
+    "keywordsType": {
+      "all": "Alle antwoorden",
+      "equal": "Exacte overeenkomst",
+      "contain": "Bevat"
+    },
+    "replyAfterType": {
+      "immediately": "Onmiddellijk",
+      "seconds": "Na X seconden",
+      "minutes": "Na X minuten",
+      "hours": "Na X uur",
+      "randomWithin3Minutes": "Willekeurig binnen 3 minuten",
+      "randomWithin5Minutes": "Willekeurig binnen 5 minuten",
+      "randomWithin10Minutes": "Willekeurig binnen 10 minuten",
+      "randomWithin20Minutes": "Willekeurig binnen 20 minuten",
+      "randomWithin30Minutes": "Willekeurig binnen 30 minuten",
+      "randomWithin60Minutes": "Willekeurig binnen 60 minuten"
+    }
   }
 }

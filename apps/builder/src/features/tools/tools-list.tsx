@@ -37,6 +37,13 @@ const TOOLS_CONFIG = [
     getLink: (id: string) => `/space/${id}/ig-comments`,
   },
   {
+    id: "story-reply-automation",
+    labelKey: "storyReplyAutomation.title",
+    descriptionKey: "storyReplyAutomation.description",
+    icon: SiFacebook,
+    getLink: (id: string) => `/space/${id}/story-reply-automation`,
+  },
+  {
     id: "instagram-story",
     labelKey: "instagramStoryAutomation.title",
     descriptionKey: "instagramStoryAutomation.description",

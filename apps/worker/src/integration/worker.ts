@@ -47,11 +47,18 @@ import {
 } from "./handlers/received-message"
 import { runRef } from "./handlers/ref"
 import { handleSendSequenceFlow } from "./handlers/sequence-flow"
-import { processStoryReplyAutomation } from "./handlers/story-reply-automation"
+import {
+  dispatchStoryReplyAutomation,
+  processStoryReplyAutomation,
+} from "./handlers/story-reply-automation"
 import { captureTemplateFlowResponse } from "./handlers/template-flow-response"
 import { runWaitResume } from "./handlers/wait-resume"
 import { runIntegrationJobWithWebhookContext } from "./job-context"
 import { resolveIncomingTextRouting } from "./routing"
+import {
+  buildLegacyStoryReplyJobId,
+  resolveLegacyStoryReplyMid,
+} from "./story-reply"
 import { closeChatQueueEvents } from "./utils/message"
 
 async function startIntegrationWorker() {
@@ -78,6 +85,7 @@ async function startIntegrationWorker() {
               postbackAction,
               quickReplyAction,
               conversation,
+              contactInbox,
               channelType,
             } = await receiveMessage(job.data.data)
 
@@ -100,23 +108,56 @@ async function startIntegrationWorker() {
             const storyReply = getStoryReply(message.contentAttributes)
 
             if (isFromContact && storyReply) {
-              await integrationQueue.add(
-                IntegrationJobAction.processStoryReplyAutomation,
-                {
-                  type: IntegrationJobAction.processStoryReplyAutomation,
-                  data: {
-                    workspaceId: conversation.workspaceId,
-                    conversationId: conversation.id,
-                    contactInboxId: message.contactInboxId,
-                    messageId: message.id,
-                    storyId: storyReply.id,
-                    storyUrl: storyReply.url,
-                    message: message.text ?? undefined,
-                    channelType,
+              const integrationType = job.data.data.integrationType
+              const mid = resolveLegacyStoryReplyMid(message)
+
+              if (
+                integrationType === "messenger" ||
+                channelType === "instagram"
+              ) {
+                await integrationQueue.add(
+                  IntegrationJobAction.processStoryReplyAutomation,
+                  {
+                    type: IntegrationJobAction.processStoryReplyAutomation,
+                    data: {
+                      integrationType:
+                        integrationType === "messenger"
+                          ? "messenger"
+                          : "instagram",
+                      integrationIdentifier:
+                        job.data.data.integrationIdentifier,
+                      workspaceId: conversation.workspaceId,
+                      conversationId: conversation.id,
+                      contactInboxId: message.contactInboxId,
+                      psid: contactInbox.sourceId,
+                      storyId: storyReply.id,
+                      mid,
+                      message: message.text ?? undefined,
+                    },
                   },
-                },
-                { jobId: `story-reply-auto-${message.id}` },
-              )
+                  { jobId: buildLegacyStoryReplyJobId(mid) },
+                )
+              }
+
+              if (integrationType === "instagram") {
+                await integrationQueue.add(
+                  IntegrationJobAction.processStoryReplyAutomation,
+                  {
+                    type: IntegrationJobAction.processStoryReplyAutomation,
+                    data: {
+                      workspaceId: conversation.workspaceId,
+                      conversationId: conversation.id,
+                      contactInboxId: message.contactInboxId,
+                      messageId: message.id,
+                      storyId: storyReply.id,
+                      storyUrl: storyReply.url,
+                      message: message.text ?? undefined,
+                      channelType,
+                    },
+                  },
+                  { jobId: `story-reply-auto-${message.id}` },
+                )
+              }
               return
             }
 
@@ -273,6 +314,10 @@ async function startIntegrationWorker() {
           }
           case IntegrationJobAction.dispatchCommentAutomationPrivateReply: {
             await dispatchCommentAutomationPrivateReply(job.data.data)
+            return
+          }
+          case IntegrationJobAction.dispatchStoryReplyAutomation: {
+            await dispatchStoryReplyAutomation(job.data.data)
             return
           }
           case IntegrationJobAction.commentAIReply: {

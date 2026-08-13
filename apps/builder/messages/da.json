@@ -4432,5 +4432,71 @@
       "position": "Ordre",
       "iconSearchLink": "Browse Lucide icons →"
     }
+  },
+  "storyReplyAutomation": {
+    "title": "Automatisering af story-svar",
+    "description": "Send automatisk en privat besked til kontakter, der svarer på dine Instagram- eller Facebook-stories.",
+    "create": "Opret automatisering",
+    "replies": "Svar",
+    "activated": "Automatisering aktiveret",
+    "deactivated": "Automatisering deaktiveret",
+    "active": "Aktiv",
+    "platform": "Platform",
+    "storyTarget": "Målrettede stories",
+    "storyTargetDescription": "Anvend denne automatisering på svar til alle dine stories, eller begræns den til bestemte stories, du vælger, mens de stadig er live.",
+    "reply": "Svar (DM)",
+    "replyDescription": "Send en privat besked til personen, der svarede på din story. Vælg AI Agent, en fast tekstskabelon, et flow eller ingen svar.",
+    "replyMessage": "Svarbesked",
+    "replyMessagePlaceholder": "Indtast svarbesked...",
+    "includeKeywordsType": "Svar på",
+    "includeKeywordsTypeDescription": "Vælg hvilke story-svar denne automatisering skal reagere på.",
+    "includeKeywords": "Nøgleord der skal matche",
+    "excludeKeywords": "Udeluk svar med disse nøgleord",
+    "keywordsPlaceholder": "Skriv og tryk Enter...",
+    "replyAfter": "Svar efter",
+    "replyAfterValue": "Værdi",
+    "selectStories": "Vælg stories",
+    "chooseSpecificStories": "Vælg stories...",
+    "liveStoriesTab": "Live stories",
+    "liveStoriesDescription": "Kun stories, der stadig er live (oprettet inden for de sidste 24 timer), kan vælges her. Brug fanen Story ID til at målrette en story manuelt.",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "Indtast story-medie-id’er, ét pr. linje...",
+    "noLiveStoriesFound": "Ingen live stories fundet lige nu",
+    "card": {
+      "targeting": "Målretning og svar",
+      "filters": "Filtre",
+      "replyTiming": "Svartidspunkt"
+    },
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTargetType": {
+      "all": "Alle stories",
+      "specific": "Bestemte stories"
+    },
+    "replyType": {
+      "text": "Tekstbesked",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "Ingen svar"
+    },
+    "keywordsType": {
+      "all": "Alle svar",
+      "equal": "Præcis match",
+      "contain": "Indeholder"
+    },
+    "replyAfterType": {
+      "immediately": "Med det samme",
+      "seconds": "Efter X sekunder",
+      "minutes": "Efter X minutter",
+      "hours": "Efter X timer",
+      "randomWithin3Minutes": "Tilfældigt inden for 3 minutter",
+      "randomWithin5Minutes": "Tilfældigt inden for 5 minutter",
+      "randomWithin10Minutes": "Tilfældigt inden for 10 minutter",
+      "randomWithin20Minutes": "Tilfældigt inden for 20 minutter",
+      "randomWithin30Minutes": "Tilfældigt inden for 30 minutter",
+      "randomWithin60Minutes": "Tilfældigt inden for 60 minutter"
+    }
   }
 }

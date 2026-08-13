@@ -51,6 +51,7 @@ export const IntegrationJobAction = {
   commentAIReply: "commentAIReply",
   processLeadgen: "processLeadgen",
   processStoryReplyAutomation: "processStoryReplyAutomation",
+  dispatchStoryReplyAutomation: "dispatchStoryReplyAutomation",
   captureTemplateFlowResponse: "captureTemplateFlowResponse",
 } as const
 
@@ -410,15 +411,40 @@ export type IntegrationJobDispatchCommentAutomationPrivateReply = {
 
 export type IntegrationJobProcessStoryReplyAutomation = {
   type: typeof IntegrationJobAction.processStoryReplyAutomation
+  data:
+    | {
+        integrationType: "messenger" | "instagram"
+        integrationIdentifier: string
+        workspaceId: string
+        conversationId: string
+        contactInboxId: string
+        psid: string
+        storyId: string
+        mid: string
+        message?: string
+      }
+    | {
+        workspaceId: string
+        conversationId: string
+        contactInboxId: string
+        messageId: string
+        storyId: string
+        storyUrl?: string
+        message?: string
+        channelType: "instagram" | "instagramFacebook"
+      }
+}
+
+export type IntegrationJobDispatchStoryReplyAutomation = {
+  type: typeof IntegrationJobAction.dispatchStoryReplyAutomation
   data: {
+    integrationType: "messenger" | "instagram"
+    integrationIdentifier: string
+    automationId: string
+    mid: string
+    psid: string
+    text: string
     workspaceId: string
-    conversationId: string
-    contactInboxId: string
-    messageId: string
-    storyId: string
-    storyUrl?: string
-    message?: string
-    channelType: "instagram" | "instagramFacebook"
   }
 }
 
@@ -479,6 +505,7 @@ export type IntegrationJobData =
   | IntegrationJobCommentAIReply
   | IntegrationJobProcessLeadgen
   | IntegrationJobProcessStoryReplyAutomation
+  | IntegrationJobDispatchStoryReplyAutomation
   | IntegrationJobCaptureTemplateFlowResponse
 
 export const integrationQueue =

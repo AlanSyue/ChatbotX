@@ -7,7 +7,12 @@ export {
   sendComment,
   sendPrivateReply,
 } from "./apis/comment"
+export { sendStoryReply } from "./apis/message"
 export { getPostDetails } from "./apis/post"
+export {
+  type FacebookStoryListItem,
+  listFacebookPageStories,
+} from "./apis/story"
 export { getUserInboxLink } from "./apis/user-inbox-link"
 export * from "./integration"
 export { isRevokedTokenError, mapToChannelError } from "./lib/error-mapper"

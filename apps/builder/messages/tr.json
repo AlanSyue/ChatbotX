@@ -4432,5 +4432,71 @@
       "position": "Sıra",
       "iconSearchLink": "Lucide simgelerine göz atın →"
     }
+  },
+  "storyReplyAutomation": {
+    "title": "Hikâye yanıtı otomasyonu",
+    "description": "Instagram veya Facebook hikâyelerinize yanıt veren kişilere otomatik olarak özel mesaj gönderin.",
+    "create": "Otomasyon oluştur",
+    "replies": "Yanıtlar",
+    "activated": "Otomasyon etkinleştirildi",
+    "deactivated": "Otomasyon devre dışı bırakıldı",
+    "active": "Etkin",
+    "platform": "Platform",
+    "storyTarget": "Hedef hikâyeler",
+    "storyTargetDescription": "Bu otomasyonu hikâyelerinizden herhangi birine gelen yanıtlara uygulayın veya hâlâ yayında olan belirli hikâyelerle sınırlandırın.",
+    "reply": "Yanıt (DM)",
+    "replyDescription": "Hikâyenize yanıt veren kişiye özel mesaj gönderin. AI Agent, sabit metin şablonu, flow veya yanıt yok seçeneklerinden birini seçin.",
+    "replyMessage": "Yanıt mesajı",
+    "replyMessagePlaceholder": "Yanıt mesajını girin...",
+    "includeKeywordsType": "Şuna yanıt ver",
+    "includeKeywordsTypeDescription": "Bu otomasyonun hangi hikâye yanıtlarına tepki vereceğini seçin.",
+    "includeKeywords": "Eşleşecek anahtar kelimeler",
+    "excludeKeywords": "Bu anahtar kelimeleri içeren yanıtları hariç tut",
+    "keywordsPlaceholder": "Yazın ve Enter’a basın...",
+    "replyAfter": "Şu kadar sonra yanıtla",
+    "replyAfterValue": "Değer",
+    "selectStories": "Hikâyeleri seç",
+    "chooseSpecificStories": "Hikâyeleri seç...",
+    "liveStoriesTab": "Yayındaki hikâyeler",
+    "liveStoriesDescription": "Burada yalnızca şu anda yayında olan hikâyeler (son 24 saat içinde paylaşılmış) seçilebilir. Bir hikâyeyi manuel olarak hedeflemek için Story ID sekmesini kullanın.",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "Hikâye medya kimliklerini girin, her satıra bir tane...",
+    "noLiveStoriesFound": "Şu anda yayında hikâye bulunamadı",
+    "card": {
+      "targeting": "Hedefleme ve yanıt",
+      "filters": "Filtreler",
+      "replyTiming": "Yanıt zamanı"
+    },
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTargetType": {
+      "all": "Herhangi bir hikâye",
+      "specific": "Belirli hikâyeler"
+    },
+    "replyType": {
+      "text": "Metin mesajı",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "Yanıt yok"
+    },
+    "keywordsType": {
+      "all": "Tüm yanıtlar",
+      "equal": "Tam eşleşme",
+      "contain": "İçerir"
+    },
+    "replyAfterType": {
+      "immediately": "Hemen",
+      "seconds": "X saniye sonra",
+      "minutes": "X dakika sonra",
+      "hours": "X saat sonra",
+      "randomWithin3Minutes": "3 dakika içinde rastgele",
+      "randomWithin5Minutes": "5 dakika içinde rastgele",
+      "randomWithin10Minutes": "10 dakika içinde rastgele",
+      "randomWithin20Minutes": "20 dakika içinde rastgele",
+      "randomWithin30Minutes": "30 dakika içinde rastgele",
+      "randomWithin60Minutes": "60 dakika içinde rastgele"
+    }
   }
 }

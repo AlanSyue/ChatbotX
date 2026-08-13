@@ -102,6 +102,8 @@ import { sequenceRelations } from "./sequence"
 import { sequenceDispatchRelations } from "./sequence-dispatch"
 import { sequenceStepRelations } from "./sequence-step"
 import { spreadsheetRelations } from "./spreadsheet"
+import { storyReplyAutomationRelations } from "./story-reply-automation"
+import { storyReplyAutomationDispatchRelations } from "./story-reply-automation-dispatch"
 import { tagRelations } from "./tag"
 import { tagChannelRelations } from "./tag-channel"
 import { triggerRelations } from "./trigger"
@@ -174,6 +176,8 @@ export const relations = {
   ...auditLogRelations,
   ...sessionRelations,
   ...spreadsheetRelations,
+  ...storyReplyAutomationRelations,
+  ...storyReplyAutomationDispatchRelations,
   ...whatsappFlowRelations,
   ...integrationWhatsappRelations,
   ...whatsappMessageTemplateRelations,

@@ -48,6 +48,7 @@ import { refLinksAPI } from "@/features/reflinks/api"
 import { savedRepliesAPI } from "@/features/saved-replies/api"
 import { sequencesAPI } from "@/features/sequences/api"
 import { spreadsheetsAPI } from "@/features/spreadsheets/api"
+import { storyReplyAutomationAPI } from "@/features/story-reply-automation/api"
 import { tagsAPI } from "@/features/tags/api"
 import { triggersAPI } from "@/features/triggers/api"
 import { userPersistentMenusAPI } from "@/features/user-persistent-menus/api"
@@ -93,6 +94,7 @@ export const router = {
   fbCommentsAPI,
   igCommentsAPI,
   igStoriesAPI,
+  storyReplyAutomationAPI,
   facebookLeadAdsAPI,
   sequencesAPI,
   aiFilesAPI,

@@ -4432,5 +4432,71 @@
       "position": "Järjestys",
       "iconSearchLink": "Selaa Lucide-kuvakkeita →"
     }
+  },
+  "storyReplyAutomation": {
+    "title": "Story-vastausautomaatio",
+    "description": "Lähetä automaattisesti yksityisviesti kontakteille, jotka vastaavat Instagram- tai Facebook-tarinoihisi.",
+    "create": "Luo automaatio",
+    "replies": "Vastaukset",
+    "activated": "Automaatio aktivoitu",
+    "deactivated": "Automaatio poistettu käytöstä",
+    "active": "Aktiivinen",
+    "platform": "Alusta",
+    "storyTarget": "Kohdetarinat",
+    "storyTargetDescription": "Käytä tätä automaatiota vastauksiin mihin tahansa tarinoihisi tai rajaa se tiettyihin tarinoihin, jotka valitset niiden ollessa vielä aktiivisia.",
+    "reply": "Vastaus (DM)",
+    "replyDescription": "Lähetä yksityisviesti henkilölle, joka vastasi tarinaasi. Valitse AI Agent, kiinteä tekstipohja, flow tai ei vastausta.",
+    "replyMessage": "Vastausviesti",
+    "replyMessagePlaceholder": "Kirjoita vastausviesti...",
+    "includeKeywordsType": "Vastaa näihin",
+    "includeKeywordsTypeDescription": "Valitse, mihin tarinavastauksiin tämä automaatio reagoi.",
+    "includeKeywords": "Täsmättävät avainsanat",
+    "excludeKeywords": "Sulje pois vastaukset, joissa on nämä avainsanat",
+    "keywordsPlaceholder": "Kirjoita ja paina Enter...",
+    "replyAfter": "Vastaa jälkeen",
+    "replyAfterValue": "Arvo",
+    "selectStories": "Valitse tarinat",
+    "chooseSpecificStories": "Valitse tarinat...",
+    "liveStoriesTab": "Aktiiviset tarinat",
+    "liveStoriesDescription": "Täällä voidaan valita vain tällä hetkellä aktiiviset tarinat (julkaistu viimeisen 24 tunnin aikana). Käytä Story ID -välilehteä kohdistaaksesi tarinan manuaalisesti.",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "Syötä tarinan media-ID:t, yksi per rivi...",
+    "noLiveStoriesFound": "Aktiivisia tarinoita ei löytynyt juuri nyt",
+    "card": {
+      "targeting": "Kohdistus ja vastaus",
+      "filters": "Suodattimet",
+      "replyTiming": "Vastausajankohta"
+    },
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTargetType": {
+      "all": "Mikä tahansa tarina",
+      "specific": "Tietyt tarinat"
+    },
+    "replyType": {
+      "text": "Tekstiviesti",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "Ei vastausta"
+    },
+    "keywordsType": {
+      "all": "Kaikki vastaukset",
+      "equal": "Tarkka osuma",
+      "contain": "Sisältää"
+    },
+    "replyAfterType": {
+      "immediately": "Heti",
+      "seconds": "X sekunnin jälkeen",
+      "minutes": "X minuutin jälkeen",
+      "hours": "X tunnin jälkeen",
+      "randomWithin3Minutes": "Satunnaisesti 3 minuutin sisällä",
+      "randomWithin5Minutes": "Satunnaisesti 5 minuutin sisällä",
+      "randomWithin10Minutes": "Satunnaisesti 10 minuutin sisällä",
+      "randomWithin20Minutes": "Satunnaisesti 20 minuutin sisällä",
+      "randomWithin30Minutes": "Satunnaisesti 30 minuutin sisällä",
+      "randomWithin60Minutes": "Satunnaisesti 60 minuutin sisällä"
+    }
   }
 }

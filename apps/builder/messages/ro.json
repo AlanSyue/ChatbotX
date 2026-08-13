@@ -4432,5 +4432,71 @@
     "title": "Ai fost dezabonat.",
     "unavailableDescription": "Acest spațiu de lucru nu mai este disponibil.",
     "unavailableTitle": "Dezabonare indisponibilă."
+  },
+  "storyReplyAutomation": {
+    "title": "Automatizare răspunsuri la story",
+    "description": "Trimite automat un mesaj privat contactelor care răspund la story-urile tale de pe Instagram sau Facebook.",
+    "create": "Creează automatizare",
+    "replies": "Răspunsuri",
+    "activated": "Automatizarea a fost activată",
+    "deactivated": "Automatizarea a fost dezactivată",
+    "active": "Activă",
+    "platform": "Platformă",
+    "storyTarget": "Story-uri țintă",
+    "storyTargetDescription": "Aplică această automatizare la răspunsurile la oricare dintre story-urile tale sau restrânge-o la story-uri specifice pe care le selectezi cât timp sunt încă active.",
+    "reply": "Răspuns (DM)",
+    "replyDescription": "Trimite un mesaj privat persoanei care a răspuns la story-ul tău. Alege AI Agent, un șablon de text fix, un flow sau fără răspuns.",
+    "replyMessage": "Mesaj de răspuns",
+    "replyMessagePlaceholder": "Introdu mesajul de răspuns...",
+    "includeKeywordsType": "Răspunde la",
+    "includeKeywordsTypeDescription": "Alege la ce răspunsuri la story trebuie să reacționeze această automatizare.",
+    "includeKeywords": "Cuvinte cheie de potrivit",
+    "excludeKeywords": "Exclude răspunsurile cu aceste cuvinte cheie",
+    "keywordsPlaceholder": "Tastează și apasă Enter...",
+    "replyAfter": "Răspunde după",
+    "replyAfterValue": "Valoare",
+    "selectStories": "Selectează story-uri",
+    "chooseSpecificStories": "Alege story-uri...",
+    "liveStoriesTab": "Story-uri active",
+    "liveStoriesDescription": "Aici pot fi selectate doar story-urile care sunt încă active (publicate în ultimele 24 de ore). Folosește fila Story ID pentru a ținti manual un story.",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "Introdu ID-urile media ale story-ului, unul pe linie...",
+    "noLiveStoriesFound": "Nu s-au găsit story-uri active acum",
+    "card": {
+      "targeting": "Targetare și răspuns",
+      "filters": "Filtre",
+      "replyTiming": "Momentul răspunsului"
+    },
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTargetType": {
+      "all": "Orice story",
+      "specific": "Story-uri specifice"
+    },
+    "replyType": {
+      "text": "Mesaj text",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "Fără răspuns"
+    },
+    "keywordsType": {
+      "all": "Toate răspunsurile",
+      "equal": "Potrivire exactă",
+      "contain": "Conține"
+    },
+    "replyAfterType": {
+      "immediately": "Imediat",
+      "seconds": "După X secunde",
+      "minutes": "După X minute",
+      "hours": "După X ore",
+      "randomWithin3Minutes": "Aleatoriu în 3 minute",
+      "randomWithin5Minutes": "Aleatoriu în 5 minute",
+      "randomWithin10Minutes": "Aleatoriu în 10 minute",
+      "randomWithin20Minutes": "Aleatoriu în 20 de minute",
+      "randomWithin30Minutes": "Aleatoriu în 30 de minute",
+      "randomWithin60Minutes": "Aleatoriu în 60 de minute"
+    }
   }
 }

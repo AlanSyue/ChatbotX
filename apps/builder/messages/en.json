@@ -4444,5 +4444,71 @@
       "position": "Order",
       "iconSearchLink": "Browse Lucide icons →"
     }
+  },
+  "storyReplyAutomation": {
+    "title": "Story Reply Automation",
+    "description": "Automatically DM contacts who reply to your Instagram or Facebook stories.",
+    "create": "Create Automation",
+    "replies": "Replies",
+    "activated": "Automation activated",
+    "deactivated": "Automation deactivated",
+    "active": "Active",
+    "platform": "Platform",
+    "platformType": {
+      "messenger": "Facebook",
+      "instagram": "Instagram"
+    },
+    "storyTarget": "Target stories",
+    "storyTargetDescription": "Apply this automation to replies on any of your stories, or narrow it to specific stories you select while they are still live.",
+    "storyTargetType": {
+      "all": "Any story",
+      "specific": "Specific stories"
+    },
+    "reply": "Reply (DM)",
+    "replyDescription": "Send a private message to the person who replied to your story. Choose AI Agent, a fixed text template, a chatbot flow, or disable.",
+    "replyMessage": "Reply message",
+    "replyMessagePlaceholder": "Enter reply message...",
+    "includeKeywordsType": "Reply to",
+    "includeKeywordsTypeDescription": "Choose which story replies this automation responds to.",
+    "includeKeywords": "Keywords to match",
+    "excludeKeywords": "Exclude replies with these keywords",
+    "keywordsPlaceholder": "Type and press Enter...",
+    "replyAfter": "Reply after",
+    "replyAfterValue": "Value",
+    "card": {
+      "targeting": "Targeting & Reply",
+      "filters": "Filters",
+      "replyTiming": "Reply Timing"
+    },
+    "replyType": {
+      "text": "Text message",
+      "flow": "Flow",
+      "AIAgent": "AI Agent",
+      "none": "No reply"
+    },
+    "keywordsType": {
+      "all": "All replies",
+      "equal": "Exact match",
+      "contain": "Contains"
+    },
+    "replyAfterType": {
+      "immediately": "Immediately",
+      "seconds": "After X seconds",
+      "minutes": "After X minutes",
+      "hours": "After X hours",
+      "randomWithin3Minutes": "Random within 3 minutes",
+      "randomWithin5Minutes": "Random within 5 minutes",
+      "randomWithin10Minutes": "Random within 10 minutes",
+      "randomWithin20Minutes": "Random within 20 minutes",
+      "randomWithin30Minutes": "Random within 30 minutes",
+      "randomWithin60Minutes": "Random within 60 minutes"
+    },
+    "selectStories": "Select Stories",
+    "chooseSpecificStories": "Choose stories...",
+    "liveStoriesTab": "Live stories",
+    "liveStoriesDescription": "Only stories that are currently live (posted within the last 24 hours) can be picked here. Use the Story ID tab to target a story manually.",
+    "storyIdTab": "Story ID",
+    "storyIdPlaceholder": "Enter story media IDs, one per line...",
+    "noLiveStoriesFound": "No live stories found right now"
   }
 }
