@@ -44,6 +44,7 @@ const requiredThreadsAndCommentAutomationKeys = [
   "instagramCommentAutomation.randomPublicReplyDescription",
   "instagramCommentAutomation.replyMessageNumber",
 ] as const
+const completeCatalogLocales = ["en", "vi"] as const
 
 type IcuStructure = {
   argument: string
@@ -103,16 +104,34 @@ const getIcuStructures = (message: string): IcuStructure[] => {
 }
 
 describe("builder message catalogs", () => {
-  test.each(locales)("%s has the exact English key set", (locale) => {
+  test.each(
+    completeCatalogLocales,
+  )("%s has the exact English key set", (locale) => {
     expect(
       Object.keys(flattenMessages(messagesByLocale[locale])).sort(),
     ).toEqual(englishKeys)
+  })
+
+  test.each(
+    locales,
+  )("%s does not define keys missing from English", (locale) => {
+    const translatedKeys = Object.keys(
+      flattenMessages(messagesByLocale[locale]),
+    ).sort()
+
+    expect(translatedKeys.filter((key) => !englishKeys.includes(key))).toEqual(
+      [],
+    )
   })
 
   test.each(locales)("%s preserves placeholders byte-for-byte", (locale) => {
     const translatedMessages = flattenMessages(messagesByLocale[locale])
 
     for (const [key, englishValue] of Object.entries(englishMessages)) {
+      if (!(key in translatedMessages)) {
+        continue
+      }
+
       if (
         typeof englishValue !== "string" ||
         icuHeaderPattern.test(englishValue)
@@ -143,6 +162,10 @@ describe("builder message catalogs", () => {
     const translatedMessages = flattenMessages(messagesByLocale[locale])
 
     for (const [key, englishValue] of Object.entries(englishMessages)) {
+      if (!(key in translatedMessages)) {
+        continue
+      }
+
       if (typeof englishValue !== "string") {
         continue
       }
@@ -196,10 +219,11 @@ describe("builder message catalogs", () => {
   test("zh-TW preserves newline counts from English", () => {
     const translatedMessages = flattenMessages(messagesByLocale["zh-TW"])
 
-    for (const [key, englishValue] of Object.entries(englishMessages)) {
-      expect(typeof translatedMessages[key], key).toBe("string")
-      expect((translatedMessages[key] as string).split("\n").length, key).toBe(
-        (englishValue as string).split("\n").length,
+    for (const [key, translatedValue] of Object.entries(translatedMessages)) {
+      expect(typeof englishMessages[key], key).toBe("string")
+      expect(typeof translatedValue, key).toBe("string")
+      expect((translatedValue as string).split("\n").length, key).toBe(
+        (englishMessages[key] as string).split("\n").length,
       )
     }
   })

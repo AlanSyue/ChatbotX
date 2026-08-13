@@ -5,6 +5,36 @@
   "prevIds": ["083ca3a1-8d1b-49b1-93bf-fad269cb8ca4"],
   "ddl": [
     {
+      "values": [
+        "pending",
+        "sent",
+        "failed",
+        "skipped_no_scope",
+        "skipped_region"
+      ],
+      "name": "adsConversionCapiStatus",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": ["automatic", "rule"],
+      "name": "adsConversionEventSource",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": ["whatsapp", "facebook"],
+      "name": "adsConversionChannel",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
+      "values": ["lead", "purchase"],
+      "name": "adsConversionEventType",
+      "entityType": "enums",
+      "schema": "public"
+    },
+    {
       "values": ["pending", "success", "error", "processing"],
       "name": "aiConversationEmbeddingStatus",
       "entityType": "enums",
@@ -391,6 +421,18 @@
     {
       "isRlsEnabled": false,
       "name": "ShardTimeRange",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "AdsConversionEvent",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
+      "name": "AdsConversionRule",
       "entityType": "tables",
       "schema": "public"
     },
@@ -966,6 +1008,12 @@
     },
     {
       "isRlsEnabled": false,
+      "name": "IntegrationThreads",
+      "entityType": "tables",
+      "schema": "public"
+    },
+    {
+      "isRlsEnabled": false,
       "name": "IntegrationTiktok",
       "entityType": "tables",
       "schema": "public"
@@ -1524,6 +1572,383 @@
       "entityType": "columns",
       "schema": "public",
       "table": "ShardTimeRange"
+    },
+    {
+      "type": "bigint",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "timestamp(6) with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "createdAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "timestamp(6) with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "updatedAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "bigint",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "workspaceId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "bigint",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "integrationWhatsappId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "wabaId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "adsConversionEventSource",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "source",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "adsConversionEventType",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "eventType",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "ctwaClid",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "adId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "bigint",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "contactInboxId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "currency",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "numeric",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "value",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "timestamp(6) with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "occurredAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "sourceEventId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "adsConversionCapiStatus",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": "'pending'",
+      "generated": null,
+      "identity": null,
+      "name": "capiStatus",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "timestamp(6) with time zone",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "capiSentAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "type": "bigint",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionRule"
+    },
+    {
+      "type": "timestamp(6) with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "createdAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionRule"
+    },
+    {
+      "type": "timestamp(6) with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "updatedAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionRule"
+    },
+    {
+      "type": "bigint",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "workspaceId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionRule"
+    },
+    {
+      "type": "adsConversionChannel",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "channel",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionRule"
+    },
+    {
+      "type": "bigint",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "integrationWhatsappId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionRule"
+    },
+    {
+      "type": "bigint",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "integrationFacebookAdsId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionRule"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "adAccountId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionRule"
+    },
+    {
+      "type": "adsConversionEventType",
+      "typeSchema": "public",
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "eventType",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionRule"
+    },
+    {
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "trigger",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionRule"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "markAs",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionRule"
+    },
+    {
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "true",
+      "generated": null,
+      "identity": null,
+      "name": "enabled",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "AdsConversionRule"
     },
     {
       "type": "bigint",
@@ -14503,6 +14928,123 @@
       "name": "id",
       "entityType": "columns",
       "schema": "public",
+      "table": "IntegrationThreads"
+    },
+    {
+      "type": "timestamp(6) with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "createdAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "IntegrationThreads"
+    },
+    {
+      "type": "timestamp(6) with time zone",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "now()",
+      "generated": null,
+      "identity": null,
+      "name": "updatedAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "IntegrationThreads"
+    },
+    {
+      "type": "jsonb",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "auth",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "IntegrationThreads"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "threadsUserId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "IntegrationThreads"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "username",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "IntegrationThreads"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "name",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "IntegrationThreads"
+    },
+    {
+      "type": "bigint",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "workspaceId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "IntegrationThreads"
+    },
+    {
+      "type": "bigint",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "inboxId",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "IntegrationThreads"
+    },
+    {
+      "type": "bigint",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "id",
+      "entityType": "columns",
+      "schema": "public",
       "table": "IntegrationTiktok"
     },
     {
@@ -14995,6 +15537,45 @@
       "generated": null,
       "identity": null,
       "name": "historyDeclined",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "IntegrationWhatsapp"
+    },
+    {
+      "type": "boolean",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "false",
+      "generated": null,
+      "identity": null,
+      "name": "hasCapiScope",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "IntegrationWhatsapp"
+    },
+    {
+      "type": "timestamp(6) with time zone",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "capiScopeCheckedAt",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "IntegrationWhatsapp"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "datasetId",
       "entityType": "columns",
       "schema": "public",
       "table": "IntegrationWhatsapp"
@@ -15593,6 +16174,19 @@
       "generated": null,
       "identity": null,
       "name": "attributes",
+      "entityType": "columns",
+      "schema": "public",
+      "table": "Message"
+    },
+    {
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "name": "sendError",
       "entityType": "columns",
       "schema": "public",
       "table": "Message"
@@ -21363,6 +21957,202 @@
       "nameExplicit": true,
       "columns": [
         {
+          "value": "workspaceId",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "integrationWhatsappId",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "source",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "sourceEventId",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "AdsConversionEvent_workspace_integration_source_sourceEventId_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "workspaceId",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "eventType",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "occurredAt",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "AdsConversionEvent_workspaceId_eventType_occurredAt_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "contactInboxId",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "AdsConversionEvent_contactInboxId_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "workspaceId",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "occurredAt",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "AdsConversionEvent_workspaceId_occurredAt_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "workspaceId",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "adId",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "occurredAt",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "AdsConversionEvent_workspaceId_adId_occurredAt_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "workspaceId",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "channel",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        },
+        {
+          "value": "enabled",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "AdsConversionRule_workspaceId_channel_enabled_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "AdsConversionRule"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
           "value": "sourceId",
           "isExpression": false,
           "asc": true,
@@ -23092,6 +23882,27 @@
       "method": "btree",
       "concurrently": false,
       "name": "ContactInbox_contactId_lastOutboundMessageAt_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "ContactInbox"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "(\"referral\"->>'ctwaClid')",
+          "isExpression": true,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": "\"referral\"->>'ctwaClid' IS NOT NULL",
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "ContactInbox_referral_ctwaClid_idx",
       "entityType": "indexes",
       "schema": "public",
       "table": "ContactInbox"
@@ -26108,6 +26919,69 @@
       "with": "",
       "method": "btree",
       "concurrently": false,
+      "name": "IntegrationThreads_workspaceId_idx",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "IntegrationThreads"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "inboxId",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "IntegrationThreads_inboxId_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "IntegrationThreads"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "threadsUserId",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "IntegrationThreads_threadsUserId_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "IntegrationThreads"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "workspaceId",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
       "name": "IntegrationTiktok_workspaceId_idx",
       "entityType": "indexes",
       "schema": "public",
@@ -26256,6 +27130,27 @@
       "method": "btree",
       "concurrently": false,
       "name": "IntegrationWhatsapp_inboxId_key",
+      "entityType": "indexes",
+      "schema": "public",
+      "table": "IntegrationWhatsapp"
+    },
+    {
+      "nameExplicit": true,
+      "columns": [
+        {
+          "value": "workspaceId",
+          "isExpression": false,
+          "asc": true,
+          "nullsFirst": false,
+          "opclass": null
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "with": "",
+      "method": "btree",
+      "concurrently": false,
+      "name": "IntegrationWhatsapp_workspaceId_idx",
       "entityType": "indexes",
       "schema": "public",
       "table": "IntegrationWhatsapp"
@@ -29018,6 +29913,84 @@
       "columnsTo": ["id"],
       "onUpdate": "CASCADE",
       "onDelete": "CASCADE",
+      "name": "AdsConversionEvent_workspaceId_Workspace_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "nameExplicit": false,
+      "columns": ["integrationWhatsappId"],
+      "schemaTo": "public",
+      "tableTo": "IntegrationWhatsapp",
+      "columnsTo": ["id"],
+      "onUpdate": "CASCADE",
+      "onDelete": "CASCADE",
+      "name": "AdsConversionEvent_IENNsXLBb1k1_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "nameExplicit": false,
+      "columns": ["contactInboxId"],
+      "schemaTo": "public",
+      "tableTo": "ContactInbox",
+      "columnsTo": ["id"],
+      "onUpdate": "CASCADE",
+      "onDelete": "SET NULL",
+      "name": "AdsConversionEvent_contactInboxId_ContactInbox_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "AdsConversionEvent"
+    },
+    {
+      "nameExplicit": false,
+      "columns": ["workspaceId"],
+      "schemaTo": "public",
+      "tableTo": "Workspace",
+      "columnsTo": ["id"],
+      "onUpdate": "CASCADE",
+      "onDelete": "CASCADE",
+      "name": "AdsConversionRule_workspaceId_Workspace_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "AdsConversionRule"
+    },
+    {
+      "nameExplicit": false,
+      "columns": ["integrationWhatsappId"],
+      "schemaTo": "public",
+      "tableTo": "IntegrationWhatsapp",
+      "columnsTo": ["id"],
+      "onUpdate": "CASCADE",
+      "onDelete": "CASCADE",
+      "name": "AdsConversionRule_k99JXbMObQIn_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "AdsConversionRule"
+    },
+    {
+      "nameExplicit": false,
+      "columns": ["integrationFacebookAdsId"],
+      "schemaTo": "public",
+      "tableTo": "IntegrationFacebookAds",
+      "columnsTo": ["id"],
+      "onUpdate": "CASCADE",
+      "onDelete": "CASCADE",
+      "name": "AdsConversionRule_fBmu8W26Mw5R_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "AdsConversionRule"
+    },
+    {
+      "nameExplicit": false,
+      "columns": ["workspaceId"],
+      "schemaTo": "public",
+      "tableTo": "Workspace",
+      "columnsTo": ["id"],
+      "onUpdate": "CASCADE",
+      "onDelete": "CASCADE",
       "name": "AIAgent_workspaceId_Workspace_id_fkey",
       "entityType": "fks",
       "schema": "public",
@@ -31247,6 +32220,32 @@
       "table": "IntegrationTelegram"
     },
     {
+      "nameExplicit": true,
+      "columns": ["workspaceId"],
+      "schemaTo": "public",
+      "tableTo": "Workspace",
+      "columnsTo": ["id"],
+      "onUpdate": "CASCADE",
+      "onDelete": "CASCADE",
+      "name": "IntegrationThreads_workspaceId_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "IntegrationThreads"
+    },
+    {
+      "nameExplicit": true,
+      "columns": ["inboxId"],
+      "schemaTo": "public",
+      "tableTo": "Inbox",
+      "columnsTo": ["id"],
+      "onUpdate": "CASCADE",
+      "onDelete": "CASCADE",
+      "name": "IntegrationThreads_inboxId_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "IntegrationThreads"
+    },
+    {
       "nameExplicit": false,
       "columns": ["workspaceId"],
       "schemaTo": "public",
@@ -32625,6 +33624,22 @@
     {
       "columns": ["id"],
       "nameExplicit": false,
+      "name": "AdsConversionEvent_pkey",
+      "schema": "public",
+      "table": "AdsConversionEvent",
+      "entityType": "pks"
+    },
+    {
+      "columns": ["id"],
+      "nameExplicit": false,
+      "name": "AdsConversionRule_pkey",
+      "schema": "public",
+      "table": "AdsConversionRule",
+      "entityType": "pks"
+    },
+    {
+      "columns": ["id"],
+      "nameExplicit": false,
       "name": "AIAgent_pkey",
       "schema": "public",
       "table": "AIAgent",
@@ -33257,6 +34272,14 @@
     {
       "columns": ["id"],
       "nameExplicit": false,
+      "name": "IntegrationThreads_pkey",
+      "schema": "public",
+      "table": "IntegrationThreads",
+      "entityType": "pks"
+    },
+    {
+      "columns": ["id"],
+      "nameExplicit": false,
       "name": "IntegrationTiktok_pkey",
       "schema": "public",
       "table": "IntegrationTiktok",
@@ -33663,226 +34686,6 @@
       "entityType": "checks",
       "schema": "public",
       "table": "WhatsappSignupSession"
-    },
-    {
-      "isRlsEnabled": false,
-      "name": "IntegrationThreads",
-      "entityType": "tables",
-      "schema": "public"
-    },
-    {
-      "type": "bigint",
-      "typeSchema": null,
-      "notNull": true,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "id",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "IntegrationThreads"
-    },
-    {
-      "type": "timestamp(6) with time zone",
-      "typeSchema": null,
-      "notNull": true,
-      "dimensions": 0,
-      "default": "now()",
-      "generated": null,
-      "identity": null,
-      "name": "createdAt",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "IntegrationThreads"
-    },
-    {
-      "type": "timestamp(6) with time zone",
-      "typeSchema": null,
-      "notNull": true,
-      "dimensions": 0,
-      "default": "now()",
-      "generated": null,
-      "identity": null,
-      "name": "updatedAt",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "IntegrationThreads"
-    },
-    {
-      "type": "jsonb",
-      "typeSchema": null,
-      "notNull": true,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "auth",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "IntegrationThreads"
-    },
-    {
-      "type": "text",
-      "typeSchema": null,
-      "notNull": true,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "threadsUserId",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "IntegrationThreads"
-    },
-    {
-      "type": "text",
-      "typeSchema": null,
-      "notNull": true,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "username",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "IntegrationThreads"
-    },
-    {
-      "type": "text",
-      "typeSchema": null,
-      "notNull": true,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "name",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "IntegrationThreads"
-    },
-    {
-      "type": "bigint",
-      "typeSchema": null,
-      "notNull": true,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "workspaceId",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "IntegrationThreads"
-    },
-    {
-      "type": "bigint",
-      "typeSchema": null,
-      "notNull": true,
-      "dimensions": 0,
-      "default": null,
-      "generated": null,
-      "identity": null,
-      "name": "inboxId",
-      "entityType": "columns",
-      "schema": "public",
-      "table": "IntegrationThreads"
-    },
-    {
-      "nameExplicit": true,
-      "columns": [
-        {
-          "value": "workspaceId",
-          "isExpression": false,
-          "asc": true,
-          "nullsFirst": false,
-          "opclass": null
-        }
-      ],
-      "isUnique": false,
-      "where": null,
-      "with": "",
-      "method": "btree",
-      "concurrently": false,
-      "name": "IntegrationThreads_workspaceId_idx",
-      "entityType": "indexes",
-      "schema": "public",
-      "table": "IntegrationThreads"
-    },
-    {
-      "nameExplicit": true,
-      "columns": [
-        {
-          "value": "inboxId",
-          "isExpression": false,
-          "asc": true,
-          "nullsFirst": false,
-          "opclass": null
-        }
-      ],
-      "isUnique": true,
-      "where": null,
-      "with": "",
-      "method": "btree",
-      "concurrently": false,
-      "name": "IntegrationThreads_inboxId_key",
-      "entityType": "indexes",
-      "schema": "public",
-      "table": "IntegrationThreads"
-    },
-    {
-      "nameExplicit": true,
-      "columns": [
-        {
-          "value": "threadsUserId",
-          "isExpression": false,
-          "asc": true,
-          "nullsFirst": false,
-          "opclass": null
-        }
-      ],
-      "isUnique": true,
-      "where": null,
-      "with": "",
-      "method": "btree",
-      "concurrently": false,
-      "name": "IntegrationThreads_threadsUserId_key",
-      "entityType": "indexes",
-      "schema": "public",
-      "table": "IntegrationThreads"
-    },
-    {
-      "nameExplicit": true,
-      "columns": ["workspaceId"],
-      "schemaTo": "public",
-      "tableTo": "Workspace",
-      "columnsTo": ["id"],
-      "onUpdate": "CASCADE",
-      "onDelete": "CASCADE",
-      "name": "IntegrationThreads_workspaceId_fkey",
-      "entityType": "fks",
-      "schema": "public",
-      "table": "IntegrationThreads"
-    },
-    {
-      "nameExplicit": true,
-      "columns": ["inboxId"],
-      "schemaTo": "public",
-      "tableTo": "Inbox",
-      "columnsTo": ["id"],
-      "onUpdate": "CASCADE",
-      "onDelete": "CASCADE",
-      "name": "IntegrationThreads_inboxId_fkey",
-      "entityType": "fks",
-      "schema": "public",
-      "table": "IntegrationThreads"
-    },
-    {
-      "columns": ["id"],
-      "nameExplicit": false,
-      "name": "IntegrationThreads_pkey",
-      "schema": "public",
-      "table": "IntegrationThreads",
-      "entityType": "pks"
     }
   ],
   "renames": []

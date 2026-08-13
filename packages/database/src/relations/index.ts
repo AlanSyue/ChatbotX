@@ -1,3 +1,5 @@
+import { adsConversionEventRelations } from "./ads-conversion-event"
+import { adsConversionRuleRelations } from "./ads-conversion-rule"
 import { aiAgentRelations } from "./ai-agent"
 import { aiAssistantRelations } from "./ai-assistant"
 import { aiConversationSourceRelations } from "./ai-conversation-source"
@@ -124,6 +126,8 @@ import { workspaceMemberRelations } from "./workspace-member"
 
 export const relations = {
   ...aiTriggerRelations,
+  ...adsConversionEventRelations,
+  ...adsConversionRuleRelations,
   ...integrationOpenaiRelations,
   ...contactRelations,
   ...tagRelations,
