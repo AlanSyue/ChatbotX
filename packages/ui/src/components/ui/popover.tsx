@@ -20,32 +20,48 @@ function PopoverContent({
   side = "bottom",
   sideOffset = 4,
   anchor,
+  portal = true,
   ...props
 }: PopoverPrimitive.Popup.Props &
   Pick<
     PopoverPrimitive.Positioner.Props,
     "align" | "alignOffset" | "side" | "sideOffset" | "anchor"
-  >) {
+  > & {
+    portal?: boolean
+  }) {
+  const inlinePortalContainerRef = React.useRef<HTMLDivElement>(null)
+
   return (
-    <PopoverPrimitive.Portal>
-      <PopoverPrimitive.Positioner
-        align={align}
-        alignOffset={alignOffset}
-        side={side}
-        sideOffset={sideOffset}
-        anchor={anchor}
-        className="isolate z-50"
+    <>
+      <PopoverPrimitive.Portal
+        container={portal ? undefined : inlinePortalContainerRef}
       >
-        <PopoverPrimitive.Popup
-          data-slot="popover-content"
-          className={cn(
-            "z-50 border flex w-72 origin-(--transform-origin) flex-col gap-2.5 rounded-lg bg-popover p-2.5 text-sm text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-hidden duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
-            className
-          )}
-          {...props}
+        <PopoverPrimitive.Positioner
+          align={align}
+          alignOffset={alignOffset}
+          side={side}
+          sideOffset={sideOffset}
+          anchor={anchor}
+          className="isolate z-50"
+        >
+          <PopoverPrimitive.Popup
+            data-slot="popover-content"
+            className={cn(
+              "z-50 border flex w-72 origin-(--transform-origin) flex-col gap-2.5 rounded-lg bg-popover p-2.5 text-sm text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-hidden duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+              className
+            )}
+            {...props}
+          />
+        </PopoverPrimitive.Positioner>
+      </PopoverPrimitive.Portal>
+      {!portal && (
+        <div
+          className="contents"
+          data-slot="popover-inline-portal-container"
+          ref={inlinePortalContainerRef}
         />
-      </PopoverPrimitive.Positioner>
-    </PopoverPrimitive.Portal>
+      )}
+    </>
   )
 }
 
