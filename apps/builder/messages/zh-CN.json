@@ -2049,6 +2049,12 @@
         "audio": "音频",
         "gif": "GIF",
         "file": "文件"
+      },
+      "fromCtwaAd": "来自 Click to WhatsApp 广告",
+      "ctwaConversion": "CTWA 转化",
+      "ctwaConversionTypes": {
+        "lead": "潜在客户",
+        "purchase": "购买"
       }
     },
     "fieldGroups": {
@@ -2063,7 +2069,8 @@
       "topicCoupon": "主题优惠券",
       "customFields": "自订字段",
       "email": "电子邮件",
-      "sms": "短信"
+      "sms": "短信",
+      "ctwaAds": "点击 WhatsApp 广告"
     },
     "languages": {
       "ar": "阿拉伯语",
@@ -2099,6 +2106,15 @@
       "webchat": "网络聊天",
       "botLink": "机器人链接",
       "chatPlugin": "C.聊天插件"
+    },
+    "ctwaRetarget": {
+      "segments": {
+        "conversations": "CTWA 对话发起者",
+        "leads": "CTWA 合格潜在客户",
+        "purchases": "CTWA 购买者"
+      },
+      "adPrefix": "广告",
+      "allAds": "所有广告"
     }
   },
   "channels": {
@@ -3301,7 +3317,14 @@
       "label": "范本标头"
     },
     "transferPhoneNumber": "从其他 Whatsapp 供应商转接电话",
-    "signupSessionExpired": "您的WhatsApp注册会话已过期。请重新开始连接。"
+    "signupSessionExpired": "您的WhatsApp注册会话已过期。请重新开始连接。",
+    "reconnect": {
+      "errors": {
+        "notFound": "未找到 WhatsApp 集成。",
+        "phoneNumberMismatch": "重新连接返回了预期的 WhatsApp Business 账号，但不是连接到此工作区的电话号码。",
+        "wabaMismatch": "重新连接返回了不同的 WhatsApp Business 账号。请重新连接同一账号。"
+      }
+    }
   },
   "zalo": {
     "title": "ZaloOA",
@@ -4524,5 +4547,209 @@
     "storyIdTab": "Story ID",
     "storyIdPlaceholder": "输入限时动态媒体 ID，每行一个...",
     "noLiveStoriesFound": "目前找不到在线的限时动态"
+  },
+  "errors": {
+    "superAdminRequired": "您必须是工作区超级管理员才能执行此操作。"
+  },
+  "ads": {
+    "title": "广告",
+    "nav": {
+      "clickToWhatsappAds": "点击 WhatsApp 广告",
+      "clickToTiktokAds": "点击 TikTok 广告",
+      "connectAccounts": "连接账号",
+      "conversionEvents": "转化事件",
+      "adsAnalytics": "广告分析",
+      "reporting": "报表",
+      "ctwa": "CTWA",
+      "googleAds": "Google Ads",
+      "comingSoon": "即将推出"
+    },
+    "connectAccounts": {
+      "title": "管理您的所有广告账号",
+      "description": "跟踪转化并优化您的点击 WhatsApp 广告活动。",
+      "learnMore": "了解更多",
+      "connectAdAccount": "连接广告账号",
+      "adAccountName": "广告账号名称",
+      "disconnect": "断开连接",
+      "empty": "尚未连接任何广告账号。",
+      "adAccountsTitle": "Meta 广告账号",
+      "adAccountsDescription": "连接 Facebook Ads 以加载用于点击 WhatsApp 广告活动的广告账号。",
+      "adAccountsReconnectBanner": "您的 Meta 广告账号令牌已过期或权限已丢失。请重新连接 Facebook Ads 以继续使用广告报表功能。",
+      "adAccountsNotConnected": "尚未连接任何 Meta 广告账号。",
+      "adAccountsEmpty": "此 Facebook Ads 连接中未找到任何 Meta 广告账号。",
+      "adAccountsNote": "广告花费和再营销受众来自这些广告账号。",
+      "reconnectBanner": "重新连接您的 WhatsApp 账号，以启用将转化事件发送到 Meta。",
+      "reconnect": "重新连接",
+      "reconnectSuccess": "WhatsApp 账号已重新连接。",
+      "selectAccountLabel": "WhatsApp 账号",
+      "status": {
+        "ready": "自动事件已就绪",
+        "missingPermission": "缺少 Automatic Events 权限",
+        "unverified": "权限尚未验证"
+      },
+      "table": {
+        "name": "名称",
+        "phoneNumber": "电话号码",
+        "wabaId": "WABA ID",
+        "permission": "Automatic Events"
+      },
+      "providers": {
+        "meta": "Meta",
+        "googleAds": "Google Ads",
+        "tiktok": "TikTok"
+      },
+      "connectWhatsapp": {
+        "title": "请先连接您的 WhatsApp 账号",
+        "description": "点击 WhatsApp 转化跟踪需要先连接 WhatsApp 账号，之后您才能关联广告账号并创建转化数据集。",
+        "step1": "在“频道”中连接您的 WhatsApp Business 账号。",
+        "step2": "返回此处授权 Meta Ads，并选择您的广告账号。",
+        "step3": "我们会使用您的 WhatsApp Business 账号自动创建转化数据集。",
+        "cta": "连接 WhatsApp 账号"
+      }
+    },
+    "conversionEvents": {
+      "title": "转化事件",
+      "tabs": {
+        "facebook": "Facebook",
+        "whatsapp": "WhatsApp"
+      },
+      "manageAdsAccounts": "管理广告账号",
+      "export": "导出",
+      "selectAll": "全选",
+      "whatsappAsset": "WhatsApp 资产",
+      "selectWhatsappAsset": "选择 WhatsApp 资产",
+      "templates": "模板",
+      "selectTemplates": "选择模板",
+      "noTemplates": "未找到已批准的模板。",
+      "existingRules": "现有规则",
+      "noRules": "此 WhatsApp 资产还没有转化规则。",
+      "toggleRule": "启用或禁用规则",
+      "deleteRule": "删除规则",
+      "qualifyingTemplateMessageSent": "已发送符合条件的模板消息",
+      "qualifyingFirstReply": "联系人发送第一条消息",
+      "qualifyingAnyReply": "联系人发送消息",
+      "when": "当",
+      "whenOptions": {
+        "templateSent": "已发送符合条件的模板消息",
+        "tagApplied": "已为联系人添加标签",
+        "keywordMatched": "联系人的消息匹配关键字规则",
+        "contactReplied": "联系人发送消息"
+      },
+      "tags": "标签",
+      "selectTags": "选择标签",
+      "noTags": "未找到标签。",
+      "untitledKeywordRule": "（未命名关键字规则）",
+      "keywordRules": "关键字规则",
+      "selectKeywordRules": "选择关键字规则",
+      "noKeywordRules": "未找到任何传入关键字规则。",
+      "replyOptions": "回复选项",
+      "firstReplyOnly": "仅第一条消息",
+      "dedupeNote": "每个会话每条规则每天最多 1 个事件。",
+      "dealWon": "商机成交",
+      "eventTypeLead": "潜在客户",
+      "eventTypePurchase": "购买",
+      "messages": {
+        "ruleSaved": "转化规则已保存",
+        "ruleUpdated": "转化规则已更新",
+        "ruleDeleted": "转化规则已删除"
+      },
+      "mockAdAccount": "Banana 1",
+      "mockPages": {
+        "page1": "页面 1",
+        "page2": "页面 2"
+      },
+      "trackQualifiedLeads": {
+        "title": "跟踪合格潜在客户",
+        "question": "您希望在对话的哪个阶段将联系人判定为潜在客户？",
+        "when": "当",
+        "then": "然后将 CTWA 潜在客户标记为"
+      },
+      "trackPurchases": {
+        "title": "跟踪购买",
+        "question": "哪个模板用于确认购买？",
+        "when": "当",
+        "then": "然后",
+        "noValueNote": "基于规则的购买会记录一笔 Purchase 转化，但不包含订单金额。它会计入购买次数，但只会为营收增加 0。只有 Meta Automatic Events 会采集订单金额。"
+      }
+    },
+    "analytics": {
+      "title": "CTWA 分析",
+      "funnelOverview": "漏斗概览",
+      "conversationsStarted": "已开始对话",
+      "qualifiedLeads": "合格潜在客户",
+      "purchases": "购买",
+      "adSpend": "广告花费",
+      "spendAccountLevelNote": "花费按 Meta 广告账号层级统计；选择 WhatsApp 账号后，该账号下只有花费但没有漏斗活动的广告会被隐藏。",
+      "revenue": "营收",
+      "roas": "ROAS",
+      "revenueCurrencyNote": "营收默认按单一币种（USD）计算。混合币种广告账号目前还无法汇总。",
+      "costPerLead": "每位潜在客户成本",
+      "costPerPurchase": "每次购买成本",
+      "impressions": "展示次数",
+      "clicks": "点击次数",
+      "cpc": "CPC",
+      "ctr": "CTR",
+      "cpm": "CPM",
+      "costPerConversation": "每次对话成本",
+      "costCurrencyNote": "成本指标默认按单一币种（USD）计算，并与广告花费保持一致。",
+      "performanceChart": {
+        "title": "一段时间内的表现",
+        "empty": "此范围内还没有对话、潜在客户、购买或花费。"
+      },
+      "dateRange": {
+        "oneDay": "1D",
+        "oneWeek": "1W",
+        "oneMonth": "1M",
+        "threeMonths": "3M",
+        "custom": "自定义",
+        "apply": "应用"
+      },
+      "allAds": "所有广告",
+      "adAccountFilter": {
+        "all": "所有广告账号",
+        "label": "广告账号",
+        "note": "按广告账号筛选时，在所选日期范围内有转化但花费为 0 或投放为 0 的广告会被隐藏。"
+      },
+      "retarget": "再营销",
+      "thoseWhoPurchased": "已购买的人",
+      "thoseWhoStartedConversation": "已开始对话的人",
+      "sendWhatsappBroadcast": "发送 WhatsApp 广播",
+      "from": "从",
+      "to": "到",
+      "unattributed": "未归因",
+      "retargetDialog": {
+        "title": "再营销 CTWA 联系人",
+        "createAudience": "创建受众",
+        "useExistingAudience": "使用现有受众",
+        "audienceName": "受众名称",
+        "audiencePrefix": "CTWA",
+        "confirm": "开始同步",
+        "success": "已加入再营销受众同步队列。",
+        "error": "无法加入再营销受众同步队列。"
+      },
+      "delivery": {
+        "title": "转化传送",
+        "sent": "已发送",
+        "pending": "待处理",
+        "failed": "失败",
+        "skippedNoScope": "已跳过（无权限范围）",
+        "skippedRegion": "已跳过（地区）",
+        "noScopeWarning": "部分转化未发送，因为此 WhatsApp 账号缺少事件权限。请重新连接以启用 Automatic Events 报表。",
+        "reconnectCta": "重新连接账号",
+        "empty": "此范围内还没有转化事件。"
+      },
+      "export": {
+        "conversations": "导出对话",
+        "leads": "导出潜在客户",
+        "purchases": "导出购买"
+      },
+      "csv": {
+        "contactName": "联系人名称",
+        "phone": "电话",
+        "adId": "广告 ID",
+        "occurredAt": "发生时间"
+      },
+      "empty": "暂无数据。请连接广告账号并开始跟踪转化。"
+    }
   }
 }

@@ -112,10 +112,10 @@ describe("builder message catalogs", () => {
     ).toEqual(englishKeys)
   })
 
-  test("zh-CN matches the zh-TW key set exactly", () => {
+  test("zh-CN has the exact English key set", () => {
     expect(
       Object.keys(flattenMessages(messagesByLocale["zh-CN"])).sort(),
-    ).toEqual(Object.keys(flattenMessages(messagesByLocale["zh-TW"])).sort())
+    ).toEqual(englishKeys)
   })
 
   test.each(
