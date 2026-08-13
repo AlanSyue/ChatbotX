@@ -1,12 +1,12 @@
 import { describe, expect, test, vi } from "vitest"
+import {
+  buildThreadsReferer,
+  buildThreadsWebhookUrl,
+} from "../src/features/integration-threads/libs/oauth"
 
 vi.mock("@/lib/oauth-broker", () => ({
   buildBrokerCallbackUrl: (path: string) => `https://broker.example.com${path}`,
 }))
-
-const { buildThreadsReferer, buildThreadsWebhookUrl } = await import(
-  "../src/features/integration-threads/libs/oauth"
-)
 
 describe("threads oauth builders", () => {
   test("builds the settings referer from the workspace origin", () => {
