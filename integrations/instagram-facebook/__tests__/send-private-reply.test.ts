@@ -6,18 +6,19 @@ import type { InstagramAuthValue } from "../src/schemas"
 
 const ACCESS_TOKEN = "IG_TOKEN"
 const IG_ID = "ig-business-account-id"
+const PAGE_ID = "facebook-page-id"
 const COMMENT_ID = "comment-123"
 
 const auth = {
   tokens: { accessToken: ACCESS_TOKEN },
-  metadata: { igId: IG_ID, version: DEFAULT_API_VERSION },
+  metadata: { igId: IG_ID, pageId: PAGE_ID, version: DEFAULT_API_VERSION },
 } as unknown as InstagramAuthValue
 
 describe("sendPrivateReply", () => {
-  test("addresses the account directly via igId, not the me alias", async () => {
+  test("addresses the Page node directly via pageId, not the me alias", async () => {
     server.use(
       http.post(
-        `${API_URL}/${DEFAULT_API_VERSION}/${IG_ID}/messages`,
+        `${API_URL}/${DEFAULT_API_VERSION}/${PAGE_ID}/messages`,
         async ({ request }) => {
           expect(request.headers.get("authorization")).toBe(
             `Bearer ${ACCESS_TOKEN}`,
