@@ -112,6 +112,12 @@ describe("builder message catalogs", () => {
     ).toEqual(englishKeys)
   })
 
+  test("zh-CN matches the zh-TW key set exactly", () => {
+    expect(
+      Object.keys(flattenMessages(messagesByLocale["zh-CN"])).sort(),
+    ).toEqual(Object.keys(flattenMessages(messagesByLocale["zh-TW"])).sort())
+  })
+
   test.each(
     locales,
   )("%s does not define keys missing from English", (locale) => {
@@ -216,8 +222,11 @@ describe("builder message catalogs", () => {
     expect(Object.keys(messagesByLocale).sort()).toEqual([...locales])
   })
 
-  test("zh-TW preserves newline counts from English", () => {
-    const translatedMessages = flattenMessages(messagesByLocale["zh-TW"])
+  test.each([
+    "zh-CN",
+    "zh-TW",
+  ] as const)("%s preserves newline counts from English", (locale) => {
+    const translatedMessages = flattenMessages(messagesByLocale[locale])
 
     for (const [key, translatedValue] of Object.entries(translatedMessages)) {
       expect(typeof englishMessages[key], key).toBe("string")
@@ -228,8 +237,11 @@ describe("builder message catalogs", () => {
     }
   })
 
-  test("zh-TW contains no generated token markers or zero-width characters", () => {
-    const translatedMessages = flattenMessages(messagesByLocale["zh-TW"])
+  test.each([
+    "zh-CN",
+    "zh-TW",
+  ] as const)("%s contains no generated token markers or zero-width characters", (locale) => {
+    const translatedMessages = flattenMessages(messagesByLocale[locale])
 
     for (const [key, translatedValue] of Object.entries(translatedMessages)) {
       expect(typeof translatedValue, key).toBe("string")
@@ -259,12 +271,15 @@ describe("locale resolution", () => {
     ["zh-tw", "zh-TW"],
     ["zh-TW-x-private", "zh-TW"],
     ["zh-tw-x-private", "zh-TW"],
-    ["zh-CN", "en"],
-    ["zh-CN-x-private", "en"],
-    ["zh-cn", "en"],
-    ["zh-Hans", "en"],
-    ["zh-hans", "en"],
-    ["zh", "en"],
+    ["zh-CN", "zh-CN"],
+    ["zh-CN-x-private", "zh-CN"],
+    ["zh-cn", "zh-CN"],
+    ["ZH-CN", "zh-CN"],
+    ["zh-Hans", "zh-CN"],
+    ["zh-hans", "zh-CN"],
+    ["zh-Hans-CN", "zh-CN"],
+    ["zh", "zh-CN"],
+    ["zh-HK", "zh-TW"],
     ["xx", "en"],
   ] as const)("resolves %s to %s", (input, expected) => {
     expect(resolveLocale(input)).toBe(expected)
