@@ -12,7 +12,7 @@ import { getTranslations } from "next-intl/server"
 import { getOriginUrlFromHeader } from "@/lib/domain"
 import { resolveOwnerForWorkspace } from "@/lib/platform-credential-owner"
 import { workspaceActionClient } from "@/lib/safe-action"
-import { generateThreadsRedirectUri } from "../libs/oauth"
+import { generateThreadsRedirectUri } from "../libs/oauth.server"
 
 export const reconnectThreadsAction = workspaceActionClient
   .bindArgsSchemas([zodBigintAsString(), zodBigintAsString()])

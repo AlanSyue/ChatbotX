@@ -61,7 +61,7 @@ import { reconnectMessengerHandler } from "@/features/integration-messenger/acti
 import {
   clearThreadsOAuthStateCookie,
   getThreadsOAuthStateCookie,
-} from "@/features/integration-threads/libs/oauth"
+} from "@/features/integration-threads/libs/oauth.server"
 import { connectTiktokHandler } from "@/features/integration-tiktok/actions/connect.action"
 import { connectZaloHandler } from "@/features/integration-zalo/actions/connect-zalo.action"
 import { integrations } from "@/integration"

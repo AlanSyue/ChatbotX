@@ -154,7 +154,7 @@ vi.mock("@/features/integration-messenger/actions/reconnect-callback", () => ({
   reconnectMessengerHandler: vi.fn(),
 }))
 
-vi.mock("@/features/integration-threads/libs/oauth", () => ({
+vi.mock("@/features/integration-threads/libs/oauth.server", () => ({
   getThreadsOAuthStateCookie: mockGetThreadsOAuthStateCookie,
   clearThreadsOAuthStateCookie: mockClearThreadsOAuthStateCookie,
 }))

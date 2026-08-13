@@ -73,7 +73,7 @@ vi.mock("@/lib/auth/utils", () => ({
   getCurrentUserId: mockGetCurrentUserId,
 }))
 
-vi.mock("@/features/integration-threads/libs/oauth", () => ({
+vi.mock("@/features/integration-threads/libs/oauth.server", () => ({
   generateThreadsRedirectUri: mockGenerateThreadsRedirectUri,
 }))
 
