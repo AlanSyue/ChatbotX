@@ -14,42 +14,60 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@chatbotx.io/business", () => ({
   broadcastToWorkspaceParty: vi.fn(),
 }))
-vi.mock("@chatbotx.io/sdk", () => ({
-  SdkException: class SdkException extends Error {},
-}))
-vi.mock("@chatbotx.io/worker-config", () => ({
-  ChatJobAction: {
-    sendChannelMessage: "sendChannelMessage",
-    sendFlowMessage: "sendFlowMessage",
-    sendChatMessage: "sendChatMessage",
-    sendWhatsappTemplateMessage: "sendWhatsappTemplateMessage",
-    sendMessengerTemplateMessage: "sendMessengerTemplateMessage",
-    sendTyping: "sendTyping",
-    notifyExportResult: "notifyExportResult",
-    broadcastEvent: "broadcastEvent",
-    deleteChannelMessage: "deleteChannelMessage",
-    editChannelMessage: "editChannelMessage",
-    changeChannelMessageState: "changeChannelMessageState",
-  },
-  defaultWorkerOptions: {},
-  getRedisConnection: vi.fn(),
-  queueNames: { enum: { chat: "chat" } },
-}))
-vi.mock("bullmq", () => ({
-  Worker: class Worker {
-    constructor(_queue: string, processJob: (job: unknown) => Promise<void>) {
-      mocks.processJob = processJob
-    }
+vi.mock("@chatbotx.io/sdk", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@chatbotx.io/sdk")>()
+  return {
+    ...actual,
+    SdkException: class SdkException extends Error {},
+  }
+})
+vi.mock("@chatbotx.io/worker-config", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@chatbotx.io/worker-config")>()
+  return {
+    ...actual,
+    ChatJobAction: {
+      ...actual.ChatJobAction,
+      sendChannelMessage: "sendChannelMessage",
+      sendFlowMessage: "sendFlowMessage",
+      sendChatMessage: "sendChatMessage",
+      sendWhatsappTemplateMessage: "sendWhatsappTemplateMessage",
+      sendMessengerTemplateMessage: "sendMessengerTemplateMessage",
+      sendTyping: "sendTyping",
+      notifyExportResult: "notifyExportResult",
+      broadcastEvent: "broadcastEvent",
+      deleteChannelMessage: "deleteChannelMessage",
+      editChannelMessage: "editChannelMessage",
+      changeChannelMessageState: "changeChannelMessageState",
+    },
+    defaultWorkerOptions: {},
+    getRedisConnection: vi.fn(),
+    queueNames: {
+      ...actual.queueNames,
+      enum: { ...actual.queueNames.enum, chat: "chat" },
+    },
+  }
+})
+vi.mock("bullmq", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("bullmq")>()
 
-    on() {
-      // Worker event registration is not exercised by this unit test.
-    }
+  return {
+    ...actual,
+    Worker: class Worker {
+      constructor(_queue: string, processJob: (job: unknown) => Promise<void>) {
+        mocks.processJob = processJob
+      }
 
-    close() {
-      return Promise.resolve()
-    }
-  },
-}))
+      on() {
+        // Worker event registration is not exercised by this unit test.
+      }
+
+      close() {
+        return Promise.resolve()
+      }
+    },
+  }
+})
 vi.mock("../src/lib/bootstrap", () => ({
   ensureBootstrapped: mocks.ensureBootstrapped,
 }))

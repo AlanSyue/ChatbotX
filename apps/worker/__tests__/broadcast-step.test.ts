@@ -26,19 +26,37 @@ vi.mock("@chatbotx.io/database/client", () => ({
   isNull: (column: unknown) => ({ __isNull: column }),
 }))
 
-vi.mock("@chatbotx.io/database/schema", () => ({
-  contactModel: {
-    id: { __column: "id" },
-    workspaceId: { __column: "workspaceId" },
-    broadcastSubscribedAt: { __column: "broadcastSubscribedAt" },
-  },
-  contactCustomFieldModel: {},
-  contactNoteModel: {},
-  contactsOnSequenceModel: {},
-  contactsToTagsModel: {},
-  conversationModel: {},
-  tagModel: {},
-}))
+vi.mock("@chatbotx.io/database/schema", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@chatbotx.io/database/schema")>()
+  return {
+    ...actual,
+    contactModel: {
+      ...actual.contactModel,
+      id: { __column: "id" },
+      workspaceId: { __column: "workspaceId" },
+      broadcastSubscribedAt: { __column: "broadcastSubscribedAt" },
+    },
+    contactCustomFieldModel: {
+      ...actual.contactCustomFieldModel,
+    },
+    contactNoteModel: {
+      ...actual.contactNoteModel,
+    },
+    contactsOnSequenceModel: {
+      ...actual.contactsOnSequenceModel,
+    },
+    contactsToTagsModel: {
+      ...actual.contactsToTagsModel,
+    },
+    conversationModel: {
+      ...actual.conversationModel,
+    },
+    tagModel: {
+      ...actual.tagModel,
+    },
+  }
+})
 
 vi.mock("@chatbotx.io/event-bus", () => ({ emit: vi.fn() }))
 const emitContactUnsubscribed = vi.fn()

@@ -112,27 +112,36 @@ vi.mock("@chatbotx.io/database/client", () => ({
 // ---------------------------------------------------------------------------
 // Mock: @chatbotx.io/database/schema — sentinel objects
 // ---------------------------------------------------------------------------
-vi.mock("@chatbotx.io/database/schema", () => ({
-  tagModel: {
-    id: "tagModel.id",
-    name: "tagModel.name",
-    workspaceId: "tagModel.workspaceId",
-  },
-  contactsOnSequenceModel: {
-    id: "contactsOnSequenceModel.id",
-    contactId: "contactsOnSequenceModel.contactId",
-    sequenceId: "contactsOnSequenceModel.sequenceId",
-    workspaceId: "contactsOnSequenceModel.workspaceId",
-  },
-  contactsToTagsModel: {
-    contactId: "contactsToTagsModel.contactId",
-    tagId: "contactsToTagsModel.tagId",
-  },
-  contactModel: {
-    id: "contactModel.id",
-    workspaceId: "contactModel.workspaceId",
-  },
-}))
+vi.mock("@chatbotx.io/database/schema", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@chatbotx.io/database/schema")>()
+  return {
+    ...actual,
+    tagModel: {
+      ...actual.tagModel,
+      id: "tagModel.id",
+      name: "tagModel.name",
+      workspaceId: "tagModel.workspaceId",
+    },
+    contactsOnSequenceModel: {
+      ...actual.contactsOnSequenceModel,
+      id: "contactsOnSequenceModel.id",
+      contactId: "contactsOnSequenceModel.contactId",
+      sequenceId: "contactsOnSequenceModel.sequenceId",
+      workspaceId: "contactsOnSequenceModel.workspaceId",
+    },
+    contactsToTagsModel: {
+      ...actual.contactsToTagsModel,
+      contactId: "contactsToTagsModel.contactId",
+      tagId: "contactsToTagsModel.tagId",
+    },
+    contactModel: {
+      ...actual.contactModel,
+      id: "contactModel.id",
+      workspaceId: "contactModel.workspaceId",
+    },
+  }
+})
 
 // ---------------------------------------------------------------------------
 // Mock: @chatbotx.io/business
@@ -515,7 +524,7 @@ describe("addContactTag", () => {
     expect(enqueueTagAppliedEvaluationsForInbox).not.toHaveBeenCalled()
   })
 
-  test("does NOT enqueue the ads conversion evaluation when no tags were newly linked", async () => {
+  test("passes an empty tag list to the ads conversion evaluation when no tags were newly linked", async () => {
     state.txExistingTags = [{ id: "tag-1" }]
     state.txNewlyLinked = []
 
@@ -527,7 +536,13 @@ describe("addContactTag", () => {
       }),
     )
 
-    expect(enqueueTagAppliedEvaluationsForInbox).not.toHaveBeenCalled()
+    expect(enqueueTagAppliedEvaluationsForInbox).toHaveBeenCalledOnce()
+    expect(enqueueTagAppliedEvaluationsForInbox).toHaveBeenCalledWith({
+      workspaceId: "ws-1",
+      inboxId: "inbox-1",
+      contactInboxId: "ci-1",
+      tagIds: [],
+    })
   })
 })
 
