@@ -31,7 +31,7 @@ export function CreateIgCommentForm({
     folderId: undefined,
     post: { type: "all" as const, value: [] },
     privateReply: { type: "text" as const, value: "" },
-    publicReply: { type: "none" as const, value: null },
+    publicReply: { type: "none" as const, value: null, values: undefined },
     includeKeywords: { type: "all" as const, value: [] },
     excludeKeywords: [],
     options: {

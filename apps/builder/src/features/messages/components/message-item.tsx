@@ -35,6 +35,7 @@ import { useTranslations } from "next-intl"
 import { useState } from "react"
 import type { AttachmentResource } from "@/features/attachments/schema/resource"
 import { useAttachmentUrl } from "@/features/attachments/utils"
+import { useChatStore } from "../../chat/store/chat-store-provider"
 import type { MessageResourceWithRelations } from "../schema/resource"
 import { MessageActions, MessageActionsEditor } from "./message-actions"
 import { MessageBubble } from "./message-bubble"
@@ -110,6 +111,19 @@ export const MessageItem = (props: MessageItemProps) => {
   const isHidden = attributes?.hidden === true
   const hasAttachments = !!message.attachments?.length
   const storyReply = getStoryReplyEntity(message.contentAttributes)
+  const { conversations, activeConversationId } = useChatStore((state) => state)
+  const activeConversation = conversations.find(
+    (conversation) => conversation.id === activeConversationId,
+  )
+  const activeConversationChannel =
+    activeConversation?.contactInboxes?.[0]?.channel
+  const isThreadsComment = isComment && activeConversationChannel === "threads"
+  const shouldShowCommentActions = !isThreadsComment
+  const shouldShowLikeButton =
+    shouldShowCommentActions &&
+    !isEditing &&
+    message.messageType === "incoming" &&
+    onChangeLike != null
 
   return (
     <MessageBubble
@@ -197,7 +211,7 @@ export const MessageItem = (props: MessageItemProps) => {
       </div>
 
       <div className="flex">
-        {isComment && !isEditing && message.messageType === "incoming" && (
+        {isComment && shouldShowLikeButton && (
           <Button
             className="self-center opacity-0 transition-opacity group-hover:opacity-100"
             onClick={onChangeLike}
@@ -230,7 +244,7 @@ export const MessageItem = (props: MessageItemProps) => {
             </Button>
           )}
 
-        {isComment && !isEditing && (
+        {isComment && !isEditing && shouldShowCommentActions && (
           <MessageActions
             message={message}
             onChangeHide={onChangeHide}

@@ -9,6 +9,7 @@ import {
 import { db, eq } from "@chatbotx.io/database/client"
 import { inboxStatuses } from "@chatbotx.io/database/partials"
 import { inboxModel } from "@chatbotx.io/database/schema"
+import { getSafeErrorDetails } from "@chatbotx.io/integration-threads"
 import type {
   TiktokAuthValue,
   TiktokConfig,
@@ -30,6 +31,9 @@ const logWebhookRequestBody = async (
   integrationType: string,
   req: NextRequest,
 ) => {
+  if (integrationType === "threads") {
+    return
+  }
   try {
     const body = await req.clone().text()
     logger.info({ integrationType, body }, "Webhook request body")
@@ -61,6 +65,10 @@ export const handleWebhook = async (
   integrationType: string,
   req: NextRequest,
 ) => {
+  if (integrationType === "threads") {
+    return handleThreadsWebhook(req)
+  }
+
   await logWebhookRequestBody(integrationType, req)
 
   // Telegram uses per-bot config (not org-level settings)
@@ -184,6 +192,90 @@ export const handleWebhook = async (
       status: 400,
       headers: { "Content-Type": "application/json" },
     })
+  }
+}
+
+const handleThreadsWebhook = async (req: NextRequest) => {
+  const appId = req.nextUrl.searchParams.get("appId")
+  if (!appId) {
+    return new Response(JSON.stringify({ message: "Invalid request" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    })
+  }
+
+  const credential =
+    await platformCredentialService.findThreadsCredentialByClientId({
+      clientId: appId,
+    })
+  if (!credential) {
+    logger.debug(
+      { integrationType: "threads", appId },
+      "Threads webhook app not found",
+    )
+    return new Response(
+      JSON.stringify({ message: "Integration is not configured" }),
+      { status: 404, headers: { "Content-Type": "application/json" } },
+    )
+  }
+
+  const integration = integrations.threads
+  if (!integration?.handleRequest) {
+    return new Response(
+      JSON.stringify({ message: "Method is not implemented" }),
+      { status: 400, headers: { "Content-Type": "application/json" } },
+    )
+  }
+
+  const redirectUrl = new URL(
+    "/integrations/threads/callback",
+    req.nextUrl,
+  ).toString()
+
+  try {
+    const result = await integration.handleRequest({
+      config: {
+        ...credential.config,
+        redirectUrl,
+        stateParams: {
+          workspaceId: req.nextUrl.searchParams.get("workspaceId") ?? "",
+          referer: req.nextUrl.origin,
+        },
+        // biome-ignore lint/suspicious/noExplicitAny: integration config bridge
+      } as any,
+      req,
+      queue: integrationQueue,
+    })
+
+    return new Response(result as BodyInit)
+  } catch (error: unknown) {
+    const safeError = getSafeErrorDetails(error)
+    const status =
+      safeError.httpStatusCode &&
+      safeError.httpStatusCode >= 400 &&
+      safeError.httpStatusCode < 500
+        ? safeError.httpStatusCode
+        : 500
+
+    logger.warn(
+      {
+        integrationType: "threads",
+        appId,
+        errorCode: safeError.code,
+        errorHttpStatusCode: safeError.httpStatusCode,
+        errorSubCode: safeError.subCode,
+        errorType: safeError.type,
+        errorMessage: safeError.message,
+      },
+      "Threads webhook request failed",
+    )
+
+    return new Response(
+      JSON.stringify({
+        message: status < 500 ? "Invalid request" : "Unable to process webhook",
+      }),
+      { status, headers: { "Content-Type": "application/json" } },
+    )
   }
 }
 

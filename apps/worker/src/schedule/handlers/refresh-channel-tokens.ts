@@ -3,6 +3,7 @@ import { logger } from "../../lib/logger"
 import { refreshInstagramFacebookTokens } from "./refresh-instagram-facebook-tokens"
 import { refreshInstagramTokens } from "./refresh-instagram-tokens"
 import { refreshMessengerTokens } from "./refresh-messenger-tokens"
+import { refreshThreadsTokens } from "./refresh-threads-tokens"
 import { refreshTiktokTokens } from "./refresh-tiktok-tokens"
 import { refreshWhatsappTokens } from "./refresh-whatsapp-tokens"
 import { refreshZaloTokens } from "./refresh-zalo-tokens"
@@ -22,6 +23,7 @@ const refreshTokenAdapter: Record<
   tiktok: refreshTiktokTokens,
   instagram: refreshInstagramAndFacebookTokens,
   messenger: refreshMessengerTokens,
+  threads: refreshThreadsTokens,
   whatsapp: refreshWhatsappTokens,
   omnichannel: undefined,
   webchat: undefined,

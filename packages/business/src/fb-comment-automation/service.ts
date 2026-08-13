@@ -1,18 +1,157 @@
-import { and, db, eq, isNull, ne, sql } from "@chatbotx.io/database/client"
+import {
+  and,
+  db,
+  eq,
+  isNull,
+  ne,
+  relationsFilterToSQL,
+  sql,
+} from "@chatbotx.io/database/client"
+import {
+  fbCommentAutomationTypes,
+  rootFolderId,
+} from "@chatbotx.io/database/partials"
 import {
   contactInboxModel,
   fbCommentAutomationDispatchModel,
   fbCommentAutomationModel,
   fbCommentAutomationReplyModel,
 } from "@chatbotx.io/database/schema"
+import {
+  getPaginationWithDefaults,
+  likeContains,
+  parseOrderByAsObject,
+} from "@chatbotx.io/database/utils"
 import { createId } from "@chatbotx.io/utils"
 import { formatInTimeZone } from "date-fns-tz"
 import { BaseService } from "../base.service"
 
 class FbCommentAutomationService extends BaseService {
+  async create(props: {
+    id: string
+    workspaceId: string
+    input: Omit<
+      typeof fbCommentAutomationModel.$inferInsert,
+      "id" | "workspaceId"
+    >
+  }) {
+    const [record] = await db
+      .insert(fbCommentAutomationModel)
+      .values({
+        id: props.id,
+        workspaceId: props.workspaceId,
+        ...props.input,
+      })
+      .returning()
+
+    return record
+  }
+
+  async updateByIdForWorkspace(props: {
+    id: string
+    workspaceId: string
+    input: Partial<typeof fbCommentAutomationModel.$inferInsert>
+  }) {
+    const [record] = await db
+      .update(fbCommentAutomationModel)
+      .set(props.input)
+      .where(
+        and(
+          eq(fbCommentAutomationModel.id, props.id),
+          eq(fbCommentAutomationModel.workspaceId, props.workspaceId),
+        ),
+      )
+      .returning()
+
+    return record
+  }
+
+  findByIdForWorkspace(props: { id: string; workspaceId: string }) {
+    return db.query.fbCommentAutomationModel.findFirst({
+      where: props,
+    })
+  }
+
+  async listForWorkspace(props: {
+    folderId?: string | null
+    input: {
+      isActive?: boolean | null
+      name?: string | null
+      page?: number | null
+      perPage?: number | null
+      sort?:
+        | {
+            desc: boolean
+            id: string
+          }[]
+        | null
+      workspaceId: string
+    }
+  }) {
+    const folderIdFilter: string | { isNull: true } =
+      !props.folderId || props.folderId === rootFolderId
+        ? { isNull: true }
+        : props.folderId
+
+    const where = {
+      workspaceId: props.input.workspaceId,
+      type: {
+        in: [
+          fbCommentAutomationTypes.enum.messenger,
+          fbCommentAutomationTypes.enum.threads,
+        ],
+      },
+      folderId: folderIdFilter,
+      name: props.input.name
+        ? {
+            ilike: likeContains(props.input.name),
+          }
+        : undefined,
+      isActive:
+        props.input.isActive !== undefined && props.input.isActive !== null
+          ? props.input.isActive
+          : undefined,
+    }
+
+    const pagination = getPaginationWithDefaults(props.input)
+    const orderBy = parseOrderByAsObject(fbCommentAutomationModel, props.input)
+
+    const [data, total] = await Promise.all([
+      db.query.fbCommentAutomationModel.findMany({
+        where,
+        orderBy,
+        ...pagination,
+      }),
+      db.$count(
+        fbCommentAutomationModel,
+        relationsFilterToSQL(fbCommentAutomationModel, where),
+      ),
+    ])
+
+    return {
+      data,
+      pageCount: Math.ceil(total / pagination.limit),
+    }
+  }
+
+  findFbChannelByIdForWorkspace(props: { id: string; workspaceId: string }) {
+    return db.query.fbCommentAutomationModel.findFirst({
+      where: {
+        id: props.id,
+        workspaceId: props.workspaceId,
+        type: {
+          in: [
+            fbCommentAutomationTypes.enum.messenger,
+            fbCommentAutomationTypes.enum.threads,
+          ],
+        },
+      },
+    })
+  }
+
   findActiveAutomations(props: {
     workspaceId: string
-    channelType: "messenger" | "instagram" | "instagramFacebook"
+    channelType: "messenger" | "instagram" | "instagramFacebook" | "threads"
   }) {
     return db.query.fbCommentAutomationModel.findMany({
       where: {

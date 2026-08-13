@@ -43,6 +43,7 @@
     "disableBot": "השבתת הבוט",
     "disconnect": "ניתוק",
     "download": "הורדה",
+    "downloadTemplate": "הורדת תבנית",
     "edit": "עריכה",
     "editFeature": "עריכת {feature}",
     "enableBot": "הפעלת הבוט",
@@ -424,6 +425,11 @@
       "selectCustomFieldPlaceholder": "בחירת שדה מותאם אישית",
       "addMapping": "הוספת מיפוי",
       "addCustomField": "הוספת חדש"
+    },
+    "sendCarousel": {
+      "addSlide": "הוספת כרטיס",
+      "removeSlide": "הסרת כרטיס",
+      "whatsappLinkButtonIgnored": "ב-WhatsApp, הקישור של כרטיס זה לא יעבוד: כרטיס עם כפתור קישור לא יכול לכלול כפתורים אחרים. הוא יישלח במקום זאת כתשובה."
     },
     "additionalSteps": "שלבים נוספים",
     "delayType": {
@@ -816,7 +822,8 @@
     "title": "הגדרות פלטפורמה",
     "errors": {
       "giphyApiKeyRequired": "נדרש מפתח API כדי להגדיר את GIPHY.",
-      "giphyApiKeyInvalid": "מפתח ה-API של GIPHY אינו תקין"
+      "giphyApiKeyInvalid": "מפתח ה-API של GIPHY אינו תקין",
+      "threadsAppSecretRequired": "נדרש App Secret כדי להגדיר את Threads."
     }
   },
   "home": {
@@ -1005,6 +1012,8 @@
     "noVersionsFound": "לא נמצאו גרסאות שפורסמו",
     "publishVersionSuccess": "גרסה חדשה פורסמה",
     "flowConfigIncomplete": "חלק מההגדרות אינן שלמות",
+    "whatsappCarouselButtonsMismatch": "ב-WhatsApp, קרוסלה צריכה את אותם כפתורים בכל כרטיס: או כפתור קישור יחיד בכל כרטיס, או אותו מספר של כפתורי תשובה בכל כרטיס",
+    "whatsappCarouselLinkButtonNotAlone": "ב-WhatsApp, כרטיס קרוסלה עם כפתור קישור לא יכול לכלול כפתורים אחרים. הסירו את הכפתורים האחרים מאותו כרטיס, או החליפו את כפתור הקישור בפעולה אחרת.",
     "duplicateNodeError": "לא ניתן היה לשכפל את הבלוק. נסו שוב.",
     "deleteNodeError": "לא ניתן היה למחוק את הבלוק. נסו שוב.",
     "redoHistoryCleared": "היסטוריית הביצוע מחדש נוקתה",
@@ -1351,6 +1360,7 @@
         "quickReplyPayloadPlaceholder": "הזנת מטען (אופציונלי)",
         "flowToken": "אסימון תהליך",
         "flowTokenPlaceholder": "הזנת אסימון תהליך",
+        "flowNotSynced": "סנכרנו את תזרימי WhatsApp כדי למפות את השדות שנשלחו.",
         "catalogProductId": "מזהה מוצר",
         "catalogProductIdPlaceholder": "הזנת מזהה המוצר אצל הקמעונאי",
         "carouselCard": "כרטיס {index}",
@@ -1624,7 +1634,10 @@
     "exportTakingLongDescription": "הייצוא עדיין בעיבוד. ניתן לסגור חלון זה ולבדוק שוב בעוד מספר דקות בהיסטוריית הייצוא."
   },
   "auditLogs": { "title": "יומני ביקורת" },
-  "customFields": { "title": "שדות מותאמים אישית" },
+  "customFields": {
+    "title": "שדות מותאמים אישית",
+    "variables": { "rawGroup": "שדות מותאמים אישית גולמיים" }
+  },
   "keywords": {
     "title": "מילות מפתח",
     "tabs": {
@@ -1826,12 +1839,19 @@
     "deactivated": "האוטומציה הושבתה",
     "trackCommentsOn": "מעקב אחר תגובות ב-",
     "trackCommentsOnDescription": "החילו אוטומציה זו על כל הפוסטים בדף שלכם, או הגבילו אותה לפוסטים מסוימים שתבחרו.",
+    "platform": "פלטפורמה",
+    "platformType": {
+      "messenger": "Messenger",
+      "threads": "Threads"
+    },
     "privateReply": "תשובה פרטית (תיבת דואר נכנס)",
     "privateReplyDescription": "שליחת הודעה פרטית לתיבת הדואר הנכנס של המגיב. בחרו סוכן AI, תבנית טקסט קבועה (עם תמיכה ב-spintax), תהליך צ'אטבוט או השבתה.",
     "publicReply": "תשובה ציבורית לתגובה",
     "publicReplyDescription": "פרסום תשובה ציבורית ישירות מתחת לתגובה. יש תמיכה בעד 10 תבניות טקסט (עם תמיכה ב-spintax), סוכן AI, תהליך צ'אטבוט או ללא תשובה.",
+    "randomPublicReplyDescription": "בצעו רוטציה אקראית בין הודעות התשובה הציבורית שלמטה.",
     "replyMessage": "הודעת תשובה",
     "replyMessagePlaceholder": "הזנת הודעת תשובה...",
+    "replyMessageNumber": "הודעת תשובה מס' {number}",
     "includeKeywordsType": "להשיב ל-",
     "includeKeywordsTypeDescription": "בחרו לאילו תגובות האוטומציה תשיב.",
     "includeKeywords": "מילות מפתח להתאמה",
@@ -1931,8 +1951,10 @@
     "privateReplyDescription": "שליחת הודעה פרטית לתיבת הדואר הנכנס של המגיב. בחרו סוכן AI, תבנית טקסט קבועה (עם תמיכה ב-spintax), תהליך צ'אטבוט או השבתה.",
     "publicReply": "תשובה ציבורית לתגובה",
     "publicReplyDescription": "פרסום תשובה ציבורית ישירות מתחת לתגובה. יש תמיכה בעד 10 תבניות טקסט (עם תמיכה ב-spintax), סוכן AI, תהליך צ'אטבוט או ללא תשובה.",
+    "randomPublicReplyDescription": "בצעו רוטציה אקראית בין הודעות התשובה הציבורית שלמטה.",
     "replyMessage": "הודעת תשובה",
     "replyMessagePlaceholder": "הזנת הודעת תשובה...",
+    "replyMessageNumber": "הודעת תשובה מס' {number}",
     "includeKeywordsType": "להשיב ל-",
     "includeKeywordsTypeDescription": "בחרו לאילו תגובות האוטומציה תשיב.",
     "includeKeywords": "מילות מפתח להתאמה",
@@ -2587,6 +2609,9 @@
     },
     "messenger": {
       "label": "Messenger"
+    },
+    "threads": {
+      "label": "Threads"
     },
     "image": {
       "label": "תמונה"

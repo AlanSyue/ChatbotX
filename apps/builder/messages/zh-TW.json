@@ -36,6 +36,9 @@
     "messenger": {
       "label": "Messenger"
     },
+    "threads": {
+      "label": "Threads"
+    },
     "image": {
       "label": "圖片"
     },
@@ -1542,6 +1545,7 @@
     "disableBot": "停用機器人",
     "disconnect": "中斷連線",
     "download": "下載",
+    "downloadTemplate": "下載範本",
     "edit": "編輯",
     "editFeature": "編輯 {feature}",
     "enableBot": "啟用機器人",
@@ -2116,6 +2120,16 @@
         "cancelled": "重新連線已取消。請重試並授予請求的權限。",
         "failed": "重新連線失敗。請再試一次。"
       }
+    },
+    "tokenRefreshErrorDialog": {
+      "title": "緊急",
+      "description": "以下頻道未能自動刷新其存取權杖。請重新連接，以持續收發訊息。",
+      "cta": "重新連接"
+    },
+    "refreshAllTokens": {
+      "button": "重新整理所有權限",
+      "resultSuccess": "已重新整理 {refreshed} 個頻道。",
+      "resultWithFailures": "已重新整理 {refreshed} 個頻道，{failed} 個失敗。"
     }
   },
   "workspace": {
@@ -2714,7 +2728,8 @@
     "title": "平台設定",
     "errors": {
       "giphyApiKeyRequired": "GIPHY 的 API 設定需要金鑰。",
-      "giphyApiKeyInvalid": "GIPHY API 金鑰無效"
+      "giphyApiKeyInvalid": "GIPHY API 金鑰無效",
+      "threadsAppSecretRequired": "設定 Threads 需要 App Secret。"
     }
   },
   "home": {
@@ -3632,12 +3647,19 @@
     "deactivated": "自動化已停用",
     "trackCommentsOn": "追蹤留言的對象",
     "trackCommentsOnDescription": "可套用到粉絲專頁上的所有貼文，或縮小範圍到您指定的特定貼文。",
+    "platform": "平台",
+    "platformType": {
+      "messenger": "Messenger",
+      "threads": "Threads"
+    },
     "privateReply": "私訊回覆（收件匣）",
     "privateReplyDescription": "將私訊傳送到留言者的收件匣。可選擇 AI Agent、固定文字範本（支援 spintax）、聊天機器人流程，或停用。",
     "publicReply": "公開回覆留言",
     "publicReplyDescription": "直接在留言下方發表公開回覆。支援最多 10 個文字範本（支援 spintax）、AI Agent、聊天機器人流程，或不回覆。",
+    "randomPublicReplyDescription": "在下方的公開回覆訊息之間隨機輪替。",
     "replyMessage": "回覆訊息",
     "replyMessagePlaceholder": "輸入回覆訊息...",
+    "replyMessageNumber": "回覆訊息 #{number}",
     "includeKeywordsType": "回覆對象",
     "includeKeywordsTypeDescription": "選擇此自動化要回應哪些留言。",
     "includeKeywords": "要比對的關鍵字",
@@ -3739,8 +3761,10 @@
     "privateReplyDescription": "將私訊傳送到留言者的收件匣。可選擇 AI Agent、固定文字範本（支援 spintax）、聊天機器人流程，或停用。",
     "publicReply": "公開回覆留言",
     "publicReplyDescription": "直接在留言下方發表公開回覆。支援最多 10 個文字範本（支援 spintax）、AI Agent、聊天機器人流程，或不回覆。",
+    "randomPublicReplyDescription": "在下方的公開回覆訊息之間隨機輪替。",
     "replyMessage": "回覆訊息",
     "replyMessagePlaceholder": "輸入回覆訊息...",
+    "replyMessageNumber": "回覆訊息 #{number}",
     "includeKeywordsType": "回覆對象",
     "includeKeywordsTypeDescription": "選擇此自動化要回應哪些留言。",
     "includeKeywords": "要比對的關鍵字",
@@ -3967,7 +3991,8 @@
   "platformChannels": {
     "title": "允許頻道",
     "description": "選擇此租使用者中的工作區可以建立哪些頻道類型。",
-    "hint": "取消選取每個頻道以允許所有頻道。"
+    "hint": "取消選取每個頻道以允許所有頻道。",
+    "hiddenByPlatform": "已由平台管理員隱藏，您無法重新啟用此頻道。"
   },
   "platformEmailTemplates": {
     "title": "電子郵件範本",

@@ -43,6 +43,7 @@
     "disableBot": "ボットを無効化",
     "disconnect": "接続を解除",
     "download": "ダウンロード",
+    "downloadTemplate": "テンプレートをダウンロード",
     "edit": "編集",
     "editFeature": "{feature}を編集",
     "enableBot": "ボットを有効化",
@@ -606,6 +607,9 @@
     },
     "messenger": {
       "label": "Messenger"
+    },
+    "threads": {
+      "label": "Threads"
     },
     "image": {
       "label": "画像"
@@ -2104,6 +2108,11 @@
       "addMapping": "マッピングを追加",
       "addCustomField": "新規追加"
     },
+    "sendCarousel": {
+      "addSlide": "スライドを追加",
+      "removeSlide": "スライドを削除",
+      "whatsappLinkButtonIgnored": "WhatsAppでは、このカードのリンクは機能しません。リンクボタン付きのカードには他のボタンを追加できないためです。代わりに返信として送信されます。"
+    },
     "additionalSteps": "追加ステップ",
     "delayType": {
       "datetimeCustomField": "日時カスタムフィールド",
@@ -2674,6 +2683,8 @@
     "noVersionsFound": "公開済みバージョンが見つかりません",
     "publishVersionSuccess": "新しいバージョンを公開しました",
     "flowConfigIncomplete": "一部の設定が未完了です",
+    "whatsappCarouselButtonsMismatch": "WhatsAppでは、カルーセルの各カードに同じボタンが必要です。各カードに1つのリンクボタンを付けるか、各カードに同じ数の返信ボタンを付けてください",
+    "whatsappCarouselLinkButtonNotAlone": "WhatsAppでは、リンクボタンのあるカルーセルカードに他のボタンを追加することはできません。そのカードの他のボタンを削除するか、リンクボタンを別のアクションに変更してください。",
     "duplicateNodeError": "ブロックを複製できませんでした。もう一度お試しください。",
     "deleteNodeError": "ブロックを削除できませんでした。もう一度お試しください。",
     "redoHistoryCleared": "やり直し履歴を消去しました",
@@ -3072,6 +3083,7 @@
         "quickReplyPayloadPlaceholder": "ペイロードを入力（任意）",
         "flowToken": "フロートークン",
         "flowTokenPlaceholder": "フロートークンを入力",
+        "flowNotSynced": "送信されたフィールドを対応付けるには、WhatsAppフローを同期してください。",
         "catalogProductId": "商品ID",
         "catalogProductIdPlaceholder": "小売業者の商品IDを入力",
         "carouselCard": "カード{index}",
@@ -3373,7 +3385,10 @@
     "title": "監査ログ"
   },
   "customFields": {
-    "title": "カスタムフィールド"
+    "title": "カスタムフィールド",
+    "variables": {
+      "rawGroup": "生のカスタムフィールド"
+    }
   },
   "keywords": {
     "title": "キーワード",
@@ -3582,12 +3597,19 @@
     "deactivated": "自動化を無効にしました",
     "trackCommentsOn": "コメントを追跡する投稿",
     "trackCommentsOnDescription": "ページのすべての投稿にこの自動化を適用するか、選択した特定の投稿に限定します。",
+    "platform": "プラットフォーム",
+    "platformType": {
+      "messenger": "Messenger",
+      "threads": "Threads"
+    },
     "privateReply": "非公開返信（受信トレイ）",
     "privateReplyDescription": "コメントしたユーザーの受信トレイに非公開メッセージを送信します。AIエージェント、固定テキストテンプレート（spintax対応）、チャットボットフロー、または無効を選択できます。",
     "publicReply": "コメントに公開返信",
     "publicReplyDescription": "コメントの直下に公開返信を投稿します。最大10件のテキストテンプレート（spintax対応）、AIエージェント、チャットボットフロー、または返信なしを選択できます。",
+    "randomPublicReplyDescription": "以下の公開返信メッセージをランダムに切り替えて使用します。",
     "replyMessage": "返信メッセージ",
     "replyMessagePlaceholder": "返信メッセージを入力...",
+    "replyMessageNumber": "返信メッセージ #{number}",
     "includeKeywordsType": "返信対象",
     "includeKeywordsTypeDescription": "この自動化が返信するコメントを選択します。",
     "includeKeywords": "一致させるキーワード",
@@ -3689,8 +3711,10 @@
     "privateReplyDescription": "コメントしたユーザーの受信トレイに非公開メッセージを送信します。AIエージェント、固定テキストテンプレート（spintax対応）、チャットボットフロー、または無効を選択できます。",
     "publicReply": "コメントに公開返信",
     "publicReplyDescription": "コメントの直下に公開返信を投稿します。最大10件のテキストテンプレート（spintax対応）、AIエージェント、チャットボットフロー、または返信なしを選択できます。",
+    "randomPublicReplyDescription": "以下の公開返信メッセージをランダムに切り替えて使用します。",
     "replyMessage": "返信メッセージ",
     "replyMessagePlaceholder": "返信メッセージを入力...",
+    "replyMessageNumber": "返信メッセージ #{number}",
     "includeKeywordsType": "返信対象",
     "includeKeywordsTypeDescription": "この自動化が返信するコメントを選択します。",
     "includeKeywords": "一致させるキーワード",
@@ -3861,7 +3885,8 @@
     "title": "プラットフォーム設定",
     "errors": {
       "giphyApiKeyRequired": "GIPHYを設定するにはAPIキーが必要です。",
-      "giphyApiKeyInvalid": "GIPHYのAPIキーが無効です"
+      "giphyApiKeyInvalid": "GIPHYのAPIキーが無効です",
+      "threadsAppSecretRequired": "Threads を設定するには App Secret が必要です。"
     }
   },
   "home": {

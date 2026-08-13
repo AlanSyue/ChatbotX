@@ -43,6 +43,7 @@
     "disableBot": "Bot uitschakelen",
     "disconnect": "Verbinding verbreken",
     "download": "Downloaden",
+    "downloadTemplate": "Sjabloon downloaden",
     "edit": "Bewerken",
     "editFeature": "{feature} bewerken",
     "enableBot": "Bot inschakelen",
@@ -436,6 +437,9 @@
     },
     "messenger": {
       "label": "Messenger"
+    },
+    "threads": {
+      "label": "Threads"
     },
     "image": {
       "label": "Afbeelding"
@@ -2104,6 +2108,11 @@
       "addMapping": "Toewijzing toevoegen",
       "addCustomField": "Nieuwe toevoegen"
     },
+    "sendCarousel": {
+      "addSlide": "Dia toevoegen",
+      "removeSlide": "Dia verwijderen",
+      "whatsappLinkButtonIgnored": "Op WhatsApp werkt de link van deze kaart niet: een kaart met een linkknop kan geen andere knoppen hebben. De kaart wordt in plaats daarvan als antwoord verzonden."
+    },
     "additionalSteps": "Aanvullende stappen",
     "delayType": {
       "datetimeCustomField": "Aangepast datum- en tijdveld",
@@ -2495,7 +2504,8 @@
     "title": "Platforminstellingen",
     "errors": {
       "giphyApiKeyRequired": "Een API-sleutel is vereist om GIPHY te configureren.",
-      "giphyApiKeyInvalid": "Ongeldige GIPHY-API-sleutel"
+      "giphyApiKeyInvalid": "Ongeldige GIPHY-API-sleutel",
+      "threadsAppSecretRequired": "App Secret is vereist om Threads te configureren."
     }
   },
   "home": {
@@ -2690,6 +2700,8 @@
     "noVersionsFound": "Geen gepubliceerde versies gevonden",
     "publishVersionSuccess": "Er is een nieuwe versie gepubliceerd",
     "flowConfigIncomplete": "Sommige configuraties zijn onvolledig",
+    "whatsappCarouselButtonsMismatch": "Op WhatsApp heeft een carrousel op elke kaart dezelfde knoppen nodig: ofwel op elke kaart één linkknop, ofwel op elke kaart hetzelfde aantal antwoordknoppen",
+    "whatsappCarouselLinkButtonNotAlone": "Op WhatsApp kan een carrouselkaart met een linkknop geen andere knoppen hebben. Verwijder de andere knoppen op die kaart of wijzig de linkknop naar een andere actie.",
     "duplicateNodeError": "Het blok kon niet worden gedupliceerd. Probeer het opnieuw.",
     "deleteNodeError": "Het blok kon niet worden verwijderd. Probeer het opnieuw.",
     "redoHistoryCleared": "Geschiedenis voor opnieuw uitvoeren gewist",
@@ -3088,6 +3100,7 @@
         "quickReplyPayloadPlaceholder": "Voer payload in (optioneel)",
         "flowToken": "Flowtoken",
         "flowTokenPlaceholder": "Voer flowtoken in",
+        "flowNotSynced": "Synchroniseer WhatsApp-flows om verzonden velden te koppelen.",
         "catalogProductId": "Product-ID",
         "catalogProductIdPlaceholder": "Voer de retailer-ID van het product in",
         "carouselCard": "Kaart {index}",
@@ -3389,7 +3402,10 @@
     "title": "Auditlogboeken"
   },
   "customFields": {
-    "title": "Aangepaste velden"
+    "title": "Aangepaste velden",
+    "variables": {
+      "rawGroup": "Ruwe aangepaste velden"
+    }
   },
   "keywords": {
     "title": "Trefwoorden",
@@ -3598,12 +3614,19 @@
     "deactivated": "Automatisering gedeactiveerd",
     "trackCommentsOn": "Opmerkingen volgen op",
     "trackCommentsOnDescription": "Pas deze automatisering toe op alle berichten op je pagina of beperk deze tot specifieke berichten die je selecteert.",
+    "platform": "Platform",
+    "platformType": {
+      "messenger": "Messenger",
+      "threads": "Threads"
+    },
     "privateReply": "Privéantwoord (inbox)",
     "privateReplyDescription": "Stuur een privébericht naar de inbox van degene die de opmerking plaatste. Kies een AI-agent, een vaste tekstsjabloon (spintax wordt ondersteund), een chatbotflow of schakel dit uit.",
     "publicReply": "Openbaar antwoord op opmerking",
     "publicReplyDescription": "Plaats een openbaar antwoord direct onder de opmerking. Ondersteunt maximaal 10 tekstsjablonen (spintax wordt ondersteund), een AI-agent, een chatbotflow of geen antwoord.",
+    "randomPublicReplyDescription": "Wissel willekeurig tussen de openbare antwoordberichten hieronder.",
     "replyMessage": "Antwoordbericht",
     "replyMessagePlaceholder": "Voer een antwoordbericht in...",
+    "replyMessageNumber": "Antwoordbericht #{number}",
     "includeKeywordsType": "Antwoorden op",
     "includeKeywordsTypeDescription": "Kies op welke opmerkingen deze automatisering reageert.",
     "includeKeywords": "Trefwoorden om te vinden",
@@ -3705,8 +3728,10 @@
     "privateReplyDescription": "Stuur een privébericht naar de inbox van degene die de opmerking plaatste. Kies een AI-agent, een vaste tekstsjabloon (spintax wordt ondersteund), een chatbotflow of schakel dit uit.",
     "publicReply": "Openbaar antwoord op opmerking",
     "publicReplyDescription": "Plaats een openbaar antwoord direct onder de opmerking. Ondersteunt maximaal 10 tekstsjablonen (spintax wordt ondersteund), een AI-agent, een chatbotflow of geen antwoord.",
+    "randomPublicReplyDescription": "Wissel willekeurig tussen de openbare antwoordberichten hieronder.",
     "replyMessage": "Antwoordbericht",
     "replyMessagePlaceholder": "Voer een antwoordbericht in...",
+    "replyMessageNumber": "Antwoordbericht #{number}",
     "includeKeywordsType": "Antwoorden op",
     "includeKeywordsTypeDescription": "Kies op welke opmerkingen deze automatisering reageert.",
     "includeKeywords": "Trefwoorden om te vinden",

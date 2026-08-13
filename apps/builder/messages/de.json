@@ -43,6 +43,7 @@
     "disableBot": "Bot deaktivieren",
     "disconnect": "Verbindung trennen",
     "download": "Herunterladen",
+    "downloadTemplate": "Vorlage herunterladen",
     "edit": "Bearbeiten",
     "editFeature": "{feature} bearbeiten",
     "enableBot": "Bot aktivieren",
@@ -585,6 +586,7 @@
     "omnichannel": { "label": "Omnichannel" },
     "smtp": { "label": "SMTP" },
     "messenger": { "label": "Messenger" },
+    "threads": { "label": "Threads" },
     "image": { "label": "Bild" },
     "instagram": {
       "label": "Instagram",
@@ -1486,6 +1488,11 @@
       "addMapping": "Zuordnung hinzufügen",
       "addCustomField": "Neu hinzufügen"
     },
+    "sendCarousel": {
+      "addSlide": "Karte hinzufügen",
+      "removeSlide": "Karte entfernen",
+      "whatsappLinkButtonIgnored": "Bei WhatsApp funktioniert der Link dieser Karte nicht: Eine Karte mit einer Link-Schaltfläche darf keine weiteren Schaltflächen haben. Sie wird stattdessen als Antwort gesendet."
+    },
     "additionalSteps": "Zusätzliche Schritte",
     "delayType": {
       "datetimeCustomField": "Benutzerdefiniertes Datums- und Uhrzeitfeld",
@@ -1866,7 +1873,8 @@
     "title": "Plattformeinstellungen",
     "errors": {
       "giphyApiKeyRequired": "Zum Konfigurieren von GIPHY ist ein API-Schlüssel erforderlich.",
-      "giphyApiKeyInvalid": "Ungültiger GIPHY-API-Schlüssel"
+      "giphyApiKeyInvalid": "Ungültiger GIPHY-API-Schlüssel",
+      "threadsAppSecretRequired": "Für die Konfiguration von Threads ist ein App Secret erforderlich."
     }
   },
   "home": {
@@ -2055,6 +2063,8 @@
     "noVersionsFound": "Keine veröffentlichten Versionen gefunden",
     "publishVersionSuccess": "Eine neue Version wurde veröffentlicht",
     "flowConfigIncomplete": "Einige Konfigurationen sind unvollständig",
+    "whatsappCarouselButtonsMismatch": "Bei WhatsApp muss ein Karussell auf jeder Karte dieselben Schaltflächen haben: entweder eine einzelne Link-Schaltfläche auf jeder Karte oder auf jeder Karte die gleiche Anzahl an Antwortschaltflächen",
+    "whatsappCarouselLinkButtonNotAlone": "Bei WhatsApp darf eine Karussellkarte mit einer Link-Schaltfläche keine weiteren Schaltflächen haben. Entfernen Sie die anderen Schaltflächen auf dieser Karte oder ändern Sie die Link-Schaltfläche in eine andere Aktion.",
     "duplicateNodeError": "Der Block konnte nicht dupliziert werden. Versuchen Sie es erneut.",
     "deleteNodeError": "Der Block konnte nicht gelöscht werden. Versuchen Sie es erneut.",
     "redoHistoryCleared": "Wiederholungsverlauf gelöscht",
@@ -2416,6 +2426,7 @@
         "quickReplyPayloadPlaceholder": "Nutzdaten eingeben (optional)",
         "flowToken": "Flow-Token",
         "flowTokenPlaceholder": "Flow-Token eingeben",
+        "flowNotSynced": "Synchronisieren Sie WhatsApp-Flows, um übermittelte Felder zuzuordnen.",
         "catalogProductId": "Produkt-ID",
         "catalogProductIdPlaceholder": "Produkt-Händler-ID eingeben",
         "carouselCard": "Karte {index}",
@@ -2689,7 +2700,10 @@
     "exportTakingLongDescription": "Der Export wird noch verarbeitet. Sie können diesen Dialog schließen und in einigen Minuten im Exportverlauf erneut nachsehen."
   },
   "auditLogs": { "title": "Audit-Protokolle" },
-  "customFields": { "title": "Benutzerdefinierte Felder" },
+  "customFields": {
+    "title": "Benutzerdefinierte Felder",
+    "variables": { "rawGroup": "Rohe benutzerdefinierte Felder" }
+  },
   "keywords": {
     "title": "Schlüsselwörter",
     "tabs": {
@@ -2891,12 +2905,19 @@
     "deactivated": "Automatisierung deaktiviert",
     "trackCommentsOn": "Kommentare verfolgen für",
     "trackCommentsOnDescription": "Wenden Sie diese Automatisierung auf alle Beiträge Ihrer Seite oder auf ausgewählte Beiträge an.",
+    "platform": "Plattform",
+    "platformType": {
+      "messenger": "Messenger",
+      "threads": "Threads"
+    },
     "privateReply": "Private Antwort (Posteingang)",
     "privateReplyDescription": "Senden Sie eine private Nachricht an den Posteingang des Kommentierenden. Wählen Sie einen KI-Agenten, eine feste Textvorlage (Spintax unterstützt), einen Chatbot-Flow oder deaktivieren Sie die Antwort.",
     "publicReply": "Öffentliche Antwort auf Kommentar",
     "publicReplyDescription": "Veröffentlichen Sie eine öffentliche Antwort direkt unter dem Kommentar. Unterstützt bis zu 10 Textvorlagen (Spintax unterstützt), einen KI-Agenten, einen Chatbot-Flow oder keine Antwort.",
+    "randomPublicReplyDescription": "Wechsle zufällig zwischen den öffentlichen Antwortnachrichten unten.",
     "replyMessage": "Antwortnachricht",
     "replyMessagePlaceholder": "Antwortnachricht eingeben...",
+    "replyMessageNumber": "Antwortnachricht #{number}",
     "includeKeywordsType": "Antworten auf",
     "includeKeywordsTypeDescription": "Wählen Sie, auf welche Kommentare diese Automatisierung antwortet.",
     "includeKeywords": "Zu suchende Schlüsselwörter",
@@ -2996,8 +3017,10 @@
     "privateReplyDescription": "Senden Sie eine private Nachricht an den Posteingang des Kommentierenden. Wählen Sie einen KI-Agenten, eine feste Textvorlage (Spintax unterstützt), einen Chatbot-Flow oder deaktivieren Sie die Antwort.",
     "publicReply": "Öffentliche Antwort auf Kommentar",
     "publicReplyDescription": "Veröffentlichen Sie eine öffentliche Antwort direkt unter dem Kommentar. Unterstützt bis zu 10 Textvorlagen (Spintax unterstützt), einen KI-Agenten, einen Chatbot-Flow oder keine Antwort.",
+    "randomPublicReplyDescription": "Wechsle zufällig zwischen den öffentlichen Antwortnachrichten unten.",
     "replyMessage": "Antwortnachricht",
     "replyMessagePlaceholder": "Antwortnachricht eingeben...",
+    "replyMessageNumber": "Antwortnachricht #{number}",
     "includeKeywordsType": "Antworten auf",
     "includeKeywordsTypeDescription": "Wählen Sie, auf welche Kommentare diese Automatisierung antwortet.",
     "includeKeywords": "Zu suchende Schlüsselwörter",

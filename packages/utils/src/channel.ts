@@ -24,6 +24,7 @@ export const channelTypes = z.enum([
   "smtp",
   "telegram",
   "instagram",
+  "threads",
   "tiktok",
 ])
 
@@ -90,29 +91,35 @@ export const CHANNEL_CAPABILITIES: Record<ChannelType, ChannelCapability> = {
     requiresCredential: false,
     order: 4,
   },
-  tiktok: {
+  threads: {
     creatable: true,
     manageable: true,
     requiresCredential: true,
     order: 5,
   },
+  tiktok: {
+    creatable: true,
+    manageable: true,
+    requiresCredential: true,
+    order: 6,
+  },
   webchat: {
     creatable: true,
     manageable: true,
     requiresCredential: false,
-    order: 6,
+    order: 7,
   },
   whatsapp: {
     creatable: true,
     manageable: true,
     requiresCredential: true,
-    order: 7,
+    order: 8,
   },
   zalo: {
     creatable: true,
     manageable: true,
     requiresCredential: true,
-    order: 8,
+    order: 9,
   },
   // Not a real connectable channel — the fallback icon/label for unknown
   // channel strings (see `InboxIcon`'s `isChannelType` guard). Never offered
@@ -121,7 +128,7 @@ export const CHANNEL_CAPABILITIES: Record<ChannelType, ChannelCapability> = {
     creatable: false,
     manageable: false,
     requiresCredential: false,
-    order: 9,
+    order: 10,
   },
 }
 

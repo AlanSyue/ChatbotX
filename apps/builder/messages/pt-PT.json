@@ -43,6 +43,7 @@
     "disableBot": "Desativar bot",
     "disconnect": "Desligar",
     "download": "Transferir",
+    "downloadTemplate": "Transferir modelo",
     "edit": "Editar",
     "editFeature": "Editar {feature}",
     "enableBot": "Ativar bot",
@@ -620,6 +621,9 @@
       "viaFacebookTitle": "Instagram através do Facebook",
       "cloneFromMessenger": "Clonar do Messenger",
       "clonedFromMessenger": "Clonado do Messenger"
+    },
+    "threads": {
+      "label": "Threads"
     },
     "zalo": {
       "label": "Zalo OA"
@@ -2104,6 +2108,11 @@
       "addMapping": "Adicionar mapeamento",
       "addCustomField": "Adicionar"
     },
+    "sendCarousel": {
+      "addSlide": "Adicionar diapositivo",
+      "removeSlide": "Remover diapositivo",
+      "whatsappLinkButtonIgnored": "No WhatsApp, a ligação deste cartão não funcionará: um cartão com botão de ligação não pode ter outros botões. Será enviado como resposta."
+    },
     "additionalSteps": "Passos adicionais",
     "delayType": {
       "datetimeCustomField": "Campo personalizado de data e hora",
@@ -2495,7 +2504,8 @@
     "title": "Definições da plataforma",
     "errors": {
       "giphyApiKeyRequired": "É necessária uma chave da API para configurar o GIPHY.",
-      "giphyApiKeyInvalid": "A chave da API do GIPHY não é válida"
+      "giphyApiKeyInvalid": "A chave da API do GIPHY não é válida",
+      "threadsAppSecretRequired": "O App Secret é obrigatório para configurar o Threads."
     }
   },
   "home": {
@@ -2690,6 +2700,8 @@
     "noVersionsFound": "Não foram encontradas versões publicadas",
     "publishVersionSuccess": "Foi publicada uma nova versão",
     "flowConfigIncomplete": "Algumas configurações estão incompletas",
+    "whatsappCarouselButtonsMismatch": "No WhatsApp, um carrossel precisa de ter os mesmos botões em todos os cartões: ou um único botão de ligação em cada cartão, ou o mesmo número de botões de resposta em cada cartão",
+    "whatsappCarouselLinkButtonNotAlone": "No WhatsApp, um cartão de carrossel com um botão de ligação não pode ter outros botões. Remova os outros botões desse cartão ou altere o botão de ligação para outra ação.",
     "duplicateNodeError": "Não foi possível duplicar o bloco. Tente novamente.",
     "deleteNodeError": "Não foi possível eliminar o bloco. Tente novamente.",
     "redoHistoryCleared": "Histórico de refazer limpo",
@@ -3088,6 +3100,7 @@
         "quickReplyPayloadPlaceholder": "Introduza o payload (opcional)",
         "flowToken": "Token do fluxo",
         "flowTokenPlaceholder": "Introduza o token do fluxo",
+        "flowNotSynced": "Sincronize os fluxos do WhatsApp para mapear os campos enviados.",
         "catalogProductId": "ID do produto",
         "catalogProductIdPlaceholder": "Introduza o ID do produto do retalhista",
         "carouselCard": "Cartão {index}",
@@ -3385,7 +3398,10 @@
     "title": "Registos de auditoria"
   },
   "customFields": {
-    "title": "Campos personalizados"
+    "title": "Campos personalizados",
+    "variables": {
+      "rawGroup": "Campos personalizados em bruto"
+    }
   },
   "keywords": {
     "title": "Palavras-chave",
@@ -3588,6 +3604,11 @@
   "facebookCommentAutomation": {
     "title": "Automatização de comentários do Facebook",
     "description": "Automatize os comentários do Facebook para os seus contactos.",
+    "platform": "Plataforma",
+    "platformType": {
+      "messenger": "Messenger",
+      "threads": "Threads"
+    },
     "create": "Criar automatização",
     "replies": "Respostas",
     "activated": "Automatização ativada",
@@ -3686,6 +3707,8 @@
     "chooseSpecificPosts": "Escolher publicações...",
     "postIdTab": "ID da publicação",
     "postIdPlaceholder": "Introduza os IDs das publicações, um por linha...",
+    "randomPublicReplyDescription": "Alterne aleatoriamente entre as mensagens de resposta pública abaixo.",
+    "replyMessageNumber": "Mensagem de resposta #{number}",
     "noPostsFound": "Não foram encontradas publicações"
   },
   "instagramCommentAutomation": {
@@ -3784,6 +3807,8 @@
     "chooseSpecificPosts": "Escolher publicações...",
     "postIdTab": "ID da publicação",
     "postIdPlaceholder": "Introduza os IDs das publicações, um por linha...",
+    "randomPublicReplyDescription": "Alterne aleatoriamente entre as mensagens de resposta pública abaixo.",
+    "replyMessageNumber": "Mensagem de resposta #{number}",
     "noPostsFound": "Não foram encontradas publicações",
     "connectionType": {
       "title": "Escolher o tipo de ligação ao Instagram",

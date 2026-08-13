@@ -9,6 +9,7 @@ import type {
   FBCommentHideComments,
   FBCommentIncludeKeywords,
   FBCommentPost,
+  FBCommentPublicReply,
   FBCommentReply,
   FBCommentReplyAfter,
   IntegrationType,
@@ -49,6 +50,10 @@ import {
   createAttachmentInfoResolver,
   needsAttachmentInfo,
 } from "./comment-attachment"
+import {
+  getPublicReplyValues,
+  selectPublicReplyText,
+} from "./public-reply-text"
 
 const RANDOM_DELAY_MINUTES: Record<string, number> = {
   randomWithin3Minutes: 3,
@@ -81,6 +86,21 @@ const UNHIDE_DELAY_MS: Record<string, number> = {
   "8d": 8 * 86_400_000,
   "9d": 9 * 86_400_000,
   "10d": 10 * 86_400_000,
+}
+
+function getThreadsAuthUsername(auth: unknown): string | undefined {
+  const username =
+    typeof auth === "object" &&
+    auth !== null &&
+    "metadata" in auth &&
+    typeof auth.metadata === "object" &&
+    auth.metadata !== null &&
+    "username" in auth.metadata &&
+    typeof auth.metadata.username === "string"
+      ? auth.metadata.username
+      : undefined
+
+  return username?.toLowerCase()
 }
 
 const COMMENT_REPLY_RETENTION = {
@@ -135,6 +155,16 @@ export function isCommentReply(
 function willSendReply(reply: FBCommentReply): boolean {
   if (reply.type === "none") {
     return false
+  }
+  return Boolean(reply.value)
+}
+
+function willSendPublicReply(reply: FBCommentPublicReply): boolean {
+  if (reply.type === "none") {
+    return false
+  }
+  if (reply.type === "text") {
+    return getPublicReplyValues(reply).length > 0
   }
   return Boolean(reply.value)
 }
@@ -268,13 +298,13 @@ export async function postPublicCommentReply(props: {
 }
 
 async function executePublicReply(
-  publicReply: FBCommentReply,
+  publicReplyInput: FBCommentPublicReply,
   ctx: {
     automationId: string
     integrationType: string
     integrationIdentifier: string
     commentId: string
-    channelType: "messenger" | "instagram" | "instagramFacebook"
+    channelType: "messenger" | "instagram" | "instagramFacebook" | "threads"
     conversationId: string
     contactInboxId: string
     delay: number
@@ -285,19 +315,40 @@ async function executePublicReply(
     parentMessageCreatedAt?: Date | null
   },
 ) {
-  if (publicReply.type === "none") {
+  if (publicReplyInput.type === "none") {
     return
   }
 
-  if (publicReply.type === "text" && publicReply.value) {
-    let text = publicReply.value
+  if (
+    ctx.channelType === "threads" &&
+    !["text", "none"].includes(publicReplyInput.type)
+  ) {
+    logger.info(
+      { automationId: ctx.automationId, commentId: ctx.commentId },
+      "Threads comment automation skipped unsupported public reply",
+    )
+    return
+  }
+
+  const nonThreadsChannelType =
+    ctx.channelType === "threads" ? undefined : ctx.channelType
+
+  if (publicReplyInput.type === "text") {
+    let text = selectPublicReplyText({
+      automationId: ctx.automationId,
+      commentId: ctx.commentId,
+      reply: publicReplyInput,
+    })
+    if (!text) {
+      return
+    }
     try {
       const variables = await contactVariableService.getAll({
         contactId: ctx.contactInbox.contactId,
         contactInbox: ctx.contactInbox,
       })
       text = await contactVariableService.replaceAll({
-        text: publicReply.value,
+        text,
         variables,
       })
     } catch (err) {
@@ -321,7 +372,10 @@ async function executePublicReply(
     return
   }
 
-  if (publicReply.type === "flow" && publicReply.value) {
+  if (publicReplyInput.type === "flow" && publicReplyInput.value) {
+    if (!nonThreadsChannelType) {
+      return
+    }
     await integrationQueue.add(
       IntegrationJobAction.sendFlow,
       {
@@ -329,7 +383,7 @@ async function executePublicReply(
         data: {
           conversationId: ctx.conversationId,
           contactInboxId: ctx.contactInboxId,
-          flowId: publicReply.value,
+          flowId: publicReplyInput.value,
           origin: webhookChannelOrigin(),
           commentAnchor: { commentId: ctx.commentId, replyChannel: "public" },
         },
@@ -347,7 +401,10 @@ async function executePublicReply(
     return
   }
 
-  if (publicReply.type === "AIAgent" && publicReply.value) {
+  if (publicReplyInput.type === "AIAgent" && publicReplyInput.value) {
+    if (!nonThreadsChannelType) {
+      return
+    }
     await integrationQueue.add(
       IntegrationJobAction.commentAIReply,
       {
@@ -360,9 +417,9 @@ async function executePublicReply(
           conversationId: ctx.conversationId,
           contactInboxId: ctx.contactInboxId,
           commentId: ctx.commentId,
-          agentId: publicReply.value,
+          agentId: publicReplyInput.value,
           replyChannel: "public",
-          channelType: ctx.channelType,
+          channelType: nonThreadsChannelType,
           message: ctx.message,
           parentMessageId: ctx.parentMessageId ?? null,
           parentMessageCreatedAt:
@@ -389,7 +446,7 @@ async function executePrivateReply(
     integrationType: string
     integrationIdentifier: string
     commentId: string
-    channelType: "messenger" | "instagram" | "instagramFacebook"
+    channelType: "messenger" | "instagram" | "instagramFacebook" | "threads"
     conversationId: string
     contactInboxId: string
     contactInbox: ContactInboxModel
@@ -398,6 +455,16 @@ async function executePrivateReply(
     message?: string
   },
 ) {
+  if (ctx.channelType === "threads") {
+    if (privateReply.type !== "none") {
+      logger.info(
+        { automationId: ctx.automationId, commentId: ctx.commentId },
+        "Threads comment automation skipped unsupported private reply",
+      )
+    }
+    return
+  }
+
   if (privateReply.type === "none") {
     return
   }
@@ -655,6 +722,25 @@ export async function processCommentAutomation(
       | "messenger"
       | "instagram"
       | "instagramFacebook"
+      | "threads"
+    const selfThreadsUsername =
+      channelType === "threads"
+        ? getThreadsAuthUsername(integrationRow.auth)
+        : undefined
+
+    if (
+      channelType === "threads" &&
+      typeof data.fromId === "string" &&
+      selfThreadsUsername &&
+      data.fromId.toLowerCase() === selfThreadsUsername
+    ) {
+      logger.info(
+        { commentId, integrationIdentifier },
+        "Threads comment automation skipped self-authored reply",
+      )
+      return
+    }
+
     const automations = await fbCommentAutomationService.findActiveAutomations({
       workspaceId,
       channelType,
@@ -662,13 +748,16 @@ export async function processCommentAutomation(
 
     const workspace = await workspaceService.findById({ id: workspaceId })
 
-    const resolveAttachmentInfo = createAttachmentInfoResolver({
-      channelType,
-      workspaceId,
-      commentId,
-      integrationRow,
-      auth,
-    })
+    const resolveAttachmentInfo =
+      channelType === "threads"
+        ? async () => ({ hasImage: false, hasVideo: false })
+        : createAttachmentInfoResolver({
+            channelType,
+            workspaceId,
+            commentId,
+            integrationRow,
+            auth,
+          })
 
     let processingFailed = false
 
@@ -826,7 +915,7 @@ export async function processCommentAutomation(
             createdAt: dbMessage.createdAt,
           }
 
-          if (automation.options.likeUserComment) {
+          if (automation.options.likeUserComment && channelType !== "threads") {
             chatQueue
               .add(ChatJobAction.changeChannelMessageState, {
                 type: ChatJobAction.changeChannelMessageState,
@@ -845,28 +934,37 @@ export async function processCommentAutomation(
               )
           }
 
-          const { hasImage, hasVideo } = needsAttachmentInfo(
-            automation.hideComments,
-          )
-            ? await resolveAttachmentInfo()
-            : { hasImage: false, hasVideo: false }
+          if (channelType !== "threads") {
+            const { hasImage, hasVideo } = needsAttachmentInfo(
+              automation.hideComments,
+            )
+              ? await resolveAttachmentInfo()
+              : { hasImage: false, hasVideo: false }
 
-          applyHideComments(automation.hideComments, commentId, message, {
-            conversation: conversationRef,
-            contactInbox,
-            messageId: dbMessage.id,
-            messageCreatedAt: dbMessage.createdAt,
-            hasImage,
-            hasVideo,
-          }).catch((err: unknown) =>
-            logger.error(
-              { err, automationId: automation.id, commentId },
-              "Failed to apply hide comments",
-            ),
-          )
+            applyHideComments(automation.hideComments, commentId, message, {
+              conversation: conversationRef,
+              contactInbox,
+              messageId: dbMessage.id,
+              messageCreatedAt: dbMessage.createdAt,
+              hasImage,
+              hasVideo,
+            }).catch((err: unknown) =>
+              logger.error(
+                { err, automationId: automation.id, commentId },
+                "Failed to apply hide comments",
+              ),
+            )
+          } else if (hasHideCommentRule(automation.hideComments)) {
+            logger.info(
+              { automationId: automation.id, commentId },
+              "Threads comment automation skipped unsupported hide comment rule",
+            )
+          }
         }
 
         let dispatchFailed = false
+        let didSchedulePublicReply = false
+        let didSchedulePrivateReply = false
 
         try {
           await executePublicReply(automation.publicReply, {
@@ -884,12 +982,16 @@ export async function processCommentAutomation(
             parentMessageId,
             parentMessageCreatedAt,
           })
+          didSchedulePublicReply = didAutomationActuallySendPublicReply(
+            automation.publicReply,
+            channelType,
+          )
         } catch (err) {
           logger.error(
             { err, automationId: automation.id, commentId },
             "Failed to send public reply",
           )
-          if (willSendReply(automation.publicReply)) {
+          if (willSendPublicReply(automation.publicReply)) {
             dispatchFailed = true
           }
         }
@@ -908,6 +1010,10 @@ export async function processCommentAutomation(
             delay,
             message,
           })
+          didSchedulePrivateReply = didAutomationActuallySendPrivateReply(
+            automation.privateReply,
+            channelType,
+          )
         } catch (err) {
           logger.error(
             { err, automationId: automation.id, commentId },
@@ -926,9 +1032,7 @@ export async function processCommentAutomation(
           automationId: automation.id,
           commentId,
           workspaceId,
-          hasReply:
-            willSendReply(automation.publicReply) ||
-            willSendReply(automation.privateReply),
+          hasReply: didSchedulePublicReply || didSchedulePrivateReply,
         })
       } catch (err) {
         processingFailed = true
@@ -962,4 +1066,39 @@ const logAutomationSkipped = ({
     { automationId, commentId, postId, workspaceId, reason },
     "Comment automation skipped",
   )
+}
+
+function hasHideCommentRule(hideComments: FBCommentHideComments): boolean {
+  return (
+    hideComments.all ||
+    hideComments.hasPhoneNumber ||
+    hideComments.hasImage ||
+    hideComments.hasVideo ||
+    hideComments.hasLink ||
+    hideComments.hasKeywords ||
+    hideComments.keywords.length > 0 ||
+    hideComments.showCommentsAfter !== "none"
+  )
+}
+
+function didAutomationActuallySendPublicReply(
+  reply: FBCommentPublicReply,
+  channelType: "messenger" | "instagram" | "instagramFacebook" | "threads",
+): boolean {
+  if (channelType === "threads") {
+    return reply.type === "text" && willSendPublicReply(reply)
+  }
+
+  return willSendPublicReply(reply)
+}
+
+function didAutomationActuallySendPrivateReply(
+  reply: FBCommentReply,
+  channelType: "messenger" | "instagram" | "instagramFacebook" | "threads",
+): boolean {
+  if (channelType === "threads") {
+    return false
+  }
+
+  return willSendReply(reply)
 }

@@ -43,6 +43,7 @@
     "disableBot": "Nonaktifkan Bot",
     "disconnect": "Putuskan",
     "download": "Unduh",
+    "downloadTemplate": "Unduh templat",
     "edit": "Edit",
     "editFeature": "Edit {feature}",
     "enableBot": "Aktifkan Bot",
@@ -606,6 +607,9 @@
     },
     "messenger": {
       "label": "Messenger"
+    },
+    "threads": {
+      "label": "Threads"
     },
     "image": {
       "label": "Gambar"
@@ -2104,6 +2108,11 @@
       "addMapping": "Tambah Pemetaan",
       "addCustomField": "Tambah Baru"
     },
+    "sendCarousel": {
+      "addSlide": "Tambah kartu",
+      "removeSlide": "Hapus kartu",
+      "whatsappLinkButtonIgnored": "Di WhatsApp, tautan pada kartu ini tidak akan berfungsi: kartu dengan tombol tautan tidak boleh memiliki tombol lain. Kartu itu akan dikirim sebagai balasan."
+    },
     "additionalSteps": "Langkah tambahan",
     "delayType": {
       "datetimeCustomField": "Kolom Kustom Tanggal & Waktu",
@@ -2495,7 +2504,8 @@
     "title": "Pengaturan Platform",
     "errors": {
       "giphyApiKeyRequired": "Kunci API diperlukan untuk mengonfigurasi GIPHY.",
-      "giphyApiKeyInvalid": "Kunci API GIPHY tidak valid"
+      "giphyApiKeyInvalid": "Kunci API GIPHY tidak valid",
+      "threadsAppSecretRequired": "App Secret diperlukan untuk mengonfigurasi Threads."
     }
   },
   "home": {
@@ -2690,6 +2700,8 @@
     "noVersionsFound": "Tidak ada versi yang dipublikasikan",
     "publishVersionSuccess": "Versi baru telah dipublikasikan",
     "flowConfigIncomplete": "Beberapa konfigurasi belum lengkap",
+    "whatsappCarouselButtonsMismatch": "Di WhatsApp, korsel harus memiliki tombol yang sama pada setiap kartu: baik satu tombol tautan pada setiap kartu, atau jumlah tombol balasan yang sama pada setiap kartu",
+    "whatsappCarouselLinkButtonNotAlone": "Di WhatsApp, kartu korsel dengan tombol tautan tidak boleh memiliki tombol lain. Hapus tombol lain pada kartu itu, atau ubah tombol tautan menjadi tindakan lain.",
     "duplicateNodeError": "Blok tidak dapat diduplikat. Silakan coba lagi.",
     "deleteNodeError": "Blok tidak dapat dihapus. Silakan coba lagi.",
     "redoHistoryCleared": "Riwayat pengulangan dihapus",
@@ -3088,6 +3100,7 @@
         "quickReplyPayloadPlaceholder": "Masukkan payload (opsional)",
         "flowToken": "Token Alur",
         "flowTokenPlaceholder": "Masukkan token alur",
+        "flowNotSynced": "Sinkronkan alur WhatsApp untuk memetakan bidang yang dikirim.",
         "catalogProductId": "ID Produk",
         "catalogProductIdPlaceholder": "Masukkan ID pengecer produk",
         "carouselCard": "Kartu {index}",
@@ -3389,7 +3402,10 @@
     "title": "Log Audit"
   },
   "customFields": {
-    "title": "Kolom Kustom"
+    "title": "Kolom Kustom",
+    "variables": {
+      "rawGroup": "Bidang kustom mentah"
+    }
   },
   "keywords": {
     "title": "Kata Kunci",
@@ -3598,12 +3614,19 @@
     "deactivated": "Otomatisasi dinonaktifkan",
     "trackCommentsOn": "Lacak komentar pada",
     "trackCommentsOnDescription": "Terapkan otomatisasi ini ke semua postingan di Halaman Anda, atau batasi ke postingan tertentu yang Anda pilih.",
+    "platform": "Platform",
+    "platformType": {
+      "messenger": "Messenger",
+      "threads": "Threads"
+    },
     "privateReply": "Balasan pribadi (kotak masuk)",
     "privateReplyDescription": "Kirim pesan pribadi ke kotak masuk pemberi komentar. Pilih Agen AI, templat teks tetap (mendukung spintax), alur chatbot, atau nonaktifkan.",
     "publicReply": "Balasan publik untuk komentar",
     "publicReplyDescription": "Kirim balasan publik langsung di bawah komentar. Mendukung hingga 10 templat teks (mendukung spintax), Agen AI, alur chatbot, atau tanpa balasan.",
+    "randomPublicReplyDescription": "Putar secara acak pesan balasan publik di bawah ini.",
     "replyMessage": "Pesan balasan",
     "replyMessagePlaceholder": "Masukkan pesan balasan...",
+    "replyMessageNumber": "Pesan balasan #{number}",
     "includeKeywordsType": "Balas",
     "includeKeywordsTypeDescription": "Pilih komentar yang akan ditanggapi otomatisasi ini.",
     "includeKeywords": "Kata kunci yang dicocokkan",
@@ -3705,8 +3728,10 @@
     "privateReplyDescription": "Kirim pesan pribadi ke kotak masuk pemberi komentar. Pilih Agen AI, templat teks tetap (mendukung spintax), alur chatbot, atau nonaktifkan.",
     "publicReply": "Balasan publik untuk komentar",
     "publicReplyDescription": "Kirim balasan publik langsung di bawah komentar. Mendukung hingga 10 templat teks (mendukung spintax), Agen AI, alur chatbot, atau tanpa balasan.",
+    "randomPublicReplyDescription": "Putar secara acak pesan balasan publik di bawah ini.",
     "replyMessage": "Pesan balasan",
     "replyMessagePlaceholder": "Masukkan pesan balasan...",
+    "replyMessageNumber": "Pesan balasan #{number}",
     "includeKeywordsType": "Balas",
     "includeKeywordsTypeDescription": "Pilih komentar yang akan ditanggapi otomatisasi ini.",
     "includeKeywords": "Kata kunci yang dicocokkan",

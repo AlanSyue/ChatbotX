@@ -682,6 +682,9 @@
     "messenger": {
       "label": "Messenger"
     },
+    "threads": {
+      "label": "Threads"
+    },
     "image": {
       "label": "Image"
     },
@@ -2575,7 +2578,8 @@
     "title": "Platform Settings",
     "errors": {
       "giphyApiKeyRequired": "API Key is required to configure GIPHY.",
-      "giphyApiKeyInvalid": "Invalid GIPHY API key"
+      "giphyApiKeyInvalid": "Invalid GIPHY API key",
+      "threadsAppSecretRequired": "App Secret is required to configure Threads."
     }
   },
   "home": {
@@ -3610,12 +3614,19 @@
     "deactivated": "Automation deactivated",
     "trackCommentsOn": "Track comments on",
     "trackCommentsOnDescription": "Apply this automation to all posts on your Page, or narrow it to specific posts you select.",
+    "platform": "Platform",
+    "platformType": {
+      "messenger": "Messenger",
+      "threads": "Threads"
+    },
     "privateReply": "Private reply (inbox)",
     "privateReplyDescription": "Send a private message to the commenter's inbox. Choose AI Agent, a fixed text template (spintax supported), a chatbot flow, or disable.",
     "publicReply": "Public reply to comment",
     "publicReplyDescription": "Post a public reply directly under the comment. Supports up to 10 text templates (spintax supported), AI Agent, a chatbot flow, or no reply.",
+    "randomPublicReplyDescription": "Randomly rotate through the public reply messages below.",
     "replyMessage": "Reply message",
     "replyMessagePlaceholder": "Enter reply message...",
+    "replyMessageNumber": "Reply message #{number}",
     "includeKeywordsType": "Reply to",
     "includeKeywordsTypeDescription": "Choose which comments this automation responds to.",
     "includeKeywords": "Keywords to match",
@@ -3717,8 +3728,10 @@
     "privateReplyDescription": "Send a private message to the commenter's inbox. Choose AI Agent, a fixed text template (spintax supported), a chatbot flow, or disable.",
     "publicReply": "Public reply to comment",
     "publicReplyDescription": "Post a public reply directly under the comment. Supports up to 10 text templates (spintax supported), AI Agent, a chatbot flow, or no reply.",
+    "randomPublicReplyDescription": "Randomly rotate through the public reply messages below.",
     "replyMessage": "Reply message",
     "replyMessagePlaceholder": "Enter reply message...",
+    "replyMessageNumber": "Reply message #{number}",
     "includeKeywordsType": "Reply to",
     "includeKeywordsTypeDescription": "Choose which comments this automation responds to.",
     "includeKeywords": "Keywords to match",

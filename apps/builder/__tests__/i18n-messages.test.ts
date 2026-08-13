@@ -31,6 +31,19 @@ const icuHeaderPattern =
   /\{([A-Za-z][\w.-]*),\s*(plural|select|selectordinal)\s*,/g
 const icuCategoryPattern = /^\s*(=?[\w-]+)\s*\{/
 const zeroWidthPattern = /\u200b|\u200c|\u200d|\ufeff/
+const requiredThreadsAndCommentAutomationKeys = [
+  "fields.threads.label",
+  "platformSettings.errors.threadsAppSecretRequired",
+  "facebookCommentAutomation.platform",
+  "facebookCommentAutomation.platformType.messenger",
+  "facebookCommentAutomation.platformType.threads",
+  "facebookCommentAutomation.postIdPlaceholder",
+  "facebookCommentAutomation.randomPublicReplyDescription",
+  "facebookCommentAutomation.replyMessageNumber",
+  "instagramCommentAutomation.postIdPlaceholder",
+  "instagramCommentAutomation.randomPublicReplyDescription",
+  "instagramCommentAutomation.replyMessageNumber",
+] as const
 
 type IcuStructure = {
   argument: string
@@ -142,6 +155,27 @@ describe("builder message catalogs", () => {
       const translatedValue = translatedMessages[key]
       expect(typeof translatedValue, key).toBe("string")
       expect(getIcuStructures(translatedValue as string), key).toEqual(expected)
+    }
+  })
+
+  test.each(
+    locales,
+  )("%s contains required Threads/comment automation keys without English fallback fragments", (locale) => {
+    const translatedMessages = flattenMessages(messagesByLocale[locale])
+
+    for (const key of requiredThreadsAndCommentAutomationKeys) {
+      expect(translatedMessages[key], `${locale}:${key}`).toBeTruthy()
+    }
+
+    if (locale !== "en") {
+      expect(
+        translatedMessages["facebookCommentAutomation.postIdPlaceholder"],
+        `${locale}:facebookCommentAutomation.postIdPlaceholder`,
+      ).not.toContain("one per line")
+      expect(
+        translatedMessages["instagramCommentAutomation.postIdPlaceholder"],
+        `${locale}:instagramCommentAutomation.postIdPlaceholder`,
+      ).not.toContain("one per line")
     }
   })
 

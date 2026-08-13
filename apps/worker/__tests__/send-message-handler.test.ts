@@ -105,6 +105,12 @@ describe("chat send-message handlers", () => {
     vi.clearAllMocks()
     mockRunChannelHandler.mockResolvedValue({ messageIds: ["mid-1"] })
     mockContactUnblockIfBlocked.mockResolvedValue(null)
+    mockRecordOutboundMessageSent.mockResolvedValue(undefined)
+    mockUpdateSourceId.mockResolvedValue(undefined)
+    mockCreateMessageRepository.mockResolvedValue({
+      updateSourceId: mockUpdateSourceId,
+      findById: vi.fn().mockResolvedValue(null),
+    })
     mockResolveIntegrationContextFromContactInbox.mockResolvedValue({
       ctx: { workspaceId: "ws-1" },
       integration: {
@@ -206,6 +212,36 @@ describe("chat send-message handlers", () => {
           text: "comment reply",
           type: "comment",
           parentId: "parent-1",
+          createdAt: new Date("2026-07-09T08:37:21.108Z"),
+        } as never,
+      }),
+    ).resolves.toEqual({ messageIds: ["reply-1"] })
+
+    expect(mockRunChannelHandler).toHaveBeenCalledTimes(1)
+  })
+
+  test("does not retry the send when recording a successful comment reply send fails", async () => {
+    mockRunChannelHandler.mockResolvedValueOnce({
+      messageIds: ["reply-1"],
+    })
+    mockRecordOutboundMessageSent.mockRejectedValueOnce(
+      new Error("usage write failed"),
+    )
+
+    await expect(
+      sendMessageToChannel({
+        conversation: conversation as never,
+        contactInbox: contactInbox as never,
+        message: {
+          id: "msg-comment-2",
+          workspaceId: "ws-1",
+          conversationId: "conv-1",
+          contactInboxId: "ci-1",
+          contentType: "text",
+          messageType: "outgoing",
+          senderType: "user",
+          text: "comment reply",
+          type: "comment",
           createdAt: new Date("2026-07-09T08:37:21.108Z"),
         } as never,
       }),
@@ -408,6 +444,35 @@ describe("chat send-message handlers", () => {
           messageType: "outgoing",
           senderType: "user",
           text: "hello",
+        } as never,
+      }),
+    ).resolves.toEqual({ messageIds: [] })
+  })
+
+  test("does not retry a retryable ChannelError for the threads channel", async () => {
+    const error = new ChannelError(
+      "network error",
+      ChannelErrorCategory.NETWORK_ERROR,
+      { code: "network_error" },
+    )
+    mockRunChannelHandler.mockRejectedValueOnce(error)
+
+    await expect(
+      sendMessageToChannel({
+        conversation: conversation as never,
+        contactInbox: { ...contactInbox, channel: "threads" } as never,
+        message: {
+          id: "msg-1",
+          workspaceId: "ws-1",
+          conversationId: "conv-1",
+          contactInboxId: "ci-1",
+          contentType: "text",
+          messageType: "outgoing",
+          senderType: "user",
+          text: "hello",
+          contentAttributes: {
+            replyToCommentId: "comment-1",
+          },
         } as never,
       }),
     ).resolves.toEqual({ messageIds: [] })

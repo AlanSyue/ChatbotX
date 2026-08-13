@@ -1357,4 +1357,32 @@ describe("contact source taxonomy", () => {
         .mock.calls.some(([action]) => action === "getPostDetails"),
     ).toBe(false)
   })
+
+  test("skips self-authored Threads comments before contact detection", async () => {
+    vi.mocked(
+      integrationService.identifyInboxAndIntegrationAuthFromIdentifier,
+    ).mockResolvedValue({
+      inbox: { ...fakeInbox, channel: "threads" },
+      integrationRow: {
+        ...fakeIntegrationRow,
+        auth: { metadata: { username: "mythreadsbot" } },
+      },
+    } as never)
+
+    await receiveComment({
+      integrationType: "threads",
+      integrationIdentifier: "threads-user-1",
+      commentData: {
+        commentId: "comment-1",
+        fromId: "MyThreadsBot",
+        fromName: "Threads Bot",
+        message: "hello",
+        postId: "post-1",
+      },
+    })
+
+    expect(mockFindContactInbox).not.toHaveBeenCalled()
+    expect(mockConversationFindOrCreate).not.toHaveBeenCalled()
+    expect(mockCreateMessageRepository).not.toHaveBeenCalled()
+  })
 })

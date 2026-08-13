@@ -331,6 +331,33 @@ describe("processCommentAutomation reply filtering", () => {
     )
   })
 
+  test("skips Threads self-authored replies before scheduling automation", async () => {
+    mockFindActiveAutomations.mockResolvedValue([
+      buildAutomation({ type: "threads" }),
+    ])
+    mockIdentifyInboxAndIntegrationAuth.mockResolvedValue({
+      integrationRow: {
+        auth: { metadata: { username: "mythreadsbot" } },
+      },
+    })
+
+    await processCommentAutomation({
+      ...buildJobData(),
+      integrationType: "threads",
+      fromId: "MyThreadsBot",
+    } as any)
+
+    expect(mockFindActiveAutomations).not.toHaveBeenCalled()
+    expect(mockMarkDispatchScheduled).not.toHaveBeenCalled()
+    expect(mockLoggerInfo).toHaveBeenCalledWith(
+      expect.objectContaining({
+        commentId: COMMENT_ID,
+        integrationIdentifier: PAGE_ID,
+      }),
+      "Threads comment automation skipped self-authored reply",
+    )
+  })
+
   test("runs the automation for a real comment reply when ignoreCommentReplies is off", async () => {
     mockFindActiveAutomations.mockResolvedValue([
       buildAutomation({ options: { ignoreCommentReplies: false } }),

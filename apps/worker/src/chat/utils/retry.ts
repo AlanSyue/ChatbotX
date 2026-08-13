@@ -7,6 +7,7 @@ import { ChannelError, ChannelErrorCategory } from "@chatbotx.io/sdk"
 const NO_QUEUE_RETRY_CHANNELS = new Set<string>([
   channelTypes.enum.messenger,
   channelTypes.enum.instagram,
+  channelTypes.enum.threads,
 ])
 
 // Only NETWORK_ERROR leaves the outcome ambiguous (request may or may not

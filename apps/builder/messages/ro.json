@@ -157,6 +157,11 @@
       "addMapping": "Adaugă o asociere",
       "addCustomField": "Adaugă"
     },
+    "sendCarousel": {
+      "addSlide": "Adaugă diapozitiv",
+      "removeSlide": "Elimină diapozitiv",
+      "whatsappLinkButtonIgnored": "Pe WhatsApp, linkul acestui card nu va funcționa: un card cu un buton de link nu poate avea alte butoane. Va fi trimis în schimb ca răspuns."
+    },
     "additionalSteps": "Pași suplimentari",
     "delayType": {
       "datetimeCustomField": "Câmp personalizat pentru dată și oră",
@@ -548,7 +553,8 @@
     "title": "Setările platformei",
     "errors": {
       "giphyApiKeyRequired": "Cheia API este obligatorie pentru configurarea GIPHY.",
-      "giphyApiKeyInvalid": "Cheie API GIPHY nevalidă"
+      "giphyApiKeyInvalid": "Cheie API GIPHY nevalidă",
+      "threadsAppSecretRequired": "App Secret este obligatoriu pentru a configura Threads."
     }
   },
   "home": {
@@ -604,6 +610,7 @@
     "disableBot": "Dezactivează botul",
     "disconnect": "Deconectează",
     "download": "Descarcă",
+    "downloadTemplate": "Descarcă șablonul",
     "edit": "Editează",
     "editFeature": "Editează {feature}",
     "enableBot": "Activează botul",
@@ -1181,6 +1188,9 @@
       "viaFacebookTitle": "Instagram prin Facebook",
       "cloneFromMessenger": "Clonează din Messenger",
       "clonedFromMessenger": "Clonat din Messenger"
+    },
+    "threads": {
+      "label": "Threads"
     },
     "zalo": {
       "label": "Zalo OA"
@@ -2690,6 +2700,8 @@
     "noVersionsFound": "Nicio versiune publicată găsită",
     "publishVersionSuccess": "A fost publicată o versiune nouă",
     "flowConfigIncomplete": "Unele configurări sunt incomplete",
+    "whatsappCarouselButtonsMismatch": "Pe WhatsApp, un carusel are nevoie de aceleași butoane pe fiecare card: fie un singur buton de link pe fiecare card, fie același număr de butoane de răspuns pe fiecare card",
+    "whatsappCarouselLinkButtonNotAlone": "Pe WhatsApp, un card de carusel cu un buton de link nu poate avea alte butoane. Elimină celelalte butoane de pe acel card sau schimbă butonul de link cu o altă acțiune.",
     "duplicateNodeError": "Blocul nu a putut fi duplicat. Te rugăm să încerci din nou.",
     "deleteNodeError": "Blocul nu a putut fi șters. Te rugăm să încerci din nou.",
     "redoHistoryCleared": "Istoricul de refacere a fost șters",
@@ -3088,6 +3100,7 @@
         "quickReplyPayloadPlaceholder": "Introdu payload-ul (opțional)",
         "flowToken": "Token flux",
         "flowTokenPlaceholder": "Introdu tokenul fluxului",
+        "flowNotSynced": "Sincronizează fluxurile WhatsApp pentru a mapa câmpurile trimise.",
         "catalogProductId": "ID produs",
         "catalogProductIdPlaceholder": "Introdu ID-ul de retailer al produsului",
         "carouselCard": "Card {index}",
@@ -3389,7 +3402,10 @@
     "title": "Jurnale de audit"
   },
   "customFields": {
-    "title": "Câmpuri personalizate"
+    "title": "Câmpuri personalizate",
+    "variables": {
+      "rawGroup": "Câmpuri personalizate brute"
+    }
   },
   "keywords": {
     "title": "Cuvinte cheie",
@@ -3699,6 +3715,11 @@
     "create": "Creează automatizare",
     "deactivated": "Automatizare dezactivată",
     "description": "Automatizează comentariile Facebook pentru contactele tale.",
+    "platform": "Platformă",
+    "platformType": {
+      "messenger": "Messenger",
+      "threads": "Threads"
+    },
     "excludeKeywords": "Exclude comentariile cu aceste cuvinte cheie",
     "excludeKeywordsDescription": "Comentariile care conțin oricare dintre aceste cuvinte cheie vor fi ignorate atât de automatizarea prin mesaje primite, cât și de cea prin răspuns public.",
     "hideComments": {
@@ -3737,6 +3758,7 @@
     },
     "postIdPlaceholder": "Introdu ID-urile postărilor, câte unul pe linie...",
     "postIdTab": "ID postare",
+    "randomPublicReplyDescription": "Rotește aleatoriu între mesajele de răspuns public de mai jos.",
     "postType": {
       "ads": "Postări publicitare",
       "all": "Toate postările",
@@ -3764,6 +3786,7 @@
     },
     "replyAfterValue": "Valoare",
     "replyMessage": "Mesaj de răspuns",
+    "replyMessageNumber": "Mesaj de răspuns #{number}",
     "replyMessagePlaceholder": "Introdu mesajul de răspuns...",
     "replyType": {
       "AIAgent": "Agent IA",
@@ -3880,6 +3903,7 @@
     },
     "postIdPlaceholder": "Introdu ID-urile postărilor, câte unul pe linie...",
     "postIdTab": "ID postare",
+    "randomPublicReplyDescription": "Rotește aleatoriu între mesajele de răspuns public de mai jos.",
     "postType": {
       "all": "Toate postările",
       "published": "Postări publicate",
@@ -3906,6 +3930,7 @@
     },
     "replyAfterValue": "Valoare",
     "replyMessage": "Mesaj de răspuns",
+    "replyMessageNumber": "Mesaj de răspuns #{number}",
     "replyMessagePlaceholder": "Introdu mesajul de răspuns...",
     "replyType": {
       "AIAgent": "Agent IA",

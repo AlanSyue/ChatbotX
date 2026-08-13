@@ -3,6 +3,7 @@ import {
   fbCommentIncludeKeywordsSchema,
   fbCommentOptionsSchema,
   fbCommentPostSchema,
+  fbCommentPublicReplySchema,
   fbCommentReplyAfterSchema,
   fbCommentReplySchema,
 } from "@chatbotx.io/database/partials"
@@ -18,6 +19,7 @@ import {
 import z from "zod"
 import { parseAsBigInt } from "@/lib/nuqs"
 import { basePaginationRequest } from "@/lib/pagination"
+import { validateThreadsCapabilities } from "../lib/capabilities"
 import { fbCommentResource } from "./resource"
 
 export const listFbCommentsRequest = basePaginationRequest.and(
@@ -47,22 +49,34 @@ export const listFbCommentsResponse = z.object({
 })
 export type ListFbCommentsResponse = z.infer<typeof listFbCommentsResponse>
 
-export const createFbCommentRequest = z.object({
+const baseCreateFbCommentRequest = z.object({
   name: z.string().trim().min(1).max(255),
-  type: z.literal("messenger").default("messenger"),
+  type: z.enum(["messenger", "threads"]).default("messenger"),
   folderId: zodBigintAsString().nullish(),
   post: fbCommentPostSchema,
   privateReply: fbCommentReplySchema,
-  publicReply: fbCommentReplySchema,
+  publicReply: fbCommentPublicReplySchema,
   includeKeywords: fbCommentIncludeKeywordsSchema,
   excludeKeywords: z.array(z.string()),
   options: fbCommentOptionsSchema,
   hideComments: fbCommentHideCommentsSchema,
   replyAfter: fbCommentReplyAfterSchema,
 })
+
+export const createFbCommentRequest = baseCreateFbCommentRequest.superRefine(
+  (value, ctx) => {
+    validateThreadsCapabilities(value, (path, code) =>
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path,
+        message: code,
+      }),
+    )
+  },
+)
 export type CreateFbCommentRequest = z.infer<typeof createFbCommentRequest>
 
-export const updateFbCommentRequest = createFbCommentRequest.partial().and(
+export const updateFbCommentRequest = baseCreateFbCommentRequest.partial().and(
   z.object({
     isActive: z.boolean().optional(),
     startTime: z.string().nullable().optional(),

@@ -43,6 +43,7 @@
     "disableBot": "تعطيل البوت",
     "disconnect": "قطع الاتصال",
     "download": "تنزيل",
+    "downloadTemplate": "تنزيل القالب",
     "edit": "تعديل",
     "editFeature": "تعديل {feature}",
     "enableBot": "تفعيل البوت",
@@ -680,6 +681,9 @@
     },
     "messenger": {
       "label": "Messenger"
+    },
+    "threads": {
+      "label": "ثريدز"
     },
     "image": {
       "label": "صورة"
@@ -2574,7 +2578,8 @@
     "title": "إعدادات المنصة",
     "errors": {
       "giphyApiKeyRequired": "مفتاح API مطلوب لتهيئة GIPHY.",
-      "giphyApiKeyInvalid": "مفتاح API غير صالح لـ GIPHY"
+      "giphyApiKeyInvalid": "مفتاح API غير صالح لـ GIPHY",
+      "threadsAppSecretRequired": "مفتاح App Secret مطلوب لإعداد Threads."
     }
   },
   "home": {
@@ -3095,6 +3100,7 @@
         "quickReplyPayloadPlaceholder": "أدخل البيانات (اختياري)",
         "flowToken": "رمز المسار",
         "flowTokenPlaceholder": "أدخل رمز المسار",
+        "flowNotSynced": "زامن تدفقات واتساب لربط الحقول المرسلة.",
         "catalogProductId": "معرّف المنتج",
         "catalogProductIdPlaceholder": "أدخل معرّف المنتج لدى بائع التجزئة",
         "carouselCard": "البطاقة {index}",
@@ -3396,7 +3402,10 @@
     "title": "سجلات التدقيق"
   },
   "customFields": {
-    "title": "الحقول المخصصة"
+    "title": "الحقول المخصصة",
+    "variables": {
+      "rawGroup": "الحقول المخصصة الخام"
+    }
   },
   "keywords": {
     "title": "الكلمات المفتاحية",
@@ -3605,12 +3614,19 @@
     "deactivated": "تم إلغاء تفعيل الأتمتة",
     "trackCommentsOn": "تتبّع التعليقات على",
     "trackCommentsOnDescription": "طبّق هذه الأتمتة على جميع منشورات صفحتك، أو خصصها لمنشورات محددة تختارها.",
+    "platform": "المنصة",
+    "platformType": {
+      "messenger": "Messenger",
+      "threads": "Threads"
+    },
     "privateReply": "رد خاص (صندوق الوارد)",
     "privateReplyDescription": "أرسل رسالة خاصة إلى صندوق وارد صاحب التعليق. اختر وكيل ذكاء اصطناعي، أو قالب نص ثابت (يدعم spintax)، أو مسار بوت، أو عطّل الرد.",
     "publicReply": "رد عام على التعليق",
     "publicReplyDescription": "انشر ردًا عامًا أسفل التعليق مباشرةً. يدعم حتى 10 قوالب نصية (تدعم spintax)، أو وكيل ذكاء اصطناعي، أو مسار بوت، أو عدم الرد.",
+    "randomPublicReplyDescription": "بدّل عشوائيًا بين رسائل الرد العلني أدناه.",
     "replyMessage": "رسالة الرد",
     "replyMessagePlaceholder": "أدخل رسالة الرد...",
+    "replyMessageNumber": "رسالة الرد #{number}",
     "includeKeywordsType": "الرد على",
     "includeKeywordsTypeDescription": "اختر التعليقات التي تستجيب لها هذه الأتمتة.",
     "includeKeywords": "الكلمات المفتاحية المطلوب مطابقتها",
@@ -4087,8 +4103,10 @@
     "privateReplyDescription": "إرسال رسالة خاصة إلى صندوق وارد المعلّق. اختر وكيل الذكاء الاصطناعي، أو نموذج نصي ثابت (مع دعم spintax)، أو مسار روبوت محادثة، أو التعطيل.",
     "publicReply": "رد علني على التعليق",
     "publicReplyDescription": "نشر رد علني مباشرة أسفل التعليق. يدعم حتى 10 نماذج نصية (مع دعم spintax)، أو وكيل الذكاء الاصطناعي، أو مسار روبوت محادثة، أو بدون رد.",
+    "randomPublicReplyDescription": "بدّل عشوائيًا بين رسائل الرد العلني أدناه.",
     "replyMessage": "رسالة الرد",
     "replyMessagePlaceholder": "أدخل رسالة الرد...",
+    "replyMessageNumber": "رسالة الرد #{number}",
     "includeKeywordsType": "الرد على",
     "includeKeywordsTypeDescription": "اختر التعليقات التي تستجيب لها هذه الأتمتة.",
     "includeKeywords": "الكلمات المفتاحية للمطابقة",

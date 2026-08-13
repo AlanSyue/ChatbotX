@@ -4,6 +4,7 @@ import {
   db,
   eq,
   isNull,
+  sql,
 } from "@chatbotx.io/database/client"
 import {
   type CredentialByType,
@@ -361,15 +362,12 @@ class PlatformCredentialService extends BaseService {
     const livemode = props.livemode ?? false
 
     if (setting?.status === "active") {
-      const own = await this.findDecryptedForUser({
+      return this.resolveForUser({
         userId: props.ownerId,
         type: props.type,
-        livemode,
+        livemode: props.livemode,
         tx: props.tx,
       })
-      if (own) {
-        return own
-      }
     }
 
     // Reseller has no own credential (or tenant is inactive): fall back to the
@@ -412,6 +410,58 @@ class PlatformCredentialService extends BaseService {
     }
 
     return
+  }
+
+  async findThreadsCredentialByClientId(props: {
+    clientId: string
+    livemode?: boolean
+    tx?: DatabaseClient
+  }): Promise<DecryptedCredential<"threads"> | undefined> {
+    const { clientId, livemode = false, tx = db } = props
+    try {
+      const rows = await tx
+        .select()
+        .from(platformCredentialModel)
+        .where(
+          and(
+            eq(platformCredentialModel.type, "threads"),
+            eq(platformCredentialModel.livemode, livemode),
+            sql`${platformCredentialModel.publicConfig} ->> 'clientId' = ${clientId}`,
+          ),
+        )
+        .orderBy(
+          isNull(platformCredentialModel.userId),
+          platformCredentialModel.createdAt,
+        )
+
+      if (rows.length === 0) {
+        return
+      }
+
+      const platformRows = rows.filter((row) => row.userId === null)
+      const userRows = rows.filter((row) => row.userId !== null)
+
+      const resolvedRows = platformRows.length > 0 ? platformRows : userRows
+      if (resolvedRows.length !== 1) {
+        logger.warn(
+          { livemode, clientId, count: rows.length },
+          "Threads credential lookup by clientId is ambiguous",
+        )
+        return
+      }
+
+      return this._decrypt(resolvedRows[0] as CredentialRow<"threads">)
+    } catch (err) {
+      logger.error(
+        {
+          livemode,
+          clientId,
+          errorName: err instanceof Error ? err.name : undefined,
+        },
+        "Failed to decrypt Threads credential by clientId",
+      )
+      return
+    }
   }
 
   // ─── Private helpers ─────────────────────────────────────────────────────────

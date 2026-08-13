@@ -33,6 +33,7 @@ class InboxService extends BaseService {
     integrationWebchat: true,
     integrationMessenger: true,
     integrationInstagram: true,
+    integrationThreads: true,
     integrationZalo: true,
     integrationTelegram: true,
     integrationSmtp: true,
@@ -201,11 +202,29 @@ class InboxService extends BaseService {
 
     if (existing) {
       if (existing.status === inboxStatuses.enum.disconnected) {
+        const consumed = await quotaEnforcementService.tryConsume({
+          userId: ownerId,
+          metric: "channels",
+        })
+        if (!consumed.ok) {
+          throw channelLimitReachedException()
+        }
+
         const [updated] = await tx
           .update(inboxModel)
           .set({ status: inboxStatuses.enum.connected, name: data.name })
           .where(eq(inboxModel.id, existing.id))
           .returning()
+
+        await workspaceUsageService
+          .increment(data.workspaceId, "channels")
+          .catch((err) => {
+            logger.warn(
+              { err, workspaceId: data.workspaceId, inboxId: existing.id },
+              "workspace usage channel increment failed on inbox reconnect",
+            )
+          })
+
         return { inbox: updated, wasCreated: true }
       }
       return { inbox: existing, wasCreated: false }

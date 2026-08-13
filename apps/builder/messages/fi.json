@@ -43,6 +43,7 @@
     "disableBot": "Poista botti käytöstä",
     "disconnect": "Katkaise yhteys",
     "download": "Lataa",
+    "downloadTemplate": "Lataa malli",
     "edit": "Muokkaa",
     "editFeature": "Muokkaa: {feature}",
     "enableBot": "Ota botti käyttöön",
@@ -606,6 +607,9 @@
     },
     "messenger": {
       "label": "Messenger"
+    },
+    "threads": {
+      "label": "Threads"
     },
     "image": {
       "label": "Kuva"
@@ -2104,6 +2108,11 @@
       "addMapping": "Lisää yhdistäminen",
       "addCustomField": "Lisää uusi"
     },
+    "sendCarousel": {
+      "addSlide": "Lisää kortti",
+      "removeSlide": "Poista kortti",
+      "whatsappLinkButtonIgnored": "WhatsAppissa tämän kortin linkki ei toimi: linkkipainikkeen sisältävässä kortissa ei voi olla muita painikkeita. Se lähetetään sen sijaan vastauksena."
+    },
     "additionalSteps": "Lisävaiheet",
     "delayType": {
       "datetimeCustomField": "Päivämäärän ja ajan mukautettu kenttä",
@@ -2495,7 +2504,8 @@
     "title": "Alusta-asetukset",
     "errors": {
       "giphyApiKeyRequired": "GIPHY-määritys edellyttää API-avainta.",
-      "giphyApiKeyInvalid": "Virheellinen GIPHY-API-avain"
+      "giphyApiKeyInvalid": "Virheellinen GIPHY-API-avain",
+      "threadsAppSecretRequired": "Threadsin määrittämiseen tarvitaan App Secret."
     }
   },
   "home": {
@@ -2690,6 +2700,8 @@
     "noVersionsFound": "Julkaistuja versioita ei löytynyt",
     "publishVersionSuccess": "Uusi versio on julkaistu",
     "flowConfigIncomplete": "Jotkin määritykset ovat puutteellisia",
+    "whatsappCarouselButtonsMismatch": "WhatsAppissa karusellissa on oltava samat painikkeet jokaisessa kortissa: joko yksi linkkipainike jokaisessa kortissa tai sama määrä vastauspainikkeita jokaisessa kortissa",
+    "whatsappCarouselLinkButtonNotAlone": "WhatsAppissa linkkipainikkeen sisältävässä karusellikortissa ei voi olla muita painikkeita. Poista kyseiseltä kortilta muut painikkeet tai vaihda linkkipainike toiseen toimintoon.",
     "duplicateNodeError": "Lohkoa ei voitu monistaa. Yritä uudelleen.",
     "deleteNodeError": "Lohkoa ei voitu poistaa. Yritä uudelleen.",
     "redoHistoryCleared": "Uudelleentekohistoria tyhjennetty",
@@ -3088,6 +3100,7 @@
         "quickReplyPayloadPlaceholder": "Kirjoita tietosisältö (valinnainen)",
         "flowToken": "Flow-tunnus",
         "flowTokenPlaceholder": "Kirjoita flow-tunnus",
+        "flowNotSynced": "Synkronoi WhatsApp-virrat lähetettyjen kenttien kartoittamiseksi.",
         "catalogProductId": "Tuotetunnus",
         "catalogProductIdPlaceholder": "Kirjoita jälleenmyyjän tuotetunnus",
         "carouselCard": "Kortti {index}",
@@ -3389,7 +3402,10 @@
     "title": "Tarkastuslokit"
   },
   "customFields": {
-    "title": "Mukautetut kentät"
+    "title": "Mukautetut kentät",
+    "variables": {
+      "rawGroup": "Raakamuotoiset mukautetut kentät"
+    }
   },
   "keywords": {
     "title": "Avainsanat",
@@ -3598,12 +3614,19 @@
     "deactivated": "Automaatio poistettu käytöstä",
     "trackCommentsOn": "Seuraa kommentteja",
     "trackCommentsOnDescription": "Käytä tätä automaatiota kaikkiin sivusi julkaisuihin tai rajaa se valitsemiisi julkaisuihin.",
+    "platform": "Alusta",
+    "platformType": {
+      "messenger": "Messenger",
+      "threads": "Threads"
+    },
     "privateReply": "Yksityinen vastaus (saapuneet)",
     "privateReplyDescription": "Lähetä yksityisviesti kommentoijan saapuneet-kansioon. Valitse AI-agentti, kiinteä tekstimalli (spintax tuettu), chatbot-flow tai poista käytöstä.",
     "publicReply": "Julkinen vastaus kommenttiin",
     "publicReplyDescription": "Julkaise julkinen vastaus suoraan kommentin alle. Tukee enintään 10 tekstimallia (spintax tuettu), AI-agenttia, chatbot-flow'ta tai ei vastausta.",
+    "randomPublicReplyDescription": "Kierrätä satunnaisesti alla olevia julkisia vastausviestejä.",
     "replyMessage": "Vastausviesti",
     "replyMessagePlaceholder": "Kirjoita vastausviesti...",
+    "replyMessageNumber": "Vastausviesti #{number}",
     "includeKeywordsType": "Vastaa",
     "includeKeywordsTypeDescription": "Valitse kommentit, joihin tämä automaatio vastaa.",
     "includeKeywords": "Täsmättävät avainsanat",
@@ -3705,8 +3728,10 @@
     "privateReplyDescription": "Lähetä yksityisviesti kommentoijan saapuneet-kansioon. Valitse AI-agentti, kiinteä tekstimalli (spintax tuettu), chatbot-flow tai poista käytöstä.",
     "publicReply": "Julkinen vastaus kommenttiin",
     "publicReplyDescription": "Julkaise julkinen vastaus suoraan kommentin alle. Tukee enintään 10 tekstimallia (spintax tuettu), AI-agenttia, chatbot-flow'ta tai ei vastausta.",
+    "randomPublicReplyDescription": "Kierrätä satunnaisesti alla olevia julkisia vastausviestejä.",
     "replyMessage": "Vastausviesti",
     "replyMessagePlaceholder": "Kirjoita vastausviesti...",
+    "replyMessageNumber": "Vastausviesti #{number}",
     "includeKeywordsType": "Vastaa",
     "includeKeywordsTypeDescription": "Valitse kommentit, joihin tämä automaatio vastaa.",
     "includeKeywords": "Täsmättävät avainsanat",

@@ -4,6 +4,7 @@ export const fbCommentAutomationTypes = z.enum([
   "messenger",
   "instagram",
   "instagramFacebook",
+  "threads",
 ])
 export type FBCommentAutomationType = z.infer<typeof fbCommentAutomationTypes>
 
@@ -24,6 +25,11 @@ export const fbCommentReplySchema = z.object({
   value: z.string().nullable(),
 })
 export type FBCommentReply = z.infer<typeof fbCommentReplySchema>
+
+export const fbCommentPublicReplySchema = fbCommentReplySchema.extend({
+  values: z.array(z.string().trim().min(1)).min(1).max(10).optional(),
+})
+export type FBCommentPublicReply = z.infer<typeof fbCommentPublicReplySchema>
 
 export const fbCommentIncludeKeywordsSchema = z.object({
   type: z.enum(["all", "equal", "contain"]),

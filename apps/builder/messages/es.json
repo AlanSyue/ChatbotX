@@ -43,6 +43,7 @@
     "disableBot": "Desactivar bot",
     "disconnect": "Desconectar",
     "download": "Descargar",
+    "downloadTemplate": "Descargar plantilla",
     "edit": "Editar",
     "editFeature": "Editar {feature}",
     "enableBot": "Activar bot",
@@ -680,6 +681,9 @@
     },
     "messenger": {
       "label": "Messenger"
+    },
+    "threads": {
+      "label": "Threads"
     },
     "image": {
       "label": "Imagen"
@@ -2178,6 +2182,11 @@
       "addMapping": "Añadir Mapping",
       "addCustomField": "Añadir Nuevo"
     },
+    "sendCarousel": {
+      "addSlide": "Añadir tarjeta",
+      "removeSlide": "Eliminar tarjeta",
+      "whatsappLinkButtonIgnored": "En WhatsApp, el enlace de esta tarjeta no funcionará: una tarjeta con un botón de enlace no puede tener otros botones. Se enviará como una respuesta en su lugar."
+    },
     "additionalSteps": "Pasos adicionales",
     "delayType": {
       "datetimeCustomField": "Fecha & Tiempo Personalizado Campo",
@@ -2569,7 +2578,8 @@
     "title": "Ajustes de la plataforma",
     "errors": {
       "giphyApiKeyRequired": "API Clave es obligatorio un configure GIPHY.",
-      "giphyApiKeyInvalid": "No válido GIPHY API clave"
+      "giphyApiKeyInvalid": "No válido GIPHY API clave",
+      "threadsAppSecretRequired": "Se requiere App Secret para configurar Threads."
     }
   },
   "home": {
@@ -2690,6 +2700,8 @@
     "noVersionsFound": "No publicado versions found",
     "publishVersionSuccess": "A nuevo version tiene been publicado",
     "flowConfigIncomplete": "Some configurations son incomplete",
+    "whatsappCarouselButtonsMismatch": "En WhatsApp, un carrusel necesita los mismos botones en cada tarjeta: ya sea un único botón de enlace en cada tarjeta o la misma cantidad de botones de respuesta en cada tarjeta",
+    "whatsappCarouselLinkButtonNotAlone": "En WhatsApp, una tarjeta de carrusel con un botón de enlace no puede tener ningún otro botón. Elimina los otros botones de esa tarjeta o cambia el botón de enlace por otra acción.",
     "duplicateNodeError": "Could not duplicate el block. Por favor, try again.",
     "deleteNodeError": "Could not Eliminar el block. Por favor, try again.",
     "redoHistoryCleared": "Se borró el historial de rehacer",
@@ -3088,6 +3100,7 @@
         "quickReplyPayloadPlaceholder": "Introduce payload (opcional)",
         "flowToken": "Token del flujo",
         "flowTokenPlaceholder": "Introduce flow token",
+        "flowNotSynced": "Sincroniza los flujos de WhatsApp para mapear los campos enviados.",
         "catalogProductId": "ID del producto",
         "catalogProductIdPlaceholder": "Introduce product retailer ID",
         "carouselCard": "Tarjeta {index}",
@@ -3389,7 +3402,10 @@
     "title": "Registros de auditoría"
   },
   "customFields": {
-    "title": "Campos personalizados"
+    "title": "Campos personalizados",
+    "variables": {
+      "rawGroup": "Campos personalizados sin procesar"
+    }
   },
   "keywords": {
     "title": "Palabras clave",
@@ -3598,12 +3614,19 @@
     "deactivated": "Automatización deactivated",
     "trackCommentsOn": "Track comentarios on",
     "trackCommentsOnDescription": "Apply este automatización un todos publicaciones en tu Página, o narrow it un specific publicaciones tú select.",
+    "platform": "Plataforma",
+    "platformType": {
+      "messenger": "Messenger",
+      "threads": "Threads"
+    },
     "privateReply": "Private Responder (inbox)",
     "privateReplyDescription": "Enviar un private mensaje un el comentarioer's inbox. Elegir AI Agent, un fixed texto template (spintax supported), un chatbot flujo, o desactivar.",
     "publicReply": "Public Responder un comentario",
     "publicReplyDescription": "Publicación un public Responder directly under el comentario. Supports up un 10 texto templates (spintax supported), AI Agent, un chatbot flujo, o no respuesta.",
+    "randomPublicReplyDescription": "Alterna aleatoriamente entre los mensajes de respuesta pública de abajo.",
     "replyMessage": "Responder mensaje",
     "replyMessagePlaceholder": "Introduce Responder mensaje...",
+    "replyMessageNumber": "Mensaje de respuesta #{number}",
     "includeKeywordsType": "Responder to",
     "includeKeywordsTypeDescription": "Elegir which comentarios este automatización responds to.",
     "includeKeywords": "Palabras clave un match",
@@ -3689,7 +3712,7 @@
     "selectPageAll": "Todos páginas",
     "chooseSpecificPosts": "Elegir publicaciones...",
     "postIdTab": "Publicación ID",
-    "postIdPlaceholder": "Introduce publicación IDs, one per line...",
+    "postIdPlaceholder": "Introduce los ID de las publicaciones, uno por línea...",
     "noPostsFound": "No publicaciones found"
   },
   "instagramCommentAutomation": {
@@ -3705,8 +3728,10 @@
     "privateReplyDescription": "Enviar un private mensaje un el comentarioer's inbox. Elegir AI Agent, un fixed texto template (spintax supported), un chatbot flujo, o desactivar.",
     "publicReply": "Public Responder un comentario",
     "publicReplyDescription": "Publicación un public Responder directly under el comentario. Supports up un 10 texto templates (spintax supported), AI Agent, un chatbot flujo, o no respuesta.",
+    "randomPublicReplyDescription": "Alterna aleatoriamente entre los mensajes de respuesta pública de abajo.",
     "replyMessage": "Responder mensaje",
     "replyMessagePlaceholder": "Introduce Responder mensaje...",
+    "replyMessageNumber": "Mensaje de respuesta #{number}",
     "includeKeywordsType": "Responder to",
     "includeKeywordsTypeDescription": "Elegir which comentarios este automatización responds to.",
     "includeKeywords": "Palabras clave un match",
@@ -3787,7 +3812,7 @@
     "selectPageAll": "Todos cuentas",
     "chooseSpecificPosts": "Elegir publicaciones...",
     "postIdTab": "Publicación ID",
-    "postIdPlaceholder": "Introduce publicación IDs, one per line...",
+    "postIdPlaceholder": "Introduce los ID de las publicaciones, uno por línea...",
     "noPostsFound": "No publicaciones found",
     "connectionType": {
       "title": "Elegir Insetiquetaram connection tipo",

@@ -43,6 +43,7 @@
     "disableBot": "Deaktivér bot",
     "disconnect": "Afbryd",
     "download": "Download",
+    "downloadTemplate": "Download skabelon",
     "edit": "Rediger",
     "editFeature": "Rediger {feature}",
     "enableBot": "Aktivér bot",
@@ -606,6 +607,9 @@
     },
     "messenger": {
       "label": "Messenger"
+    },
+    "threads": {
+      "label": "Threads"
     },
     "image": {
       "label": "Billede"
@@ -2104,6 +2108,11 @@
       "addMapping": "Tilføj Tilknytning",
       "addCustomField": "Tilføj Ny"
     },
+    "sendCarousel": {
+      "addSlide": "Tilføj kort",
+      "removeSlide": "Fjern kort",
+      "whatsappLinkButtonIgnored": "På WhatsApp virker linket på dette kort ikke: Et kort med en linkknap kan ikke have andre knapper. Det sendes i stedet som et svar."
+    },
     "additionalSteps": "Additional trin",
     "delayType": {
       "datetimeCustomField": "Dato & Tid Brugerdefineret Felt",
@@ -2495,7 +2504,8 @@
     "title": "Platform Indstillinger",
     "errors": {
       "giphyApiKeyRequired": "API Nøgle er påkrævet til configure GIPHY.",
-      "giphyApiKeyInvalid": "Ugyldig GIPHY API-nøgle"
+      "giphyApiKeyInvalid": "Ugyldig GIPHY API-nøgle",
+      "threadsAppSecretRequired": "App Secret er påkrævet for at konfigurere Threads."
     }
   },
   "home": {
@@ -2690,6 +2700,8 @@
     "noVersionsFound": "Ingen published versions found",
     "publishVersionSuccess": "A ny version har been published",
     "flowConfigIncomplete": "Some configurations er incomplete",
+    "whatsappCarouselButtonsMismatch": "På WhatsApp skal en karrusel have de samme knapper på hvert kort: enten én enkelt linkknap på hvert kort eller det samme antal svarknapper på hvert kort",
+    "whatsappCarouselLinkButtonNotAlone": "På WhatsApp kan et karruselkort med en linkknap ikke have andre knapper. Fjern de andre knapper på det kort, eller skift linkknappen til en anden handling.",
     "duplicateNodeError": "Could ikke dupliker den blokér. Prøv igen.",
     "deleteNodeError": "Could ikke slet den blokér. Prøv igen.",
     "redoHistoryCleared": "Gentag historik cleared",
@@ -3088,6 +3100,7 @@
         "quickReplyPayloadPlaceholder": "Indtast payload (valgfri)",
         "flowToken": "Flow Token",
         "flowTokenPlaceholder": "Indtast flow token",
+        "flowNotSynced": "Synkroniser WhatsApp-flows for at knytte indsendte felter.",
         "catalogProductId": "Product ID",
         "catalogProductIdPlaceholder": "Indtast product retailer ID",
         "carouselCard": "Card {index}",
@@ -3389,7 +3402,10 @@
     "title": "Audit Logfiler"
   },
   "customFields": {
-    "title": "Brugerdefineret Felter"
+    "title": "Brugerdefineret Felter",
+    "variables": {
+      "rawGroup": "Rå brugerdefinerede felter"
+    }
   },
   "keywords": {
     "title": "Nøgleord",
@@ -3598,12 +3614,19 @@
     "deactivated": "Automatisering deactivated",
     "trackCommentsOn": "Track kommentarer på",
     "trackCommentsOnDescription": "Apply denne automatisering til alle opslag på din Side, eller narrow it til specific opslag du vælg.",
+    "platform": "Platform",
+    "platformType": {
+      "messenger": "Messenger",
+      "threads": "Threads"
+    },
     "privateReply": "Private svar (indbakke)",
     "privateReplyDescription": "Send a private besked til den commenter's indbakke. Choose AI Agent, a fixed tekst skabelon (spintax supported), a chatbot flow, eller deaktivér.",
     "publicReply": "Public svar til kommentar",
     "publicReplyDescription": "Opslag a public svar directly under den kommentar. Supports up til 10 tekst templates (spintax supported), AI Agent, a chatbot flow, eller ingen svar.",
+    "randomPublicReplyDescription": "Roter tilfældigt mellem de offentlige svarbeskeder nedenfor.",
     "replyMessage": "Svar besked",
     "replyMessagePlaceholder": "Indtast svar besked...",
+    "replyMessageNumber": "Svarbesked #{number}",
     "includeKeywordsType": "Svar til",
     "includeKeywordsTypeDescription": "Choose which kommentarer denne automatisering responds til.",
     "includeKeywords": "Nøgleord til match",
@@ -3689,7 +3712,7 @@
     "selectPageAll": "Alle sider",
     "chooseSpecificPosts": "Choose opslag...",
     "postIdTab": "Opslag ID",
-    "postIdPlaceholder": "Indtast opslag IDs, one per line...",
+    "postIdPlaceholder": "Indtast opslag-id'er, ét pr. linje...",
     "noPostsFound": "Ingen opslag found"
   },
   "instagramCommentAutomation": {
@@ -3705,8 +3728,10 @@
     "privateReplyDescription": "Send a private besked til den commenter's indbakke. Choose AI Agent, a fixed tekst skabelon (spintax supported), a chatbot flow, eller deaktivér.",
     "publicReply": "Public svar til kommentar",
     "publicReplyDescription": "Opslag a public svar directly under den kommentar. Supports up til 10 tekst templates (spintax supported), AI Agent, a chatbot flow, eller ingen svar.",
+    "randomPublicReplyDescription": "Roter tilfældigt mellem de offentlige svarbeskeder nedenfor.",
     "replyMessage": "Svar besked",
     "replyMessagePlaceholder": "Indtast svar besked...",
+    "replyMessageNumber": "Svarbesked #{number}",
     "includeKeywordsType": "Svar til",
     "includeKeywordsTypeDescription": "Choose which kommentarer denne automatisering responds til.",
     "includeKeywords": "Nøgleord til match",
@@ -3787,7 +3812,7 @@
     "selectPageAll": "Alle accounts",
     "chooseSpecificPosts": "Choose opslag...",
     "postIdTab": "Opslag ID",
-    "postIdPlaceholder": "Indtast opslag IDs, one per line...",
+    "postIdPlaceholder": "Indtast opslag-id'er, ét pr. linje...",
     "noPostsFound": "Ingen opslag found",
     "connectionType": {
       "title": "Choose Instagram connection type",

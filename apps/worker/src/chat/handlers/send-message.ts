@@ -151,12 +151,28 @@ export async function sendMessageToChannel(
       )
     }
 
-    await contactInboxService.recordOutboundMessageSent({
-      contactInboxId: contactInbox.id,
-      contactId: contactInbox.contactId,
-      workspaceId: conversation.workspaceId,
-      at: message.createdAt ?? new Date(),
-    })
+    if (isComment) {
+      try {
+        await contactInboxService.recordOutboundMessageSent({
+          contactInboxId: contactInbox.id,
+          contactId: contactInbox.contactId,
+          workspaceId: conversation.workspaceId,
+          at: message.createdAt ?? new Date(),
+        })
+      } catch (error) {
+        logger.error(
+          error,
+          "Failed to record comment reply send after a successful provider send",
+        )
+      }
+    } else {
+      await contactInboxService.recordOutboundMessageSent({
+        contactInboxId: contactInbox.id,
+        contactId: contactInbox.contactId,
+        workspaceId: conversation.workspaceId,
+        at: message.createdAt ?? new Date(),
+      })
+    }
 
     if (!isComment) {
       try {

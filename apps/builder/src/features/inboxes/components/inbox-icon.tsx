@@ -7,6 +7,8 @@ import {
   SiMessengerHex,
   SiTelegram,
   SiTelegramHex,
+  SiThreads,
+  SiThreadsHex,
   SiTiktok,
   SiTiktokHex,
   SiWhatsapp,
@@ -56,6 +58,11 @@ export const INBOX_ICON_CONFIG: Record<ChannelType, InboxIconConfig> = {
     Icon: SiInstagram,
     fill: SiInstagramHex,
     defaultLabel: "Instagram",
+  },
+  threads: {
+    Icon: SiThreads,
+    fill: SiThreadsHex,
+    defaultLabel: "Threads",
   },
   whatsapp: {
     Icon: SiWhatsapp,

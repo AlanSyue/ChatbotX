@@ -100,6 +100,21 @@ const correctStoryReplyDirectionForNewContact = (
   return message
 }
 
+const getThreadsAuthUsername = (auth: unknown): string | undefined => {
+  const username =
+    typeof auth === "object" &&
+    auth !== null &&
+    "metadata" in auth &&
+    typeof auth.metadata === "object" &&
+    auth.metadata !== null &&
+    "username" in auth.metadata &&
+    typeof auth.metadata.username === "string"
+      ? auth.metadata.username
+      : undefined
+
+  return username?.toLowerCase()
+}
+
 export const metaReferralToContactSource = (
   raw?: string | null,
 ): ContactSource | undefined => {
@@ -645,6 +660,23 @@ export const receiveComment = async (
       integrationType as IntegrationType,
       integrationIdentifier,
     )
+
+  const selfThreadsUsername =
+    integrationType === "threads"
+      ? getThreadsAuthUsername(integrationRow.auth)
+      : undefined
+
+  if (
+    selfThreadsUsername &&
+    typeof commentData.fromId === "string" &&
+    commentData.fromId.toLowerCase() === selfThreadsUsername
+  ) {
+    logger.info(
+      { commentId: commentData.commentId, integrationIdentifier },
+      "receiveComment: skipping self-authored threads comment",
+    )
+    return
+  }
 
   // `from.id` is the commenter's ID (PSID for Messenger, Instagram User ID for Instagram);
   // `fromName` is the fallback firstName.

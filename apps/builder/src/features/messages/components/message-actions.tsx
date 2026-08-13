@@ -289,6 +289,7 @@ export const MessageActions = ({
     (c) => c.id === activeConversationId,
   )
   const channel = activeConversation?.contactInboxes?.[0]?.channel
+  const isThreadsComment = message.type === "comment" && channel === "threads"
 
   const isDeleted = message.deletedAt != null
   const isOutgoing = message.messageType === "outgoing"
@@ -304,6 +305,10 @@ export const MessageActions = ({
           message.sourceId,
         )
       : null
+
+  if (isThreadsComment) {
+    return null
+  }
 
   return (
     <Popover onOpenChange={setOpen} open={open}>

@@ -18,6 +18,7 @@ type SettingsChannelsLayoutProps = {
   readonly whatsapp?: ReactNode
   readonly messenger?: ReactNode
   readonly instagram?: ReactNode
+  readonly threads?: ReactNode
   readonly zalo?: ReactNode
   readonly telegram?: ReactNode
   readonly tiktok?: ReactNode

@@ -13,6 +13,7 @@ import {
   type FBCommentIncludeKeywords,
   type FBCommentOptions,
   type FBCommentPost,
+  type FBCommentPublicReply,
   type FBCommentReply,
   type FBCommentReplyAfter,
   fbCommentAutomationTypes,
@@ -55,7 +56,7 @@ export const fbCommentAutomationModel = pgTable(
       .notNull()
       .default(sql`'{"type":"text","value":""}'`),
     publicReply: jsonb()
-      .$type<FBCommentReply>()
+      .$type<FBCommentPublicReply>()
       .notNull()
       .default(sql`'{"type":"none","value":null}'`),
     includeKeywords: jsonb()

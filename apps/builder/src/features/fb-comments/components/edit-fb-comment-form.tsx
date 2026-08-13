@@ -8,6 +8,7 @@ import { useAction } from "next-safe-action/hooks"
 import { type Resolver, type UseFormReturn, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { updateFbCommentAction } from "../actions/update-fb-comment.action"
+import { getInitialPublicReplyValues } from "../lib/public-reply"
 import {
   type CreateFbCommentRequest,
   createFbCommentRequest,
@@ -36,7 +37,10 @@ export function EditFbCommentForm({
       folderId: initialData.folderId ?? undefined,
       post: initialData.post,
       privateReply: initialData.privateReply,
-      publicReply: initialData.publicReply,
+      publicReply: {
+        ...initialData.publicReply,
+        values: getInitialPublicReplyValues(initialData.publicReply),
+      },
       includeKeywords: initialData.includeKeywords,
       excludeKeywords: initialData.excludeKeywords,
       options: initialData.options,

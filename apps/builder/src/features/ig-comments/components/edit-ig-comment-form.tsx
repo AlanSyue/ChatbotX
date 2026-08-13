@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import { type Resolver, type UseFormReturn, useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { getInitialPublicReplyValues } from "../../fb-comments/lib/public-reply"
 import { updateIgCommentAction } from "../actions/update-ig-comment.action"
 import {
   type CreateIgCommentRequest,
@@ -38,7 +39,10 @@ export function EditIgCommentForm({
       folderId: initialData.folderId ?? undefined,
       post: initialData.post,
       privateReply: initialData.privateReply,
-      publicReply: initialData.publicReply,
+      publicReply: {
+        ...initialData.publicReply,
+        values: getInitialPublicReplyValues(initialData.publicReply),
+      },
       includeKeywords: initialData.includeKeywords,
       excludeKeywords: initialData.excludeKeywords,
       options: initialData.options,

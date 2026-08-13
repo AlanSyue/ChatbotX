@@ -26,6 +26,7 @@ type ChannelsAccordionProps = {
   readonly whatsapp?: ReactNode
   readonly messenger?: ReactNode
   readonly instagram?: ReactNode
+  readonly threads?: ReactNode
   readonly zalo?: ReactNode
   readonly telegram?: ReactNode
   readonly tiktok?: ReactNode
@@ -47,6 +48,7 @@ export function ChannelsAccordion(props: ChannelsAccordionProps) {
     whatsapp,
     messenger,
     instagram,
+    threads,
     zalo,
     telegram,
     tiktok,
@@ -61,6 +63,7 @@ export function ChannelsAccordion(props: ChannelsAccordionProps) {
     whatsapp,
     messenger,
     instagram,
+    threads,
     zalo,
     telegram,
     tiktok,

@@ -696,6 +696,9 @@
       "cloneFromMessenger": "Sao chép từ Messenger",
       "clonedFromMessenger": "Đã sao chép từ Messenger"
     },
+    "threads": {
+      "label": "Threads"
+    },
     "zalo": {
       "label": "Zalo OA"
     },
@@ -2575,7 +2578,8 @@
     "title": "Cài đặt Nền tảng",
     "errors": {
       "giphyApiKeyRequired": "API Key là bắt buộc để cấu hình GIPHY.",
-      "giphyApiKeyInvalid": "API key GIPHY không hợp lệ"
+      "giphyApiKeyInvalid": "API key GIPHY không hợp lệ",
+      "threadsAppSecretRequired": "Cần có App Secret để cấu hình Threads."
     }
   },
   "home": {
@@ -3600,6 +3604,11 @@
   "facebookCommentAutomation": {
     "title": "Tự động hóa bình luận Facebook",
     "description": "Tự động hóa bình luận Facebook cho các liên hệ của bạn.",
+    "platform": "Nền tảng",
+    "platformType": {
+      "messenger": "Messenger",
+      "threads": "Threads"
+    },
     "create": "Tạo tự động hóa",
     "replies": "Phản hồi",
     "activated": "Đã kích hoạt tự động hóa",
@@ -3698,6 +3707,8 @@
     "chooseSpecificPosts": "Chọn bài viết...",
     "postIdTab": "Post ID",
     "postIdPlaceholder": "Nhập ID bài viết, mỗi dòng một ID...",
+    "randomPublicReplyDescription": "Luân phiên ngẫu nhiên giữa các tin nhắn trả lời công khai bên dưới.",
+    "replyMessageNumber": "Tin nhắn trả lời #{number}",
     "noPostsFound": "Không tìm thấy bài viết"
   },
   "instagramCommentAutomation": {
@@ -3796,6 +3807,8 @@
     "chooseSpecificPosts": "Chọn bài viết...",
     "postIdTab": "Post ID",
     "postIdPlaceholder": "Nhập ID bài viết, mỗi dòng một ID...",
+    "randomPublicReplyDescription": "Luân phiên ngẫu nhiên giữa các tin nhắn trả lời công khai bên dưới.",
+    "replyMessageNumber": "Tin nhắn trả lời #{number}",
     "noPostsFound": "Không tìm thấy bài viết",
     "connectionType": {
       "title": "Chọn loại kết nối Instagram",

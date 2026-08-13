@@ -1,13 +1,13 @@
 "use server"
 
-import { db } from "@chatbotx.io/database/client"
-import { fbCommentAutomationModel } from "@chatbotx.io/database/schema"
+import { fbCommentAutomationService } from "@chatbotx.io/business"
 import { createId } from "@chatbotx.io/utils"
 import {
   type WorkspaceIdRequestParams,
   workspaceIdrequestParams,
 } from "@/features/common/schemas"
 import { workspaceActionClient } from "@/lib/safe-action"
+import { normalizePublicReply } from "../../fb-comments/lib/public-reply"
 import {
   type CreateIgCommentRequest,
   createIgCommentRequest,
@@ -18,15 +18,15 @@ export const createIgComment = async (
   input: CreateIgCommentRequest,
 ) => {
   const id = createId()
-
-  const [record] = await db
-    .insert(fbCommentAutomationModel)
-    .values({
-      id,
-      workspaceId,
-      ...input,
-    })
-    .returning()
+  const normalizedInput = {
+    ...input,
+    publicReply: normalizePublicReply(input.publicReply),
+  }
+  const record = await fbCommentAutomationService.create({
+    id,
+    workspaceId,
+    input: normalizedInput,
+  })
 
   return record
 }

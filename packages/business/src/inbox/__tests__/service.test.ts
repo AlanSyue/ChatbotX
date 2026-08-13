@@ -240,11 +240,12 @@ describe("InboxService.create", () => {
     )
   })
 
-  test("reconnects an existing disconnected inbox without consuming quota", async () => {
+  test("reconnects an existing disconnected inbox and re-consumes quota", async () => {
     mocks.inboxFindFirst.mockResolvedValue({
       id: "existing-inbox",
       status: "disconnected",
     })
+    quotaEnforcementService.tryConsume.mockResolvedValue({ ok: true })
 
     await inboxService.create({
       data: {
@@ -255,7 +256,14 @@ describe("InboxService.create", () => {
       ownerId: "owner-1",
     })
 
-    expect(quotaEnforcementService.tryConsume).not.toHaveBeenCalled()
+    expect(quotaEnforcementService.tryConsume).toHaveBeenCalledWith({
+      userId: "owner-1",
+      metric: "channels",
+    })
+    expect(workspaceUsageService.increment).toHaveBeenCalledWith(
+      "workspace-1",
+      "channels",
+    )
     expect(mocks.inboxUpdate).toHaveBeenCalledTimes(1)
   })
 })

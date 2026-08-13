@@ -18,6 +18,7 @@ import { integration as integrationInstagramFacebook } from "@chatbotx.io/integr
 import { integration as integrationMessenger } from "@chatbotx.io/integration-messenger"
 import { integration as integrationSmtp } from "@chatbotx.io/integration-smtp"
 import { integration as integrationTelegram } from "@chatbotx.io/integration-telegram"
+import { integration as integrationThreads } from "@chatbotx.io/integration-threads"
 import { integration as integrationTiktok } from "@chatbotx.io/integration-tiktok"
 import { integration as integrationWebchat } from "@chatbotx.io/integration-webchat"
 import { integration as integrationWhatsapp } from "@chatbotx.io/integration-whatsapp"
@@ -50,6 +51,7 @@ export const allIntegrations: Record<
   smtp: integrationSmtp,
   instagram: integrationInstagram,
   instagramFacebook: integrationInstagramFacebook,
+  threads: integrationThreads,
 }
 
 export type IntegrationRow = {
@@ -111,6 +113,11 @@ export const integrationService = {
       case "tiktok": {
         modelName = "IntegrationTiktok"
         columnName = "openId"
+        break
+      }
+      case "threads": {
+        modelName = "IntegrationThreads"
+        columnName = "threadsUserId"
         break
       }
       case "webchat": {
@@ -180,6 +187,9 @@ export const integrationService = {
         break
       case "instagram":
         integrationTable = "IntegrationInstagram"
+        break
+      case "threads":
+        integrationTable = "IntegrationThreads"
         break
       default:
         throw new ChannelError(

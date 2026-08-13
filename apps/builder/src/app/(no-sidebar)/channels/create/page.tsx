@@ -63,33 +63,44 @@ export default async function CreateChannelPage(props: CreateChannelPageProps) {
     return <SimpleCreateWebchat workspaceId={workspaceId} />
   }
 
-  const [whatsapp, messenger, instagram, instagramFacebook, zalo, tiktok] =
-    await Promise.all([
-      platformCredentialService.resolveForOwner({
-        ownerId: platformOwnerId,
-        type: "whatsapp",
-      }),
-      platformCredentialService.resolveForOwner({
-        ownerId: platformOwnerId,
-        type: "messenger",
-      }),
-      platformCredentialService.resolveForOwner({
-        ownerId: platformOwnerId,
-        type: "instagram",
-      }),
-      platformCredentialService.resolveForOwner({
-        ownerId: platformOwnerId,
-        type: "instagramFacebook",
-      }),
-      platformCredentialService.resolveForOwner({
-        ownerId: platformOwnerId,
-        type: "zalo",
-      }),
-      platformCredentialService.resolveForOwner({
-        ownerId: platformOwnerId,
-        type: "tiktok",
-      }),
-    ])
+  const [
+    whatsapp,
+    messenger,
+    instagram,
+    instagramFacebook,
+    threads,
+    zalo,
+    tiktok,
+  ] = await Promise.all([
+    platformCredentialService.resolveForOwner({
+      ownerId: platformOwnerId,
+      type: "whatsapp",
+    }),
+    platformCredentialService.resolveForOwner({
+      ownerId: platformOwnerId,
+      type: "messenger",
+    }),
+    platformCredentialService.resolveForOwner({
+      ownerId: platformOwnerId,
+      type: "instagram",
+    }),
+    platformCredentialService.resolveForOwner({
+      ownerId: platformOwnerId,
+      type: "instagramFacebook",
+    }),
+    platformCredentialService.resolveForOwner({
+      ownerId: platformOwnerId,
+      type: "threads",
+    }),
+    platformCredentialService.resolveForOwner({
+      ownerId: platformOwnerId,
+      type: "zalo",
+    }),
+    platformCredentialService.resolveForOwner({
+      ownerId: platformOwnerId,
+      type: "tiktok",
+    }),
+  ])
 
   if (selectedChannel === "whatsapp" && whatsapp && isVisible("whatsapp")) {
     return (
@@ -141,6 +152,17 @@ export default async function CreateChannelPage(props: CreateChannelPageProps) {
     redirect(redirectUri)
   }
 
+  if (
+    selectedChannel === "threads" &&
+    workspaceId &&
+    threads &&
+    isVisible("threads")
+  ) {
+    redirect(
+      `/channels/create/threads${workspaceId ? `?workspaceId=${workspaceId}` : ""}`,
+    )
+  }
+
   if (selectedChannel === "zalo" && zalo && isVisible("zalo")) {
     const redirectUri = await generateZaloRedirectUri(
       zalo.publicConfig,
@@ -169,6 +191,9 @@ export default async function CreateChannelPage(props: CreateChannelPageProps) {
   }
   if (zalo) {
     configuredChannels.push("zalo")
+  }
+  if (threads) {
+    configuredChannels.push("threads")
   }
   if (tiktok) {
     configuredChannels.push("tiktok")

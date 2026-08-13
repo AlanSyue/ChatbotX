@@ -8,6 +8,7 @@ vi.mock("@chatbotx.io/database/client", () => ({
   and: vi.fn(),
   eq: vi.fn(),
   isNull: vi.fn(),
+  sql: vi.fn(),
 }))
 vi.mock("@chatbotx.io/database/partials", () => ({
   credentialEncryptedSchema: {},
@@ -20,7 +21,8 @@ vi.mock("@chatbotx.io/redis", () => ({
   invalidateCacheByTags: vi.fn(async () => undefined),
   withCache: vi.fn(async (_key: string, fn: () => unknown) => fn()),
 }))
-vi.mock("../src/logger", () => ({ logger: { error: vi.fn(), warn: vi.fn() } }))
+const logger = { error: vi.fn(), warn: vi.fn() }
+vi.mock("../src/logger", () => ({ logger }))
 
 const { platformCredentialService } = await import(
   "../src/platform-credential/service"
@@ -33,8 +35,36 @@ const PLATFORM = {
   publicConfig: { clientId: "plat" },
 }
 
+const buildThreadsRow = (overrides: Record<string, unknown> = {}) => ({
+  id: "threads-1",
+  userId: null,
+  type: "threads",
+  publicConfig: { clientId: "client-1" },
+  createdAt: new Date("2026-08-13T00:00:00.000Z"),
+  updatedAt: new Date("2026-08-13T00:00:00.000Z"),
+  ...overrides,
+})
+
+const buildThreadsTx = (rows: unknown[], error?: Error) =>
+  ({
+    select: () => ({
+      from: () => ({
+        where: () => ({
+          orderBy: () => {
+            if (error) {
+              throw error
+            }
+            return rows
+          },
+        }),
+      }),
+    }),
+  }) as never
+
 beforeEach(() => {
   tenantService.findByOwner.mockReset()
+  logger.error.mockReset()
+  logger.warn.mockReset()
 })
 
 afterEach(() => {
@@ -45,7 +75,7 @@ describe("resolveForOwner", () => {
   test("active tenant with own credential returns the reseller's own", async () => {
     tenantService.findByOwner.mockResolvedValue({ status: "active" })
     const own = vi
-      .spyOn(platformCredentialService, "findDecryptedForUser")
+      .spyOn(platformCredentialService, "resolveForUser")
       .mockResolvedValue(OWN as never)
     const platform = vi.spyOn(
       platformCredentialService,
@@ -58,16 +88,40 @@ describe("resolveForOwner", () => {
     })
 
     expect(result).toBe(OWN)
-    expect(own).toHaveBeenCalledTimes(1)
+    expect(own).toHaveBeenCalledWith({
+      userId: "owner-1",
+      type: "messenger",
+      livemode: undefined,
+      tx: undefined,
+    })
     expect(platform).not.toHaveBeenCalled()
   })
 
   test("active tenant WITHOUT own credential falls back to platform", async () => {
     tenantService.findByOwner.mockResolvedValue({ status: "active" })
-    vi.spyOn(
+    vi.spyOn(platformCredentialService, "resolveForUser").mockResolvedValue(
+      PLATFORM as never,
+    )
+    const platform = vi.spyOn(
       platformCredentialService,
-      "findDecryptedForUser",
-    ).mockResolvedValue(undefined)
+      "findDecryptedPlatform",
+    )
+
+    const result = await platformCredentialService.resolveForOwner({
+      ownerId: "owner-1",
+      type: "messenger",
+    })
+
+    expect(result).toBe(PLATFORM)
+    expect(platform).not.toHaveBeenCalled()
+  })
+
+  test("active tenant with usePlatformCredential resolves to platform", async () => {
+    tenantService.findByOwner.mockResolvedValue({ status: "active" })
+    vi.spyOn(platformCredentialService, "findForUser").mockResolvedValue({
+      ...OWN,
+      usePlatformCredential: true,
+    } as never)
     const platform = vi
       .spyOn(platformCredentialService, "findDecryptedPlatform")
       .mockResolvedValue(PLATFORM as never)
@@ -83,7 +137,7 @@ describe("resolveForOwner", () => {
 
   test("inactive tenant uses platform without reading own credential", async () => {
     tenantService.findByOwner.mockResolvedValue({ status: "suspended" })
-    const own = vi.spyOn(platformCredentialService, "findDecryptedForUser")
+    const own = vi.spyOn(platformCredentialService, "resolveForUser")
     const platform = vi
       .spyOn(platformCredentialService, "findDecryptedPlatform")
       .mockResolvedValue(PLATFORM as never)
@@ -194,5 +248,110 @@ describe("resolvePlatformAppAccessToken", () => {
     await expect(
       platformCredentialService.resolvePlatformAppAccessToken("instagram"),
     ).resolves.toBeUndefined()
+  })
+})
+
+describe("findThreadsCredentialByClientId", () => {
+  test("returns the single platform credential when present", async () => {
+    const decrypt = vi
+      .spyOn(platformCredentialService as never, "_decrypt")
+      .mockResolvedValue({ id: "platform-threads" } as never)
+
+    const result =
+      await platformCredentialService.findThreadsCredentialByClientId({
+        clientId: "client-1",
+        tx: buildThreadsTx([buildThreadsRow({ id: "platform-threads" })]),
+      })
+
+    expect(result).toEqual({ id: "platform-threads" })
+    expect(decrypt).toHaveBeenCalledTimes(1)
+  })
+
+  test("prefers the platform credential when platform and user rows share a clientId", async () => {
+    const decrypt = vi
+      .spyOn(platformCredentialService as never, "_decrypt")
+      .mockResolvedValue({ id: "platform-threads" } as never)
+
+    const result =
+      await platformCredentialService.findThreadsCredentialByClientId({
+        clientId: "client-1",
+        tx: buildThreadsTx([
+          buildThreadsRow({ id: "platform-threads", userId: null }),
+          buildThreadsRow({ id: "user-threads", userId: "user-1" }),
+        ]),
+      })
+
+    expect(result).toEqual({ id: "platform-threads" })
+    expect(decrypt).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "platform-threads", userId: null }),
+    )
+    expect(logger.warn).not.toHaveBeenCalled()
+  })
+
+  test("returns undefined and warns when the preferred scope has multiple matches", async () => {
+    const decrypt = vi.spyOn(platformCredentialService as never, "_decrypt")
+
+    const result =
+      await platformCredentialService.findThreadsCredentialByClientId({
+        clientId: "client-1",
+        tx: buildThreadsTx([
+          buildThreadsRow({ id: "platform-1", userId: null }),
+          buildThreadsRow({ id: "platform-2", userId: null }),
+        ]),
+      })
+
+    expect(result).toBeUndefined()
+    expect(decrypt).not.toHaveBeenCalled()
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        clientId: "client-1",
+        count: 2,
+        livemode: false,
+      }),
+      "Threads credential lookup by clientId is ambiguous",
+    )
+  })
+
+  test("returns the single user credential when no platform credential exists", async () => {
+    const decrypt = vi
+      .spyOn(platformCredentialService as never, "_decrypt")
+      .mockResolvedValue({ id: "user-threads" } as never)
+
+    const result =
+      await platformCredentialService.findThreadsCredentialByClientId({
+        clientId: "client-1",
+        tx: buildThreadsTx([
+          buildThreadsRow({ id: "user-threads", userId: "user-1" }),
+        ]),
+      })
+
+    expect(result).toEqual({ id: "user-threads" })
+    expect(decrypt).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "user-threads", userId: "user-1" }),
+    )
+  })
+
+  test("returns undefined and logs safe metadata when lookup throws", async () => {
+    const decrypt = vi.spyOn(platformCredentialService as never, "_decrypt")
+
+    const result =
+      await platformCredentialService.findThreadsCredentialByClientId({
+        clientId: "secret-client-id",
+        tx: buildThreadsTx([], new Error("top-secret-token")),
+      })
+
+    expect(result).toBeUndefined()
+    expect(decrypt).not.toHaveBeenCalled()
+    expect(logger.error).toHaveBeenCalledWith(
+      {
+        livemode: false,
+        clientId: "secret-client-id",
+        errorName: "Error",
+      },
+      "Failed to decrypt Threads credential by clientId",
+    )
+    expect(JSON.stringify(logger.error.mock.calls)).not.toContain(
+      "top-secret-token",
+    )
   })
 })

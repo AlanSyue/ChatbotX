@@ -1,7 +1,10 @@
 import {
   integrationFacebookAdsService,
   integrationMetaCatalogService,
+  integrationThreadsService,
   platformCredentialService,
+  resolveWorkspaceFreezeReason,
+  userQuotaService,
   workspaceMemberService,
   workspaceService,
 } from "@chatbotx.io/business"
@@ -29,6 +32,12 @@ import {
 import { exchangeLongLivedToken as exchangeMessengerLongLivedToken } from "@chatbotx.io/integration-messenger/apis/page"
 import type { MetaCatalogAuthValue } from "@chatbotx.io/integration-meta-catalog/schemas"
 import {
+  buildThreadsAuthValue,
+  exchangeCodeForToken as exchangeThreadsCode,
+  getSafeErrorDetails,
+  getThreadsProfile,
+} from "@chatbotx.io/integration-threads"
+import {
   AuthType,
   type AuthValue,
   type Oauth2AuthValue,
@@ -42,12 +51,17 @@ import { cookies } from "next/headers"
 import { notFound, redirect } from "next/navigation"
 import type { NextRequest } from "next/server"
 import { z } from "zod"
+import { isCloud } from "@/env"
 import { enableLeadgenForWorkspacePages } from "@/features/facebook-lead-ad-automation/lib/pages"
 import {
   reconnectInstagramFacebookHandler,
   reconnectInstagramHandler,
 } from "@/features/integration-instagram/actions/reconnect-callback"
 import { reconnectMessengerHandler } from "@/features/integration-messenger/actions/reconnect-callback"
+import {
+  clearThreadsOAuthStateCookie,
+  getThreadsOAuthStateCookie,
+} from "@/features/integration-threads/libs/oauth"
 import { connectTiktokHandler } from "@/features/integration-tiktok/actions/connect.action"
 import { connectZaloHandler } from "@/features/integration-zalo/actions/connect-zalo.action"
 import { integrations } from "@/integration"
@@ -73,6 +87,7 @@ const stateValidationSchema = z.object({
   // this flag so the Messenger branch dispatches to the right token-storage /
   // webhook-subscription logic instead of the page picker.
   flow: z.enum(["facebookAds", "facebookLeadAds", "metaCatalog"]).optional(),
+  nonce: z.string().min(1).optional(),
   // Set by the channel "Reconnect" buttons: the callback refreshes the tokens
   // of this existing integration row (matched against its stored page/account
   // identity) instead of running the connect/page-select flow.
@@ -157,6 +172,50 @@ const lookupFacebookUser = async (
   }
 }
 
+const getThreadsOauthFailedRedirectUrl = (
+  workspaceId: string,
+  safeReferer: string,
+) =>
+  new URL(
+    `/space/${workspaceId}/settings/channels?channel=threads&error=oauth_failed`,
+    safeReferer,
+  ).toString()
+
+const revalidateThreadsCallbackAccess = async (props: {
+  workspaceId: string
+  ownerId: string
+  userId: string
+}) => {
+  const workspaceMember =
+    await workspaceMemberService.findByWorkspaceIdAndUserId({
+      workspaceId: props.workspaceId,
+      userId: props.userId,
+    })
+  if (!workspaceMember?.permissions?.superAdmin) {
+    return { allowed: false as const }
+  }
+
+  const latestWorkspace = await workspaceService.findById({
+    id: props.workspaceId,
+  })
+  if (!latestWorkspace) {
+    return { allowed: false as const }
+  }
+
+  const accessState = isCloud()
+    ? await userQuotaService.getAccessState(props.ownerId)
+    : null
+  const freezeReason = resolveWorkspaceFreezeReason({
+    accessState,
+    workspace: latestWorkspace,
+  })
+
+  return {
+    allowed: !freezeReason,
+    workspace: latestWorkspace,
+  } as const
+}
+
 export const handleCallback = async (
   integrationType: IntegrationType,
   req: NextRequest,
@@ -173,15 +232,23 @@ export const handleCallback = async (
       atob(decodeURIComponent(url.searchParams.get("state") || "")),
     )
   } catch {
-    logger.debug(
-      { url: url.toString() },
-      "state param is not valid base64/JSON",
-    )
+    logger.debug({ integrationType }, "state param is not valid base64/JSON")
     return notFound()
   }
   const { data: stateParams } = stateValidationSchema.safeParse(rawState)
   if (!stateParams) {
-    logger.debug({ url: url.toString() }, "state is not valid")
+    logger.debug({ integrationType }, "state is not valid")
+    return notFound()
+  }
+
+  if (
+    integrationType === "threads" &&
+    !(stateParams.workspaceId && stateParams.nonce)
+  ) {
+    logger.debug(
+      { integrationType, reason: "missing_workspace_or_nonce" },
+      "threads oauth callback rejected",
+    )
     return notFound()
   }
 
@@ -189,7 +256,7 @@ export const handleCallback = async (
   // without a workspaceId the create-workspace branch below would run.
   if (stateParams.reconnectIntegrationId && !stateParams.workspaceId) {
     logger.debug(
-      { url: url.toString() },
+      { integrationType, reason: "missing_workspace_for_reconnect" },
       "reconnect state is missing workspaceId",
     )
     return notFound()
@@ -205,8 +272,10 @@ export const handleCallback = async (
     return redirect(relayTarget)
   }
 
-  // Facebook returns ?error=access_denied when the user cancels
-  if (url.searchParams.get("error")) {
+  // Facebook returns ?error=access_denied when the user cancels. Threads has a
+  // stricter callback flow (cookie consume + superAdmin recheck), so it
+  // handles provider errors inside its own branch instead of bypassing those.
+  if (integrationType !== "threads" && url.searchParams.get("error")) {
     const cancelReferer = await sanitizeReferer(stateParams.referer)
     // A cancelled reconnect must still surface a toast on the settings page,
     // like every other reconnect outcome.
@@ -226,15 +295,23 @@ export const handleCallback = async (
     return notFound()
   }
 
-  const workspace = stateParams.workspaceId
+  let workspace = stateParams.workspaceId
     ? await workspaceService.findById({ id: stateParams.workspaceId })
-    : await workspaceService.create({
-        data: {
-          name: "New Workspace",
-          ownerId: userId,
-        },
-        createdBy: userId,
-      })
+    : undefined
+
+  if (!workspace && integrationType !== "threads") {
+    workspace = await workspaceService.create({
+      data: {
+        name: "New Workspace",
+        ownerId: userId,
+      },
+      createdBy: userId,
+    })
+  }
+
+  if (!workspace) {
+    return notFound()
+  }
 
   if (
     stateParams.workspaceId &&
@@ -477,6 +554,262 @@ export const handleCallback = async (
       })
       return redirect(
         new URL("/channels/instagram-facebook/select", safeReferer).toString(),
+      )
+    }
+
+    case "threads": {
+      if (!(stateParams.workspaceId && stateParams.nonce)) {
+        return notFound()
+      }
+
+      const workspaceMember =
+        await workspaceMemberService.findByWorkspaceIdAndUserId({
+          workspaceId: workspace.id,
+          userId,
+        })
+      if (!workspaceMember?.permissions?.superAdmin) {
+        logger.info(
+          { userId, workspaceId: workspace.id },
+          "threads oauth callback rejected: user is not workspace super admin",
+        )
+        return notFound()
+      }
+
+      const oauthStateCookie = await getThreadsOAuthStateCookie()
+      await clearThreadsOAuthStateCookie()
+
+      if (
+        !oauthStateCookie ||
+        oauthStateCookie.nonce !== stateParams.nonce ||
+        oauthStateCookie.workspaceId !== workspace.id ||
+        oauthStateCookie.reconnectIntegrationId !==
+          stateParams.reconnectIntegrationId
+      ) {
+        logger.info(
+          { workspaceId: workspace.id },
+          "threads oauth callback rejected: state cookie mismatch",
+        )
+        return notFound()
+      }
+
+      if (url.searchParams.get("error")) {
+        if (stateParams.reconnectIntegrationId) {
+          return redirect(
+            buildReconnectRedirectUrl(safeReferer, {
+              status: "error",
+              reason: "cancelled",
+            }),
+          )
+        }
+        return redirect(
+          new URL(
+            `/space/${workspace.id}/settings/channels?channel=threads&error=oauth_failed`,
+            safeReferer,
+          ).toString(),
+        )
+      }
+
+      const threadsCredential = await platformCredentialService.resolveForOwner(
+        {
+          ownerId: platformOwnerId,
+          type: "threads",
+        },
+      )
+      if (!threadsCredential) {
+        return notFound()
+      }
+
+      const initialAccessCheck = await revalidateThreadsCallbackAccess({
+        workspaceId: workspace.id,
+        ownerId: workspace.ownerId,
+        userId,
+      })
+      if (!initialAccessCheck.allowed) {
+        if (stateParams.reconnectIntegrationId) {
+          return redirect(
+            buildReconnectRedirectUrl(safeReferer, {
+              status: "error",
+              reason: "failed",
+            }),
+          )
+        }
+        return redirect(
+          getThreadsOauthFailedRedirectUrl(workspace.id, safeReferer),
+        )
+      }
+
+      const callbackUrl = buildBrokerCallbackUrl(
+        "/integrations/threads/callback",
+      )
+
+      let auth: ReturnType<typeof buildThreadsAuthValue>
+      let profile: Awaited<ReturnType<typeof getThreadsProfile>>
+
+      try {
+        const { accessToken, expiresAt } = await exchangeThreadsCode(
+          threadsCredential.config,
+          code,
+          callbackUrl,
+        )
+        profile = await getThreadsProfile(
+          accessToken,
+          threadsCredential.config.version,
+        )
+
+        auth = buildThreadsAuthValue({
+          version: threadsCredential.config.version,
+          accessToken,
+          expiresAt,
+          threadsUserId: profile.id,
+          username: profile.username,
+        })
+      } catch (error) {
+        const safeError = getSafeErrorDetails(error)
+        logger.warn(
+          {
+            workspaceId: workspace.id,
+            integrationType: "threads",
+            errorCode: safeError.code,
+            errorHttpStatusCode: safeError.httpStatusCode,
+            errorSubCode: safeError.subCode,
+            errorType: safeError.type,
+            errorMessage: safeError.message,
+          },
+          "threads oauth callback failed",
+        )
+
+        if (stateParams.reconnectIntegrationId) {
+          return redirect(
+            buildReconnectRedirectUrl(safeReferer, {
+              status: "error",
+              reason: "failed",
+            }),
+          )
+        }
+
+        return redirect(
+          getThreadsOauthFailedRedirectUrl(workspace.id, safeReferer),
+        )
+      }
+
+      const postExchangeAccessCheck = await revalidateThreadsCallbackAccess({
+        workspaceId: workspace.id,
+        ownerId: workspace.ownerId,
+        userId,
+      })
+      if (!postExchangeAccessCheck.allowed) {
+        if (stateParams.reconnectIntegrationId) {
+          return redirect(
+            buildReconnectRedirectUrl(safeReferer, {
+              status: "error",
+              reason: "failed",
+            }),
+          )
+        }
+
+        return redirect(
+          getThreadsOauthFailedRedirectUrl(workspace.id, safeReferer),
+        )
+      }
+
+      if (stateParams.reconnectIntegrationId) {
+        const existing = await integrationThreadsService.findByIdForWorkspace({
+          id: stateParams.reconnectIntegrationId,
+          workspaceId: workspace.id,
+        })
+        if (!existing || existing.threadsUserId !== profile.id) {
+          return redirect(
+            buildReconnectRedirectUrl(safeReferer, {
+              status: "error",
+              reason: "accountNotFound",
+            }),
+          )
+        }
+
+        try {
+          await integrationThreadsService.reconnect({
+            workspaceId: workspace.id,
+            id: existing.id,
+            auth,
+            username: profile.username,
+            name: profile.name,
+          })
+        } catch (error) {
+          const safeError = getSafeErrorDetails(error)
+          logger.warn(
+            {
+              workspaceId: workspace.id,
+              integrationType: "threads",
+              errorCode: safeError.code,
+              errorHttpStatusCode: safeError.httpStatusCode,
+              errorSubCode: safeError.subCode,
+              errorType: safeError.type,
+              errorMessage: safeError.message,
+            },
+            "threads oauth callback failed",
+          )
+
+          return redirect(
+            buildReconnectRedirectUrl(safeReferer, {
+              status: "error",
+              reason: "failed",
+            }),
+          )
+        }
+
+        return redirect(
+          buildReconnectRedirectUrl(safeReferer, {
+            status: "success",
+          }),
+        )
+      }
+
+      const existing = await integrationThreadsService.findByThreadsUserId(
+        profile.id,
+      )
+      if (existing) {
+        return redirect(
+          new URL(
+            `/space/${workspace.id}/settings/channels?channel=threads&error=duplicated`,
+            safeReferer,
+          ).toString(),
+        )
+      }
+
+      try {
+        await integrationThreadsService.connect({
+          workspaceId: workspace.id,
+          ownerId: workspace.ownerId,
+          auth,
+          threadsUserId: profile.id,
+          username: profile.username,
+          name: profile.name,
+        })
+      } catch (error) {
+        const safeError = getSafeErrorDetails(error)
+        logger.warn(
+          {
+            workspaceId: workspace.id,
+            integrationType: "threads",
+            errorCode: safeError.code,
+            errorHttpStatusCode: safeError.httpStatusCode,
+            errorSubCode: safeError.subCode,
+            errorType: safeError.type,
+            errorMessage: safeError.message,
+          },
+          "threads oauth callback failed",
+        )
+
+        return redirect(
+          getThreadsOauthFailedRedirectUrl(workspace.id, safeReferer),
+        )
+      }
+
+      return redirect(
+        new URL(
+          `/space/${workspace.id}/settings/channels?channel=threads`,
+          safeReferer,
+        ).toString(),
       )
     }
 

@@ -43,6 +43,7 @@
     "disableBot": "Botu Devre Dışı Bırak",
     "disconnect": "Bağlantıyı Kes",
     "download": "İndir",
+    "downloadTemplate": "Şablonu indir",
     "edit": "Düzenle",
     "editFeature": "{feature} Düzenle",
     "enableBot": "Botu Etkinleştir",
@@ -694,6 +695,9 @@
       "viaFacebookTitle": "Facebook üzerinden Instagram",
       "cloneFromMessenger": "Messenger'dan Klonla",
       "clonedFromMessenger": "Messenger'dan Klonlandı"
+    },
+    "threads": {
+      "label": "Threads"
     },
     "zalo": {
       "label": "Zalo OA"
@@ -2178,6 +2182,11 @@
       "addMapping": "Eşleme Ekle",
       "addCustomField": "Yeni Ekle"
     },
+    "sendCarousel": {
+      "addSlide": "Slayt ekle",
+      "removeSlide": "Slaytı kaldır",
+      "whatsappLinkButtonIgnored": "WhatsApp'ta bu kartın bağlantısı çalışmaz: bağlantı düğmesi olan bir kartta başka düğmeler bulunamaz. Bunun yerine yanıt olarak gönderilir."
+    },
     "additionalSteps": "Ek adımlar",
     "delayType": {
       "datetimeCustomField": "Tarih ve Saat Özel Alanı",
@@ -2569,7 +2578,8 @@
     "title": "Platform Ayarları",
     "errors": {
       "giphyApiKeyRequired": "GIPHY'yi yapılandırmak için API Anahtarı gereklidir.",
-      "giphyApiKeyInvalid": "Geçersiz GIPHY API anahtarı"
+      "giphyApiKeyInvalid": "Geçersiz GIPHY API anahtarı",
+      "threadsAppSecretRequired": "Threads yapılandırmak için App Secret gereklidir."
     }
   },
   "home": {
@@ -2690,6 +2700,8 @@
     "noVersionsFound": "Yayınlanmış sürüm bulunamadı",
     "publishVersionSuccess": "Yeni bir sürüm yayınlandı",
     "flowConfigIncomplete": "Bazı yapılandırmalar eksik",
+    "whatsappCarouselButtonsMismatch": "WhatsApp'ta bir döngülü galeride her kartta aynı düğmeler olmalıdır: ya her kartta tek bir bağlantı düğmesi ya da her kartta aynı sayıda yanıt düğmesi",
+    "whatsappCarouselLinkButtonNotAlone": "WhatsApp'ta bağlantı düğmesi olan bir döngülü galeri kartında başka düğmeler bulunamaz. O karttaki diğer düğmeleri kaldırın veya bağlantı düğmesini başka bir eylemle değiştirin.",
     "duplicateNodeError": "Blok çoğaltılamadı. Lütfen tekrar deneyin.",
     "deleteNodeError": "Blok silinemedi. Lütfen tekrar deneyin.",
     "redoHistoryCleared": "Yinele geçmişi temizlendi",
@@ -3088,6 +3100,7 @@
         "quickReplyPayloadPlaceholder": "Veriyi girin (isteğe bağlı)",
         "flowToken": "Akış Token'ı",
         "flowTokenPlaceholder": "Akış token'ını girin",
+        "flowNotSynced": "Gönderilen alanları eşlemek için WhatsApp akışlarını senkronize edin.",
         "catalogProductId": "Ürün ID",
         "catalogProductIdPlaceholder": "Ürün satıcı ID'sini girin",
         "carouselCard": "Kart {index}",
@@ -3389,7 +3402,10 @@
     "title": "Denetim Günlükleri"
   },
   "customFields": {
-    "title": "Özel Alanlar"
+    "title": "Özel Alanlar",
+    "variables": {
+      "rawGroup": "Ham özel alanlar"
+    }
   },
   "keywords": {
     "title": "Anahtar Kelimeler",
@@ -3592,6 +3608,11 @@
   "facebookCommentAutomation": {
     "title": "Facebook Yorum Otomasyonu",
     "description": "Kişileriniz için Facebook yorumlarını otomatikleştirin.",
+    "platform": "Platform",
+    "platformType": {
+      "messenger": "Messenger",
+      "threads": "Threads"
+    },
     "create": "Otomasyon Oluştur",
     "replies": "Yanıtlar",
     "activated": "Otomasyon etkinleştirildi",
@@ -3690,6 +3711,8 @@
     "chooseSpecificPosts": "Gönderi seçin...",
     "postIdTab": "Gönderi ID",
     "postIdPlaceholder": "Gönderi ID'lerini her satıra bir tane olacak şekilde girin...",
+    "randomPublicReplyDescription": "Aşağıdaki genel yanıt mesajları arasında rastgele dönüşümlü olarak geçiş yap.",
+    "replyMessageNumber": "Yanıt mesajı #{number}",
     "noPostsFound": "Gönderi bulunamadı"
   },
   "instagramCommentAutomation": {
@@ -3788,6 +3811,8 @@
     "chooseSpecificPosts": "Gönderileri seç...",
     "postIdTab": "Gönderi ID",
     "postIdPlaceholder": "Gönderi ID'lerini her satıra bir tane olacak şekilde girin...",
+    "randomPublicReplyDescription": "Aşağıdaki genel yanıt mesajları arasında rastgele dönüşümlü olarak geçiş yap.",
+    "replyMessageNumber": "Yanıt mesajı #{number}",
     "noPostsFound": "Gönderi bulunamadı",
     "connectionType": {
       "title": "Instagram bağlantı türünü seç",

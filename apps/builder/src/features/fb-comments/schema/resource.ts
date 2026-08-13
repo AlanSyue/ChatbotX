@@ -3,6 +3,7 @@ import {
   fbCommentIncludeKeywordsSchema,
   fbCommentOptionsSchema,
   fbCommentPostSchema,
+  fbCommentPublicReplySchema,
   fbCommentReplyAfterSchema,
   fbCommentReplySchema,
 } from "@chatbotx.io/database/partials"
@@ -18,7 +19,7 @@ export const fbCommentResource = createSelectSchema(fbCommentAutomationModel, {
   folderId: z.string().nullish(),
   post: fbCommentPostSchema,
   privateReply: fbCommentReplySchema,
-  publicReply: fbCommentReplySchema,
+  publicReply: fbCommentPublicReplySchema,
   includeKeywords: fbCommentIncludeKeywordsSchema,
   excludeKeywords: z.array(z.string()),
   options: fbCommentOptionsSchema,

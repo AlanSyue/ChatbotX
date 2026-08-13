@@ -27,12 +27,14 @@ import {
 } from "@chatbotx.io/ui/components/ui/tooltip"
 import { InfoIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import { useWatch } from "react-hook-form"
 import { TiptapEditorField } from "@/components/tiptap/tiptap-editor-field"
 import { useAIAgentStore } from "@/features/ai-agents/provider/ai-agent-store-context"
 import { useFlowSelectOptions } from "@/features/flows/provider/flow-hook"
+import { PublicReplyValuesFields } from "../../fb-comments/components/public-reply-values-fields"
+import { getEditablePublicReplyState } from "../../fb-comments/lib/public-reply"
 import type { CreateIgCommentRequest, IgCommentVariant } from "../schema/action"
 import { SelectInstagramPostsDialog } from "./select-instagram-posts-dialog"
 
@@ -64,6 +66,8 @@ export function IgCommentForm({
   }))
 
   const [selectPostsOpen, setSelectPostsOpen] = useState(false)
+  const hasInitializedPublicReplyRef = useRef(false)
+  const previousPublicReplyTypeRef = useRef(form.getValues("publicReply.type"))
 
   const postType = useWatch({ control: form.control, name: "post.type" })
   const postValue = useWatch({ control: form.control, name: "post.value" })
@@ -76,6 +80,10 @@ export function IgCommentForm({
     control: form.control,
     name: "publicReply.type",
   })
+  const publicReply = useWatch({
+    control: form.control,
+    name: "publicReply",
+  })
   const includeKeywordsType = useWatch({
     control: form.control,
     name: "includeKeywords.type",
@@ -84,6 +92,11 @@ export function IgCommentForm({
     control: form.control,
     name: "replyAfter.type",
   })
+  const publicReplyValues =
+    useWatch({
+      control: form.control,
+      name: "publicReply.values",
+    }) ?? []
   const hideCommentsKeywords = useWatch({
     control: form.control,
     name: "hideComments.hasKeywords",
@@ -197,6 +210,37 @@ export function IgCommentForm({
     replyAfterType,
   )
 
+  useEffect(() => {
+    const previousType = previousPublicReplyTypeRef.current
+    const isFirstRun = !hasInitializedPublicReplyRef.current
+
+    const nextState = getEditablePublicReplyState({
+      isFirstRun,
+      previousType,
+      reply: publicReply,
+    })
+    const currentValues = publicReply.values
+    const nextValues = nextState.values
+    const isSameValues =
+      currentValues?.length === nextValues?.length &&
+      currentValues?.every((value, index) => value === nextValues?.[index])
+
+    if (!isSameValues) {
+      form.setValue("publicReply.values", nextValues, {
+        shouldValidate: false,
+      })
+    }
+
+    if (publicReply.value !== nextState.value) {
+      form.setValue("publicReply.value", nextState.value, {
+        shouldValidate: false,
+      })
+    }
+
+    previousPublicReplyTypeRef.current = publicReply.type
+    hasInitializedPublicReplyRef.current = true
+  }, [form, publicReply])
+
   return (
     <form className="m-auto w-full max-w-200 space-y-6" onSubmit={onSubmit}>
       <InputField label={t("fields.name.label")} name="name" required />
@@ -299,14 +343,25 @@ export function IgCommentForm({
               required
             />
             {publicReplyType === "text" && (
-              <TiptapEditorField
-                channels={["instagram"]}
-                label={t("instagramCommentAutomation.replyMessage")}
-                name="publicReply.value"
-                placeholder={t(
-                  "instagramCommentAutomation.replyMessagePlaceholder",
+              <PublicReplyValuesFields
+                addButtonAriaLabel={t("actions.addMore")}
+                addButtonLabel={t("actions.addMore")}
+                description={t(
+                  "instagramCommentAutomation.randomPublicReplyDescription",
                 )}
-                required
+                form={form}
+                getItemLabel={(index) =>
+                  t("instagramCommentAutomation.replyMessageNumber", {
+                    number: index + 1,
+                  })
+                }
+                removeButtonAriaLabel={(index) =>
+                  `${t("actions.remove")} ${t(
+                    "instagramCommentAutomation.replyMessageNumber",
+                    { number: index + 1 },
+                  )}`
+                }
+                values={publicReplyValues}
               />
             )}
             {publicReplyType === "flow" && (
