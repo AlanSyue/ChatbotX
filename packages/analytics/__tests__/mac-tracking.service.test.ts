@@ -639,12 +639,11 @@ describe("MacTrackingService — occurredAt coercion", () => {
   test("falls back to now() for a malformed occurredAt", async () => {
     seedQuotaContext()
 
-    await expect(
-      newService().trackMessageIn([
-        makeInPayload({ occurredAt: "not-a-date" }),
-      ]),
-    ).resolves.toBeUndefined()
+    const result = await newService().trackMessageIn([
+      makeInPayload({ occurredAt: "not-a-date" }),
+    ])
 
+    expect(result).toEqual(new Map())
     expect(macRepository.upsertMonthlyPresence).toHaveBeenCalledTimes(1)
     const [rows] = macRepository.upsertMonthlyPresence.mock.calls[0] as [
       PreparedRow[],
