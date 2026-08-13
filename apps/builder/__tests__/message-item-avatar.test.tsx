@@ -9,6 +9,14 @@ vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
 }))
 
+vi.mock("@/features/chat/store/chat-store-provider", () => ({
+  useChatStore: (selector: (state: Record<string, unknown>) => unknown) =>
+    selector({
+      conversations: [],
+      activeConversationId: null,
+    }),
+}))
+
 // Base UI's Avatar.Image only mounts once the underlying <img> actually
 // fires a load/error event (see useImageLoadingStatus), which jsdom never
 // dispatches for a src that isn't really fetched. Mock it down to plain

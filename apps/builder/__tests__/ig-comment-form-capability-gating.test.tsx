@@ -21,6 +21,12 @@ vi.mock("@/features/ai-agents/provider/ai-agent-store-context", () => ({
   useAIAgentStore: () => [],
 }))
 
+vi.mock("@/components/tiptap/tiptap-editor-field", () => ({
+  TiptapEditorField: ({ label }: { label?: string }) => (
+    <div data-testid="tiptap-editor-field">{label}</div>
+  ),
+}))
+
 vi.mock("@chatbotx.io/ui/components/ui/form", async () => {
   const { FormProvider } = await import("react-hook-form")
   return {

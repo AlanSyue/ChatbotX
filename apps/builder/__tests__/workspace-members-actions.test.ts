@@ -14,6 +14,7 @@ const {
   mockIsCommunity,
   mockQuotaHasReachedLimit,
   mockUpdateSet,
+  mockWorkspaceMemberServiceDelete,
   mockWorkspaceFindById,
 } = vi.hoisted(() => {
   const mockInsertReturning = vi.fn()
@@ -39,6 +40,7 @@ const {
     mockQuotaHasReachedLimit: vi.fn(),
     mockUpdateSet,
     mockUpdateWhere,
+    mockWorkspaceMemberServiceDelete: vi.fn(),
     mockWorkspaceFindById: vi.fn(),
   }
 })
@@ -67,6 +69,9 @@ vi.mock("@chatbotx.io/business", () => ({
     `users:${userId}:workspace-members`,
   quotaEnforcementService: {
     hasReachedLimit: mockQuotaHasReachedLimit,
+  },
+  workspaceMemberService: {
+    delete: mockWorkspaceMemberServiceDelete,
   },
   workspaceService: {
     findById: mockWorkspaceFindById,
@@ -359,6 +364,7 @@ describe("deleteWorkspaceMemberAction", () => {
     ).rejects.toThrow("You cannot delete the owner of the workspace")
 
     expect(mockDbDelete).not.toHaveBeenCalled()
+    expect(mockWorkspaceMemberServiceDelete).not.toHaveBeenCalled()
   })
 
   test("rejects non-super-admin members before deleting", async () => {
@@ -373,6 +379,7 @@ describe("deleteWorkspaceMemberAction", () => {
     )
 
     expect(mockDbDelete).not.toHaveBeenCalled()
+    expect(mockWorkspaceMemberServiceDelete).not.toHaveBeenCalled()
   })
 
   test("invalidates the removed member's cached workspace list", async () => {
@@ -380,7 +387,11 @@ describe("deleteWorkspaceMemberAction", () => {
       deleteActionCtx(),
     )
 
-    expect(mockDbDelete).toHaveBeenCalled()
+    expect(mockWorkspaceMemberServiceDelete).toHaveBeenCalledWith({
+      id: MEMBER_ID,
+      workspaceId: WORKSPACE_ID,
+    })
+    expect(mockDbDelete).not.toHaveBeenCalled()
     expect(mockInvalidateCacheByTags).toHaveBeenCalledWith([
       `users:${MEMBER_USER_ID}:workspace-members`,
     ])
@@ -391,7 +402,8 @@ describe("deleteWorkspaceMemberAction", () => {
       deleteActionCtx(),
     )
 
-    expect(mockDbDelete).toHaveBeenCalledOnce()
+    expect(mockWorkspaceMemberServiceDelete).toHaveBeenCalledOnce()
+    expect(mockDbDelete).not.toHaveBeenCalled()
     expect(mockInvalidateCacheByTags).toHaveBeenCalledWith([
       `users:${MEMBER_USER_ID}:workspace-members`,
     ])

@@ -37,9 +37,15 @@ vi.mock("@chatbotx.io/database/queries/contact-filter/permission", () => ({
     contactFilter ?? undefined,
 }))
 
-vi.mock("@chatbotx.io/database/schema", () => ({
-  broadcastModel: {},
-}))
+vi.mock("@chatbotx.io/database/schema", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@chatbotx.io/database/schema")>()
+
+  return {
+    ...actual,
+    broadcastModel: {},
+  }
+})
 
 vi.mock("@chatbotx.io/database/client", () => ({
   db: {

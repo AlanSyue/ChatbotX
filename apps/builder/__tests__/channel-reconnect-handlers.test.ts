@@ -11,6 +11,7 @@ const {
   mockGetUserPages,
   mockGetMessengerFacebookUser,
   mockExchangeMessengerLongLivedToken,
+  mockDebugToken,
   mockSubscribePageToAppWebhook,
   mockGetInstagramAccount,
   mockSubscribeInstagramWebhook,
@@ -19,6 +20,8 @@ const {
   mockSubscribeInstagramFacebookWebhook,
   mockBuildIntegrationUserInfo,
   mockLookupIntegrationUserInfo,
+  mockScopesToPageSubscribeFields,
+  mockToAppAccessToken,
 } = vi.hoisted(() => ({
   mockFindMessengerIntegration: vi.fn(),
   mockUpdateMessengerIntegrationAuth: vi.fn(),
@@ -28,6 +31,7 @@ const {
   mockGetUserPages: vi.fn(),
   mockGetMessengerFacebookUser: vi.fn(),
   mockExchangeMessengerLongLivedToken: vi.fn(),
+  mockDebugToken: vi.fn(),
   mockSubscribePageToAppWebhook: vi.fn(),
   mockGetInstagramAccount: vi.fn(),
   mockSubscribeInstagramWebhook: vi.fn(),
@@ -36,6 +40,8 @@ const {
   mockSubscribeInstagramFacebookWebhook: vi.fn(),
   mockBuildIntegrationUserInfo: vi.fn(),
   mockLookupIntegrationUserInfo: vi.fn(),
+  mockScopesToPageSubscribeFields: vi.fn(() => ["messages"]),
+  mockToAppAccessToken: vi.fn(() => "app-access-token"),
 }))
 
 vi.mock("@chatbotx.io/business", () => ({
@@ -50,13 +56,16 @@ vi.mock("@chatbotx.io/business", () => ({
 }))
 
 vi.mock("@chatbotx.io/integration-messenger", () => ({
+  debugToken: mockDebugToken,
   exchangeCodeForToken: mockExchangeMessengerCode,
   getFacebookUser: mockGetMessengerFacebookUser,
   getUserPages: mockGetUserPages,
+  toAppAccessToken: mockToAppAccessToken,
 }))
 
 vi.mock("@chatbotx.io/integration-messenger/apis/page", () => ({
   exchangeLongLivedToken: mockExchangeMessengerLongLivedToken,
+  scopesToPageSubscribeFields: mockScopesToPageSubscribeFields,
   subscribePageToAppWebhook: mockSubscribePageToAppWebhook,
 }))
 
@@ -182,6 +191,7 @@ describe("reconnectMessengerHandler", () => {
       ],
       bmLookupFailed: false,
     })
+    mockDebugToken.mockResolvedValue({ scopes: ["pages_messaging"] })
   })
 
   const executeReconnect = () =>
@@ -200,6 +210,7 @@ describe("reconnectMessengerHandler", () => {
     expect(mockSubscribePageToAppWebhook).toHaveBeenCalledWith({
       pageId: "page-1",
       accessToken: "long-page-token",
+      subscribedFields: "messages",
       version: "v23.0",
     })
     expect(mockUpdateMessengerIntegrationAuth).toHaveBeenCalledWith({

@@ -6,18 +6,28 @@ const {
   mockDbInsert,
   mockInsertReturning,
   mockInsertValues,
+  mockDbSelect,
   mockFlowFindFirst,
-  mockMessengerTemplateFindFirst,
-  mockWhatsappTemplateFindFirst,
   mockIntegrationMessengerFindFirst,
   mockIntegrationWhatsappFindFirst,
   mockReturnValidationErrors,
+  selectedTemplateRows,
 } = vi.hoisted(() => {
   const mockInsertReturning = vi.fn()
   const mockInsertValues = vi.fn()
   mockInsertValues.mockReturnValue({ returning: mockInsertReturning })
   const mockDbInsert = vi.fn()
   mockDbInsert.mockReturnValue({ values: mockInsertValues })
+  const selectedTemplateRows: { current: unknown[] } = { current: [] }
+  const mockDbSelect = vi.fn(() => ({
+    from: () => ({
+      innerJoin: () => ({
+        where: () => ({
+          limit: async () => selectedTemplateRows.current,
+        }),
+      }),
+    }),
+  }))
 
   const mockReturnValidationErrors = vi.fn(
     (_schema: unknown, errs: unknown) => ({ __validationError: errs }),
@@ -27,12 +37,12 @@ const {
     mockDbInsert,
     mockInsertReturning,
     mockInsertValues,
+    mockDbSelect,
     mockFlowFindFirst: vi.fn(),
-    mockMessengerTemplateFindFirst: vi.fn(),
-    mockWhatsappTemplateFindFirst: vi.fn(),
     mockIntegrationMessengerFindFirst: vi.fn(),
     mockIntegrationWhatsappFindFirst: vi.fn(),
     mockReturnValidationErrors,
+    selectedTemplateRows,
   }
 })
 
@@ -63,12 +73,6 @@ vi.mock("@chatbotx.io/database/client", () => ({
   db: {
     query: {
       flowModel: { findFirst: mockFlowFindFirst },
-      messengerMessageTemplateModel: {
-        findFirst: mockMessengerTemplateFindFirst,
-      },
-      whatsappMessageTemplateModel: {
-        findFirst: mockWhatsappTemplateFindFirst,
-      },
       integrationMessengerModel: {
         findFirst: mockIntegrationMessengerFindFirst,
       },
@@ -77,12 +81,21 @@ vi.mock("@chatbotx.io/database/client", () => ({
       },
     },
     insert: mockDbInsert,
+    select: mockDbSelect,
   },
+  and: (...args: unknown[]) => args,
+  eq: (...args: unknown[]) => args,
 }))
 
-vi.mock("@chatbotx.io/database/schema", () => ({
-  broadcastModel: { _: "broadcastModel" },
-}))
+vi.mock("@chatbotx.io/database/schema", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@chatbotx.io/database/schema")>()
+
+  return {
+    ...actual,
+    broadcastModel: { _: "broadcastModel" },
+  }
+})
 
 const { createBroadcastAction } = await import(
   "../src/features/broadcasts/actions/create-broadcast.action"
@@ -93,6 +106,7 @@ const WORKSPACE_ID = "ws-1"
 beforeEach(() => {
   mockIntegrationMessengerFindFirst.mockResolvedValue({ id: "int-1" })
   mockIntegrationWhatsappFindFirst.mockResolvedValue({ id: "wa-int-1" })
+  selectedTemplateRows.current = []
 })
 
 const baseInput = {
@@ -155,7 +169,7 @@ describe("createBroadcastAction — messenger template validation", () => {
   })
 
   test("returns validation error when messenger template not found", async () => {
-    mockMessengerTemplateFindFirst.mockResolvedValue(undefined)
+    selectedTemplateRows.current = []
 
     const result = await (
       createBroadcastAction as (props: unknown) => Promise<unknown>
@@ -180,8 +194,18 @@ describe("createBroadcastAction — messenger template validation", () => {
   })
 
   test("sets broadcastName to template.name when messenger template found", async () => {
-    const mockTemplate = { id: "tpl-1", name: "Promo Template" }
-    mockMessengerTemplateFindFirst.mockResolvedValue(mockTemplate)
+    selectedTemplateRows.current = [
+      {
+        id: "tpl-1",
+        name: "Promo Template",
+        language: "en",
+        category: "marketing",
+        status: "approved",
+        parameterFormat: "named",
+        components: [],
+        integrationName: "Messenger One",
+      },
+    ]
     const mockBroadcast = { id: "bc-2", name: "Promo Template" }
     mockInsertReturning.mockResolvedValue([mockBroadcast])
 
@@ -199,7 +223,7 @@ describe("createBroadcastAction — messenger template validation", () => {
     const insertedValues = mockInsertValues.mock.calls[0]?.[0] as {
       name: string
     }
-    expect(insertedValues.name).toBe("Promo Template")
+    expect(insertedValues.name).toBe("Messenger One - Promo Template")
   })
 })
 
@@ -211,7 +235,7 @@ describe("createBroadcastAction — whatsapp template validation", () => {
   })
 
   test("returns validation error when whatsapp template not found", async () => {
-    mockWhatsappTemplateFindFirst.mockResolvedValue(undefined)
+    selectedTemplateRows.current = []
 
     const result = await (
       createBroadcastAction as (props: unknown) => Promise<unknown>
@@ -236,8 +260,17 @@ describe("createBroadcastAction — whatsapp template validation", () => {
   })
 
   test("sets broadcastName to template.name when whatsapp template found", async () => {
-    const mockTemplate = { id: "tpl-2", name: "WA Promo" }
-    mockWhatsappTemplateFindFirst.mockResolvedValue(mockTemplate)
+    selectedTemplateRows.current = [
+      {
+        id: "tpl-2",
+        name: "WA Promo",
+        language: "en",
+        category: "marketing",
+        status: "approved",
+        components: [],
+        integrationName: "WhatsApp One",
+      },
+    ]
     const mockBroadcast = { id: "bc-3", name: "WA Promo" }
     mockInsertReturning.mockResolvedValue([mockBroadcast])
 
@@ -255,7 +288,7 @@ describe("createBroadcastAction — whatsapp template validation", () => {
     const insertedValues = mockInsertValues.mock.calls[0]?.[0] as {
       name: string
     }
-    expect(insertedValues.name).toBe("WA Promo")
+    expect(insertedValues.name).toBe("WhatsApp One - WA Promo")
   })
 })
 

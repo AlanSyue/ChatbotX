@@ -8,6 +8,14 @@ vi.mock("next/cache", () => ({
   revalidateTag: vi.fn(),
 }))
 
+vi.mock("@/lib/safe-action", () => {
+  const chain: Record<string, unknown> = {}
+  chain.bindArgsSchemas = () => chain
+  chain.inputSchema = () => chain
+  chain.action = (fn: unknown) => fn
+  return { workspaceActionClient: chain }
+})
+
 // ---------------------------------------------------------------------------
 // Mock @chatbotx.io/redis — intercept invalidateCacheByTags calls
 // ---------------------------------------------------------------------------
@@ -130,12 +138,15 @@ const getAllWorkspaceMembersMock = getAllWorkspaceMembers as ReturnType<
 // → bind args are string representations of the IDs
 // ---------------------------------------------------------------------------
 function invokeAction(enabled: boolean) {
-  const boundAction = toggleMessengerTagSyncAction.bind(
-    null,
-    WORKSPACE_ID,
-    INTEGRATION_ID,
-  )
-  return boundAction({ enabled })
+  return (
+    toggleMessengerTagSyncAction as unknown as (props: {
+      bindArgsParsedInputs: [string, string]
+      parsedInput: { enabled: boolean }
+    }) => Promise<{ syncTagEnabledAt: Date | null }>
+  )({
+    bindArgsParsedInputs: [WORKSPACE_ID, INTEGRATION_ID],
+    parsedInput: { enabled },
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -178,7 +189,7 @@ describe("toggleMessengerTagSyncAction", () => {
       expect(setArg.syncTagEnabledAt).not.toBeNull()
 
       // Return value exposes syncTagEnabledAt from the DB row
-      expect(result?.data?.syncTagEnabledAt).toBeInstanceOf(Date)
+      expect(result?.syncTagEnabledAt).toBeInstanceOf(Date)
     })
 
     test("scopes the WHERE clause by both workspaceId and integrationId", async () => {
@@ -256,7 +267,7 @@ describe("toggleMessengerTagSyncAction", () => {
       const result = await invokeAction(true)
 
       // updated[0] is undefined → falls back to null via `?? null`
-      expect(result?.data?.syncTagEnabledAt).toBeNull()
+      expect(result?.syncTagEnabledAt).toBeNull()
     })
 
     test("still calls invalidateCacheByTags even when no row was updated", async () => {

@@ -59,9 +59,15 @@ vi.mock("@/lib/auth/auth", () => ({
 }))
 
 // ---- mock: worker-config (prevent Redis init) ------------------------------
-vi.mock("@chatbotx.io/worker-config", () => ({
-  getRedisConnection: () => ({}),
-}))
+vi.mock("@chatbotx.io/worker-config", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@chatbotx.io/worker-config")>()
+
+  return {
+    ...actual,
+    getRedisConnection: () => ({}),
+  }
+})
 
 // ---- mock: getSendGridContext -----------------------------------------------
 const mockGetSendGridContext = vi.fn()

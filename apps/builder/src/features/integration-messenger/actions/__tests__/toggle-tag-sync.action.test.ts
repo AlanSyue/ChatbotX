@@ -8,6 +8,14 @@ vi.mock("next/cache", () => ({
   revalidateTag: vi.fn(),
 }))
 
+vi.mock("@/lib/safe-action", () => {
+  const chain: Record<string, unknown> = {}
+  chain.bindArgsSchemas = () => chain
+  chain.inputSchema = () => chain
+  chain.action = (fn: unknown) => fn
+  return { workspaceActionClient: chain }
+})
+
 // ---------------------------------------------------------------------------
 // 2. Mock @chatbotx.io/redis
 // ---------------------------------------------------------------------------
@@ -136,12 +144,15 @@ const getAllWorkspaceMembersMock = getAllWorkspaceMembers as ReturnType<
 
 // Helper: invoke the action with bound args (workspaceId, integrationId)
 function invokeAction(enabled: boolean) {
-  const boundAction = toggleMessengerTagSyncAction.bind(
-    null,
-    WORKSPACE_ID,
-    INTEGRATION_ID,
-  )
-  return boundAction({ enabled })
+  return (
+    toggleMessengerTagSyncAction as unknown as (props: {
+      bindArgsParsedInputs: [string, string]
+      parsedInput: { enabled: boolean }
+    }) => Promise<{ syncTagEnabledAt: Date | null }>
+  )({
+    bindArgsParsedInputs: [WORKSPACE_ID, INTEGRATION_ID],
+    parsedInput: { enabled },
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -182,7 +193,7 @@ describe("toggleMessengerTagSyncAction", () => {
       expect(setCall.syncTagEnabledAt).not.toBeNull()
 
       // The action's return value should expose syncTagEnabledAt
-      expect(result?.data?.syncTagEnabledAt).toBeInstanceOf(Date)
+      expect(result?.syncTagEnabledAt).toBeInstanceOf(Date)
     })
 
     test("scopes the where clause by workspaceId AND integrationId", async () => {
@@ -245,7 +256,7 @@ describe("toggleMessengerTagSyncAction", () => {
       const result = await invokeAction(true)
 
       // Should not throw; data.syncTagEnabledAt falls back to null
-      expect(result?.data?.syncTagEnabledAt).toBeNull()
+      expect(result?.syncTagEnabledAt).toBeNull()
     })
   })
 })

@@ -8,6 +8,14 @@ vi.mock("next/cache", () => ({
   revalidateTag: vi.fn(),
 }))
 
+vi.mock("@/lib/safe-action", () => {
+  const chain: Record<string, unknown> = {}
+  chain.bindArgsSchemas = () => chain
+  chain.inputSchema = () => chain
+  chain.action = (fn: unknown) => fn
+  return { workspaceActionClient: chain }
+})
+
 // ---------------------------------------------------------------------------
 // Mock @chatbotx.io/redis — intercept invalidateCacheByTags calls
 // ---------------------------------------------------------------------------
@@ -122,12 +130,15 @@ const getAllWorkspaceMembersMock = getAllWorkspaceMembers as ReturnType<
 // Helper: invoke the bound action
 // ---------------------------------------------------------------------------
 function invokeAction(enabled: boolean) {
-  const boundAction = toggleZaloTagSyncAction.bind(
-    null,
-    WORKSPACE_ID,
-    INTEGRATION_ID,
-  )
-  return boundAction({ enabled })
+  return (
+    toggleZaloTagSyncAction as unknown as (props: {
+      bindArgsParsedInputs: [string, string]
+      parsedInput: { enabled: boolean }
+    }) => Promise<{ data?: unknown; serverError?: string }>
+  )({
+    bindArgsParsedInputs: [WORKSPACE_ID, INTEGRATION_ID],
+    parsedInput: { enabled },
+  })
 }
 
 // ---------------------------------------------------------------------------

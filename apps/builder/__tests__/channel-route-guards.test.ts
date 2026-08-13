@@ -273,6 +273,11 @@ describe("channel route guards", () => {
 
   test("hides the dashboard add-channel card for non-superAdmins", async () => {
     mockGetCurrentUserAndTargetWorkspace.mockResolvedValue({
+      targetWorkspace: {
+        id: "ws-1",
+        ownerId: "owner-1",
+        createdAt: new Date("2026-08-13T00:00:00.000Z"),
+      },
       targetWorkspaceMember: {
         permissions: {
           ...basePermissions,
@@ -297,6 +302,11 @@ describe("channel route guards", () => {
 
   test("shows the dashboard add-channel card for superAdmins", async () => {
     mockGetCurrentUserAndTargetWorkspace.mockResolvedValue({
+      targetWorkspace: {
+        id: "ws-1",
+        ownerId: "owner-1",
+        createdAt: new Date("2026-08-13T00:00:00.000Z"),
+      },
       targetWorkspaceMember: {
         permissions: {
           ...basePermissions,
