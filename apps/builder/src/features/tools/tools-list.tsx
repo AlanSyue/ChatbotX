@@ -2,13 +2,18 @@
 
 import { Card, CardContent } from "@chatbotx.io/ui/components/ui/card"
 import { cn } from "@chatbotx.io/ui/lib/utils"
-import { SiFacebook, SiInstagram } from "@icons-pack/react-simple-icons"
+import {
+  SiFacebook,
+  SiInstagram,
+  SiThreads,
+} from "@icons-pack/react-simple-icons"
 import {
   BotIcon,
   CalendarIcon,
   CardSimIcon,
   CircleQuestionMarkIcon,
   CopyIcon,
+  Gamepad2Icon,
   ImagesIcon,
   LinkIcon,
   MapIcon,
@@ -43,6 +48,13 @@ const TOOLS_CONFIG = [
     descriptionKey: "instagramStoryAutomation.description",
     icon: SiInstagram,
     getLink: (id: string) => `/space/${id}/ig-stories`,
+  },
+  {
+    id: "threads-comment",
+    labelKey: "threadsCommentAutomation.title",
+    descriptionKey: "threadsCommentAutomation.description",
+    icon: SiThreads,
+    getLink: (id: string) => `/space/${id}/threads-comments`,
   },
   {
     id: "facebook-lead-ads",
@@ -84,6 +96,7 @@ const TOOLS_CONFIG = [
     labelKey: "templates.title",
     descriptionKey: "templates.description",
     icon: CopyIcon,
+    getLink: (id: string) => `/space/${id}/templates`,
   },
   {
     id: "appointment",
@@ -130,6 +143,13 @@ const TOOLS_CONFIG = [
     descriptionKey: "coupons.description",
     icon: TicketPercentIcon,
     getLink: (id: string) => `/space/${id}/topic-coupons`,
+  },
+  {
+    id: "minigames",
+    labelKey: "minigames.title",
+    descriptionKey: "minigames.description",
+    icon: Gamepad2Icon,
+    getLink: (id: string) => `/space/${id}/minigames`,
   },
   // {
   //   id: "webhooks",

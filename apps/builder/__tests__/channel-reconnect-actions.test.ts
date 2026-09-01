@@ -25,16 +25,19 @@ const {
   mockFindMessengerIntegration,
   mockFindInstagramIntegration,
   mockFindZaloIntegration,
+  mockFindThreadsIntegration,
   mockResolveForOwner,
   mockRedirect,
   mockGenerateMessengerAuthUrl,
   mockGenerateInstagramAuthUrl,
   mockGenerateInstagramFacebookAuthUrl,
   mockGenerateZaloAuthUrl,
+  mockGenerateThreadsAuthUrl,
 } = vi.hoisted(() => ({
   mockFindMessengerIntegration: vi.fn(),
   mockFindInstagramIntegration: vi.fn(),
   mockFindZaloIntegration: vi.fn(),
+  mockFindThreadsIntegration: vi.fn(),
   mockResolveForOwner: vi.fn(),
   mockRedirect: vi.fn(),
   mockGenerateMessengerAuthUrl: vi.fn(() => "https://facebook.example/auth"),
@@ -43,6 +46,7 @@ const {
     () => "https://facebook.example/instagram-auth",
   ),
   mockGenerateZaloAuthUrl: vi.fn(() => "https://zalo.example/auth"),
+  mockGenerateThreadsAuthUrl: vi.fn(() => "https://threads.example/auth"),
 }))
 
 vi.mock("@/lib/safe-action", () => ({
@@ -59,8 +63,17 @@ vi.mock("@chatbotx.io/business", () => ({
   zaloIntegrationService: {
     findById: mockFindZaloIntegration,
   },
+  integrationThreadsService: {
+    findByIdForWorkspace: mockFindThreadsIntegration,
+  },
   platformCredentialService: {
     resolveForOwner: mockResolveForOwner,
+  },
+  customDomainService: {
+    findActiveByTenantId: mockFindActiveByTenantId,
+  },
+  tenantService: {
+    findByOwner: mockFindByOwner,
   },
 }))
 
@@ -90,26 +103,46 @@ vi.mock("@chatbotx.io/integration-zalo", () => ({
   generateAuthUrl: mockGenerateZaloAuthUrl,
 }))
 
+vi.mock("@chatbotx.io/integration-threads", () => ({
+  generateAuthUrl: mockGenerateThreadsAuthUrl,
+}))
+
 vi.mock("next/navigation", () => ({
   redirect: mockRedirect,
+}))
+
+vi.mock("next-intl/server", () => ({
+  getTranslations: vi.fn(async () => (key: string) => key),
 }))
 
 vi.mock("@/lib/domain", () => ({
   getOriginUrlFromHeader: vi.fn(async () => "https://app.example.com"),
 }))
 
+const BROKER_ORIGIN = "https://broker.example.com"
+
 vi.mock("@/lib/oauth-broker", () => ({
-  buildBrokerCallbackUrl: (path: string) => `https://broker.example.com${path}`,
+  getBrokerOrigin: () => BROKER_ORIGIN,
+  buildBrokerCallbackUrl: (path: string) => `${BROKER_ORIGIN}${path}`,
 }))
+
+const { mockFindActiveByTenantId, mockFindByOwner } = vi.hoisted(() => ({
+  mockFindActiveByTenantId: vi.fn(),
+  mockFindByOwner: vi.fn(),
+}))
+
+vi.mock("@/env", () => ({ isCloud: () => true }))
 
 await import("../src/features/integration-messenger/actions/reconnect.action")
 await import("../src/features/integration-instagram/actions/reconnect.action")
 await import("../src/features/integration-zalo/actions/reconnect.action")
+await import("../src/features/integration-threads/actions/reconnect.action")
 
 const [
   reconnectMessengerHandler,
   reconnectInstagramHandler,
   reconnectZaloHandler,
+  reconnectThreadsHandler,
 ] = capturedActionHandlers
 
 const executeMessengerReconnect = () =>
@@ -130,16 +163,25 @@ const executeZaloReconnect = () =>
     ctx: { workspace: { id: "ws-1", ownerId: "owner-1" } },
   })
 
+const executeThreadsReconnect = () =>
+  reconnectThreadsHandler({
+    bindArgsParsedInputs: ["ws-1", "th-1"],
+    ctx: { workspace: { id: "ws-1", ownerId: "owner-1" } },
+  })
+
 describe("reconnectMessengerAction", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockResolveForOwner.mockResolvedValue({
+      userId: null,
       config: {
         clientId: "client-1",
         clientSecret: "secret-1",
         version: "v23.0",
       },
     })
+    mockFindByOwner.mockResolvedValue(undefined)
+    mockFindActiveByTenantId.mockResolvedValue(undefined)
   })
 
   test("redirects to the Facebook dialog with reconnect state", async () => {
@@ -185,18 +227,46 @@ describe("reconnectMessengerAction", () => {
     )
     expect(mockRedirect).not.toHaveBeenCalled()
   })
-})
 
-describe("reconnectInstagramAction", () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
+  test("uses the reseller's active custom domain for a tenant-owned credential", async () => {
+    mockFindMessengerIntegration.mockResolvedValue({
+      id: "im-1",
+      pageId: "page-1",
+    })
     mockResolveForOwner.mockResolvedValue({
+      userId: "owner-1",
       config: {
         clientId: "client-1",
         clientSecret: "secret-1",
         version: "v23.0",
       },
     })
+    mockFindByOwner.mockResolvedValue({ id: "t1", status: "active" })
+    mockFindActiveByTenantId.mockResolvedValue({ domain: "chat.acme.com" })
+
+    await executeMessengerReconnect()
+
+    expect(mockGenerateMessengerAuthUrl).toHaveBeenCalledWith(
+      expect.objectContaining({
+        redirectUrl: "https://chat.acme.com/integrations/messenger/callback",
+      }),
+    )
+  })
+})
+
+describe("reconnectInstagramAction", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockResolveForOwner.mockResolvedValue({
+      userId: null,
+      config: {
+        clientId: "client-1",
+        clientSecret: "secret-1",
+        version: "v23.0",
+      },
+    })
+    mockFindByOwner.mockResolvedValue(undefined)
+    mockFindActiveByTenantId.mockResolvedValue(undefined)
   })
 
   test("opens the direct Instagram dialog for type instagram", async () => {
@@ -267,6 +337,7 @@ describe("reconnectZaloAction", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockResolveForOwner.mockResolvedValue({
+      userId: null,
       config: {
         clientId: "client-1",
         clientSecret: "secret-1",
@@ -274,6 +345,8 @@ describe("reconnectZaloAction", () => {
         version: "v4",
       },
     })
+    mockFindByOwner.mockResolvedValue(undefined)
+    mockFindActiveByTenantId.mockResolvedValue(undefined)
   })
 
   test("redirects to the Zalo dialog with reconnect state", async () => {
@@ -316,6 +389,85 @@ describe("reconnectZaloAction", () => {
 
     await expect(executeZaloReconnect()).rejects.toThrow(
       "Zalo App settings not found",
+    )
+    expect(mockRedirect).not.toHaveBeenCalled()
+  })
+
+  test("uses the reseller's active custom domain for a tenant-owned credential", async () => {
+    mockFindZaloIntegration.mockResolvedValue({ id: "iz-1", oaId: "oa-1" })
+    mockResolveForOwner.mockResolvedValue({
+      userId: "owner-1",
+      config: {
+        clientId: "client-1",
+        clientSecret: "secret-1",
+        verifyToken: "verify-1",
+        version: "v4",
+      },
+    })
+    mockFindByOwner.mockResolvedValue({ id: "t1", status: "active" })
+    mockFindActiveByTenantId.mockResolvedValue({ domain: "chat.acme.com" })
+
+    await executeZaloReconnect()
+
+    expect(mockGenerateZaloAuthUrl).toHaveBeenCalledWith(
+      expect.objectContaining({
+        redirectUrl: "https://chat.acme.com/integrations/zalo/callback",
+      }),
+    )
+  })
+})
+
+describe("reconnectThreadsAction", () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockResolveForOwner.mockResolvedValue({
+      config: {
+        clientId: "client-1",
+        clientSecret: "secret-1",
+        version: "v23.0",
+      },
+    })
+  })
+
+  test("redirects to the Threads dialog with reconnect state", async () => {
+    mockFindThreadsIntegration.mockResolvedValue({
+      id: "th-1",
+      threadsUserId: "threads-user-1",
+    })
+
+    await executeThreadsReconnect()
+
+    expect(mockGenerateThreadsAuthUrl).toHaveBeenCalledWith({
+      clientId: "client-1",
+      redirectUrl: "https://broker.example.com/integrations/threads/callback",
+      stateParams: {
+        workspaceId: "ws-1",
+        referer:
+          "https://app.example.com/space/ws-1/settings/channels?channel=threads",
+        reconnectIntegrationId: "th-1",
+      },
+    })
+    expect(mockRedirect).toHaveBeenCalledWith("https://threads.example/auth")
+  })
+
+  test("throws a translated not-found error when the integration is missing", async () => {
+    mockFindThreadsIntegration.mockResolvedValue(undefined)
+
+    await expect(executeThreadsReconnect()).rejects.toThrow(
+      "channels.reconnect.errors.notFound",
+    )
+    expect(mockRedirect).not.toHaveBeenCalled()
+  })
+
+  test("throws a translated app-settings error when the credential is missing", async () => {
+    mockFindThreadsIntegration.mockResolvedValue({
+      id: "th-1",
+      threadsUserId: "threads-user-1",
+    })
+    mockResolveForOwner.mockResolvedValue(null)
+
+    await expect(executeThreadsReconnect()).rejects.toThrow(
+      "messages.needToAddSettings",
     )
     expect(mockRedirect).not.toHaveBeenCalled()
   })

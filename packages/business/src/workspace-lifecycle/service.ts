@@ -15,6 +15,7 @@ import {
   integrationMessengerModel,
   integrationSmtpModel,
   integrationTelegramModel,
+  integrationThreadsModel,
   integrationTiktokModel,
   integrationWebchatModel,
   integrationWhatsappModel,
@@ -397,18 +398,19 @@ class WorkspaceLifecycleService extends BaseService {
     return deleted
   }
 
+  /** Returns the ids of the owner's workspaces this call tore down, so callers that need to attribute a per-workspace side effect (e.g. audit rows) don't have to re-query. */
   async deactivateOwnerWorkspaces(props: {
     ownerId: string
     integrations?: WorkspaceTeardownIntegrations
     teardownLevel?: WorkspaceTeardownLevel
-  }): Promise<void> {
+  }): Promise<string[]> {
     const workspaces = await db.query.workspaceModel.findMany({
       where: { ownerId: props.ownerId },
       columns: { id: true, tenantId: true },
     })
 
     if (workspaces.length === 0) {
-      return
+      return []
     }
 
     const teardownLevel = props.teardownLevel ?? "pause"
@@ -428,6 +430,8 @@ class WorkspaceLifecycleService extends BaseService {
       props.ownerId,
       workspaces[0]?.tenantId ?? ROOT_TENANT_ID,
     )
+
+    return workspaces.map((workspace) => workspace.id)
   }
 
   private async disconnectWorkspaceInbox(props: {
@@ -608,6 +612,15 @@ class WorkspaceLifecycleService extends BaseService {
         await finish(integrations?.tiktok)
         return
       }
+      case channelTypes.enum.threads: {
+        if (removeIntegrationRow && inbox.integrationThreads) {
+          await tx
+            .delete(integrationThreadsModel)
+            .where(eq(integrationThreadsModel.id, inbox.integrationThreads.id))
+        }
+        await finish(integrations?.threads)
+        return
+      }
       case channelTypes.enum.webchat: {
         if (removeIntegrationRow && inbox.integrationWebchat) {
           await tx
@@ -650,6 +663,8 @@ const inboxToAuth = (inbox: InboxWithIntegrations): unknown => {
       return inbox.integrationSmtp?.auth
     case channelTypes.enum.instagram:
       return inbox.integrationInstagram?.auth
+    case channelTypes.enum.threads:
+      return inbox.integrationThreads?.auth
     default:
       return null
   }
